@@ -30,7 +30,6 @@ jobs:
           VALIDATE_JAVASCRIPT_ES: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  lint-frontend:
     name: Lint Frontend Code
     runs-on: ubuntu-latest
     steps:
