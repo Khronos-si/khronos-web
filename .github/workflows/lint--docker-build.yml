@@ -5,7 +5,7 @@ on:
     branches: [master]
 
 jobs:
-  lint-backend:
+  Build-docker-and-push:
     name: Lint Backend Code
     runs-on: ubuntu-latest
     steps:
