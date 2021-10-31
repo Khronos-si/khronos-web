@@ -10,7 +10,7 @@ services:
 
   backend:
     container_name: tpo_backend
-    image: "nikp00/doker_test:backend"
+    image: "nikp00/tpo_backend"
     build: ./backend
     restart: always
     volumes: [./backend:/usr/src/app]
@@ -21,6 +21,7 @@ services:
 
   frontend:
     container_name: tpo_frontend
+    image: "nikp00/tpo_frontend"
     restart: always
     build: ./frontend
     volumes: [./frontend:/usr/src/app]
