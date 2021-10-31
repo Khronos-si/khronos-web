@@ -23,7 +23,7 @@ jobs:
       - name: Docker build images
         run: docker-compose build
 
-      - name: Docker push login
+      - name: Docker push
         run: docker-compose push
 
         env:
