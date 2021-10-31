@@ -1,0 +1,223 @@
+{
+    "_type": "export",
+    "__export_format": 4,
+    "__export_date": "2021-10-30T17:00:05.840Z",
+    "__export_source": "insomnia.desktop.app:v2021.6.0",
+    "resources": [{
+        "_id": "req_5e7be8553f554452b5b975f421fe67d6",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635612600850,
+        "created": 1635529856638,
+        "url": "http://localhost:3000/api/user/login",
+        "name": "post_login",
+        "description": "",
+        "method": "POST",
+        "body": {
+            "mimeType": "application/json",
+            "text": "{\n\t\"email\":\"nik.princic@gmail.com\",\n\t\"password\":\"1234\"\n}"
+        },
+        "parameters": [],
+        "headers": [{
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "pair_597c4fa7a3e14596bc87343ae4f2c919"
+        }],
+        "authentication": {},
+        "metaSortKey": -1635536536694,
+        "isPrivate": false,
+        "settingStoreCookies": true,
+        "settingSendCookies": true,
+        "settingDisableRenderRequestBody": false,
+        "settingEncodeUrl": true,
+        "settingRebuildPath": true,
+        "settingFollowRedirects": "global",
+        "_type": "request"
+    }, {
+        "_id": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "parentId": null,
+        "modified": 1635529835869,
+        "created": 1635529835869,
+        "name": "Test",
+        "description": "",
+        "scope": "collection",
+        "_type": "workspace"
+    }, {
+        "_id": "req_d257cc658a4b489bb2d01e86b640d691",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635612599180,
+        "created": 1635534295552,
+        "url": "http://localhost:3000/api/user/register",
+        "name": "post_register",
+        "description": "",
+        "method": "POST",
+        "body": {
+            "mimeType": "application/json",
+            "text": "{\n\t\"name\": \"nik\",\n\t\"email\": \"nik.princic@gmail.com\",\n\t\"password\": \"1234\"\n}\t\n"
+        },
+        "parameters": [],
+        "headers": [{
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "pair_3edad996dfc747878569623a898b5e10"
+        }],
+        "authentication": {},
+        "metaSortKey": -1635534295552,
+        "isPrivate": false,
+        "settingStoreCookies": true,
+        "settingSendCookies": true,
+        "settingDisableRenderRequestBody": false,
+        "settingEncodeUrl": true,
+        "settingRebuildPath": true,
+        "settingFollowRedirects": "global",
+        "_type": "request"
+    }, {
+        "_id": "req_78bb463e5e37402f9ca956e7e3af7589",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635612663633,
+        "created": 1635538777836,
+        "url": "http://localhost:3000/api/todo/617d5696b0e3a95473674df8",
+        "name": "get_todo",
+        "description": "",
+        "method": "GET",
+        "body": {
+            "mimeType": "application/json",
+            "text": ""
+        },
+        "parameters": [],
+        "headers": [{
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "pair_cd3e2838dfda439c8271e959ddc55817"
+        }, {
+            "id": "pair_089fb5b63a764907a428e2a662f1e0d7",
+            "name": "{{ _.jwt }}",
+            "value": "{{ _.jwt_value }}",
+            "description": "",
+            "disabled": false
+        }],
+        "authentication": {},
+        "metaSortKey": -1635538777836,
+        "isPrivate": false,
+        "settingStoreCookies": true,
+        "settingSendCookies": true,
+        "settingDisableRenderRequestBody": false,
+        "settingEncodeUrl": true,
+        "settingRebuildPath": true,
+        "settingFollowRedirects": "global",
+        "_type": "request"
+    }, {
+        "_id": "req_b9e1b7da4c1246279650e30bb0ca8b62",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635612663125,
+        "created": 1635598820844,
+        "url": "http://localhost:3000/api/todo/",
+        "name": "add_todo",
+        "description": "",
+        "method": "POST",
+        "body": {
+            "mimeType": "application/json",
+            "text": "{\n\t\"todoGroupId\": \"617d5687b0e3a95473674df2\",\n\t\"name\": \"Add api endpoints\",\n\t\"description\": \"Random text\",\n\t\"status\": false\n}"
+        },
+        "parameters": [],
+        "headers": [{
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "pair_a8c03e9a66e14cb4a301a47eac79d3bf"
+        }, {
+            "id": "pair_dfa17b6cef5f4f66989981d58ecf9ab7",
+            "name": "{{ _.jwt }}",
+            "value": "{{ _.jwt_value }}",
+            "description": ""
+        }],
+        "authentication": {},
+        "metaSortKey": -1635598820844,
+        "isPrivate": false,
+        "settingStoreCookies": true,
+        "settingSendCookies": true,
+        "settingDisableRenderRequestBody": false,
+        "settingEncodeUrl": true,
+        "settingRebuildPath": true,
+        "settingFollowRedirects": "global",
+        "_type": "request"
+    }, {
+        "_id": "req_f015c6fa503d48c5a2c4a0860be60168",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635612656234,
+        "created": 1635602066426,
+        "url": "http://localhost:3000/api/todo/group",
+        "name": "add_todoGroup",
+        "description": "",
+        "method": "POST",
+        "body": {
+            "mimeType": "application/json",
+            "text": "{\n\t\"name\": \"test group\"\n}"
+        },
+        "parameters": [],
+        "headers": [{
+            "name": "Content-Type",
+            "value": "application/json",
+            "id": "pair_77956e4624a540f8afd5f348358168bb"
+        }, {
+            "id": "pair_62d2e01055034f33a653d7aa5b409469",
+            "name": "{{ _.jwt }}",
+            "value": "{{ _.jwt_value }}",
+            "description": ""
+        }],
+        "authentication": {},
+        "metaSortKey": -1635602066426,
+        "isPrivate": false,
+        "settingStoreCookies": true,
+        "settingSendCookies": true,
+        "settingDisableRenderRequestBody": false,
+        "settingEncodeUrl": true,
+        "settingRebuildPath": true,
+        "settingFollowRedirects": "global",
+        "_type": "request"
+    }, {
+        "_id": "env_422b2cf30b362c281139d9dbbcf6b3ba86ce6162",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635612623944,
+        "created": 1635529835872,
+        "name": "Base Environment",
+        "data": {},
+        "dataPropertyOrder": {},
+        "color": null,
+        "isPrivate": false,
+        "metaSortKey": 1635529835872,
+        "_type": "environment"
+    }, {
+        "_id": "jar_422b2cf30b362c281139d9dbbcf6b3ba86ce6162",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635529835873,
+        "created": 1635529835873,
+        "name": "Default Jar",
+        "cookies": [],
+        "_type": "cookie_jar"
+    }, {
+        "_id": "spc_5b8a770339614c5490370409d00234ed",
+        "parentId": "wrk_a8b71f7d9951469c8407a24e3a653adb",
+        "modified": 1635529835870,
+        "created": 1635529835870,
+        "fileName": "Test",
+        "contents": "",
+        "contentType": "yaml",
+        "_type": "api_spec"
+    }, {
+        "_id": "env_ab0f0e9c076e44e18ca36f5911e9ce16",
+        "parentId": "env_422b2cf30b362c281139d9dbbcf6b3ba86ce6162",
+        "modified": 1635612634828,
+        "created": 1635612486626,
+        "name": "TPO",
+        "data": {
+            "jwt": "auth-token",
+            "jwt_value": "{% response 'raw', 'req_5e7be8553f554452b5b975f421fe67d6', '', 'when-expired', 60 %}"
+        },
+        "dataPropertyOrder": {
+            "&": ["jwt", "jwt_value"]
+        },
+        "color": null,
+        "isPrivate": false,
+        "metaSortKey": 1635612486626,
+        "_type": "environment"
+    }]
+}
