@@ -6,7 +6,7 @@ on:
 
 jobs:
   Build-docker-and-push:
-    name: Lint Code & Build Docker Images
+    name: Build Docker Images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -26,6 +26,11 @@ jobs:
 
       - name: Docker push
         run: docker-compose push
-
+        
+      - name: Webhook
+        uses: distributhor/workflow-webhook
+        with:
+          url: "http://157.230.113.194:9000/hooks/deploy"
+          json: '{ "key": "${{secrets.WEBHOOK_KEY}}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

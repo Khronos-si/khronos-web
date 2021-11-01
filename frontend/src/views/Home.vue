@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-card title="Kick start your project">
-            <b-card-text>All the best for your new project.</b-card-text>
+            <b-card-text>All the best for your new project. Test</b-card-text>
             <b-card-text>Please make sure to read our <b-link
                 href="https://pixinvent.com/demo/vuexy-vuejs-admin-dashboard-template/documentation/"
                 target="_blank"
