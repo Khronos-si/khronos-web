@@ -31,6 +31,6 @@ jobs:
         uses: distributhor/workflow-webhook
         env:
           webhook_url: "http://157.230.113.194:9000/hooks/deploy"
-          data: '{ "key": "${{ secrets.WEBHOOK_KEY }}" }'
+          data: '{ "weapon": "hammer", "drink" : "beer" }'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
