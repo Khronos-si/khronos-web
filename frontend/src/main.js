@@ -16,12 +16,11 @@ import './global-components'
 import '@/libs/portal-vue'
 import '@/libs/toastification'
 
+
 // font awesome
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import {fas} from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-console.log('asdasd')
 
 //FontAwesome
 library.add(fas)
@@ -30,27 +29,28 @@ Vue.component('fa', FontAwesomeIcon)
 // axios
 import axios from './axios.js'
 
+
 // ADDS BEARER JWT TO EVERY REQUEST
 axios.interceptors.request.use(
   config => {
     const jwt = localStorage.getItem('accessToken')
     if (jwt !== '') config.headers.common.Authorization = `Bearer ${jwt}`
-
+    
     return config
   },
   error => Promise.reject(error)
-)
-
-axios.interceptors.response.use(
-  response => response,
-  error => {
-    if (error.response.status === 401) {
-      router.push('/login')
+  )
+  
+  axios.interceptors.response.use(
+    response => response,
+    error => {
+      if (error.response.status === 401) {
+        router.push('/login')
+      }
+      return Promise.reject(error)
     }
-    return Promise.reject(error)
-  }
-)
-
+    )
+    
 Vue.prototype.$http = axios
 
 // Moment.js

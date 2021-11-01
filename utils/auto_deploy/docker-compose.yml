@@ -1,0 +1,29 @@
+version: "3"
+services:
+  db:
+    container_name: mongodb
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./database:/data/db
+
+  backend:
+    container_name: tpo_backend
+    image: "nikp00/tpo_backend"
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+
+  frontend:
+    container_name: tpo_frontend
+    image: "nikp00/tpo_frontend"
+    restart: always
+    ports:
+      - "80:3000"
+    stdin_open: true
+    depends_on:
+      - db
+      - backend

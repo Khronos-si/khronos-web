@@ -8,6 +8,10 @@ const app = express();
 
 dotenv.config();
 
+console.log("TEST");
+console.log(process.env.DB_CONNECT);
+console.log(process.env.JWT_SECRET);
+
 // Import routes
 const authRoute = require("./routes/auth");
 const todoRoute = require("./routes/todo");
