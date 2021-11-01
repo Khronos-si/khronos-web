@@ -33,6 +33,7 @@ jobs:
           webhook_url: ${{ secrets.WEBHOOK_URL }}
           webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           data: '{ "weapon": "hammer", "drink" : "beer" }'
+
       # env:
       #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
