@@ -26,11 +26,14 @@ jobs:
 
       - name: Docker push
         run: docker-compose push
-        
-      - name: Webhook
-        uses: distributhor/workflow-webhook
+
+      - name: Invoke deployment hook
+        uses: distributhor/workflow-webhook@v2
         env:
-          webhook_url: "http://157.230.113.194:9000/hooks/deploy"
+          webhook_url: ${{ secrets.WEBHOOK_URL }}
+          webhook_secret: ${{ secrets.WEBHOOK_SECRET }}
           data: '{ "weapon": "hammer", "drink" : "beer" }'
-      env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # '{ "key": "${{ secrets.WEBHOOK_KEY }}" }'
