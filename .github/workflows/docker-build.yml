@@ -29,8 +29,8 @@ jobs:
         
       - name: Webhook
         uses: distributhor/workflow-webhook
-        with:
-          url: "http://157.230.113.194:9000/hooks/deploy"
-          json: '{ "key": "${{ secrets.WEBHOOK_KEY }}" }'
+        env:
+          webhook_url: "http://157.230.113.194:9000/hooks/deploy"
+          data: '{ "key": "${{ secrets.WEBHOOK_KEY }}" }'
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
