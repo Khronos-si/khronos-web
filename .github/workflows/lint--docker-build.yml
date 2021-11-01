@@ -21,6 +21,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Docker build images
+        working-directory: ./utils/deploy_images/
         run: docker-compose build
 
       - name: Docker push
