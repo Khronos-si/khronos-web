@@ -6,7 +6,7 @@ on:
 
 jobs:
   Build-docker-and-push:
-    name: Lint Backend Code
+    name: Lint Code & Build Docker Images
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
