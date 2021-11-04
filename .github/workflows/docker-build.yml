@@ -8,6 +8,7 @@ jobs:
   Build-docker-and-push:
     name: Build Docker Images
     runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.message, 'release') }}
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
