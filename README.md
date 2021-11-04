@@ -42,3 +42,5 @@
 - Backend address [http://157.230.113.194:3000/api](http://157.230.113.194:3000/api)
 
 - If you want to use [Insomnia](https://insomnia.rest/download) to test the API you can use the template in `/utils/insomnia_template/`
+
+- Online dev DB mongodb://157.230.113.194:27018
