@@ -1,5 +1,9 @@
 # TPO app
 
+[![Lint Codebase & Build Docker Images](https://github.com/nikp00/TPO/actions/workflows/lint-and-docker-build.yml/badge.svg)](https://github.com/nikp00/TPO/actions/workflows/lint-and-docker-build.yml)
+
+[![Manual Build Docker Images](https://github.com/nikp00/TPO/actions/workflows/docker-build.yml/badge.svg)](https://github.com/nikp00/TPO/actions/workflows/docker-build.yml)
+
 ## Requirements
 
 - [Node](https://nodejs.org/en/download/)
