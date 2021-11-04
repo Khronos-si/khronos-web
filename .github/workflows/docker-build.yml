@@ -28,6 +28,7 @@ jobs:
           LINTER_RULES_PATH: ./backend
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
           VALIDATE_JAVASCRIPT_ES: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   lint-frontend:
     name: Lint Frontend Code
@@ -54,6 +55,7 @@ jobs:
           LINTER_RULES_PATH: ./frontend
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.js
           VALIDATE_JAVASCRIPT_ES: true
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   Build-docker-and-push:
     name: Build Docker Images
