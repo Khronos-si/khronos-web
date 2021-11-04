@@ -5,8 +5,59 @@ on:
     branches: [master]
 
 jobs:
+  lint-backend:
+    name: Lint Backend Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - run: npm install ./backend
+
+      - name: Lint Code Base
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: dev
+          FILTER_REGEX_INCLUDE: ./backend/*
+          LINTER_RULES_PATH: ./backend
+          JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
+          VALIDATE_JAVASCRIPT_ES: true
+
+  lint-frontend:
+    name: Lint Frontend Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+      - run: npm install -g yarn
+      - run: cd frontend/
+      - run: yarn install
+
+      - name: Lint Code Base
+        uses: github/super-linter@v4
+        env:
+          VALIDATE_ALL_CODEBASE: true
+          DEFAULT_BRANCH: dev
+          FILTER_REGEX_INCLUDE: ./frontend/*
+          LINTER_RULES_PATH: ./frontend
+          JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.js
+          VALIDATE_JAVASCRIPT_ES: true
+
   Build-docker-and-push:
     name: Build Docker Images
+    needs: [lint-backend, lint-frontend]
     runs-on: ubuntu-latest
     if: ${{ contains(github.event.head_commit.message, 'release') }}
     steps:
