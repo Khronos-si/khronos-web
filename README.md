@@ -29,7 +29,9 @@
 
 - Every push to the dev branch will be automatically linted.
 
-- Every push to teh master branch will be automatically built into 2 docker images and deployed to the [server](http://157.230.113.194)
+- Every push to the master branch, whose commit message contains "release", will be automatically linted and built into 2 docker images and deployed to the [server](http://157.230.113.194)
+
+- You can manually trigger a build action from [here](https://github.com/nikp00/TPO/actions/workflows/docker-build.yml)
 
 - Frontend address [http://157.230.113.194](http://157.230.113.194)
 

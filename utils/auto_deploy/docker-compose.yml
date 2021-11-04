@@ -6,7 +6,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./database:/data/db
+      - ../database:/data/db
 
   backend:
     container_name: tpo_backend
@@ -22,7 +22,7 @@ services:
     image: "nikp00/tpo_frontend"
     restart: always
     ports:
-      - "80:3000"
+      - "80:80"
     stdin_open: true
     depends_on:
       - db
