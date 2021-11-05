@@ -3,8 +3,6 @@ services:
   db:
     container_name: mongodb
     image: mongo
-    ports:
-      - "27017:27017"
 
   backend:
     container_name: tpo_backend
@@ -12,8 +10,6 @@ services:
     build:
       dockerfile: ../utils/deploy_images/backend/Dockerfile
       context: ../../backend/
-    ports:
-      - "3000:3000"
 
   frontend:
     container_name: tpo_frontend
@@ -21,5 +17,3 @@ services:
     build:
       dockerfile: ../utils/deploy_images/frontend/Dockerfile
       context: ../../frontend/
-    ports:
-      - "8080:80"

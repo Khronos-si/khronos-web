@@ -7,6 +7,13 @@ services:
       - "27017:27017"
     volumes:
       - ../database:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 74SKjw!N
+      MONGO_INITDB_DATABASE: TPO
+      MONGO_USERNAME: user
+      MONGO_PASSWORD: eUA8X2^1
 
   backend:
     container_name: tpo_backend
