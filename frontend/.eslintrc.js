@@ -4,6 +4,13 @@ module.exports = {
     node: true,
     browser: true
   },
+  ignorePatterns: [
+    'dist',
+    'dev/assets/vendor',
+    'node_modules',
+    'jsconfig.json',
+    '.eslintrc.js'
+  ],
   extends: ['plugin:vue/essential', 'eslint:recommended'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'error' : 'off',

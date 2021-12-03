@@ -1,5 +1,0 @@
-dist
-dev/assets/vendor
-node_modules
-jsconfig.json
-.eslintrc.js
