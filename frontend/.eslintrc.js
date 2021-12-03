@@ -10,7 +10,7 @@ module.exports = {
     'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
 
     // Best Practices
-    'eqeqeq': 'error',
+    eqeqeq: 'error',
     'no-invalid-this': 'error',
     'no-return-assign': 'error',
     'no-unused-expressions': ['error', { allowTernary: true }],
@@ -46,8 +46,8 @@ module.exports = {
       { allowAllPropertiesOnSameLine: true }
     ],
     'quote-props': ['error', 'consistent'],
-    'quotes': ['error', 'single'],
-    'semi': ['error', 'never'],
+    quotes: ['error', 'single'],
+    semi: ['error', 'never'],
     'semi-spacing': 'error',
     'space-before-blocks': 'error',
     'space-in-parens': 'error',
@@ -66,6 +66,7 @@ module.exports = {
     // Vue
     'space-before-function-paren': ['error', 'never'],
     'vue/script-indent': ['error', 4, { baseIndent: 1 }],
+    'multi-word-component-names': 'off',
     'vue/html-indent': [
       'error',
       4,
