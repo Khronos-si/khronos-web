@@ -1,5 +1,5 @@
 {
-    "extends": ["airbnb-base", "prettier", "plugin:node/recommended"],
+    "extends": ["airbnb-base", "prettier"],
     "plugins": ["prettier", "node"],
     "rules": {
       "prettier/prettier": "error",
@@ -10,6 +10,8 @@
       "object-shorthand": "off",
       "class-methods-use-this": "off",
       "no-underscore-dangle": [1, { "allow": ["_id"] }],
-      "eqeqeq": "error"
+      "eqeqeq": "error",
+      "no-restricted-syntax": "off",
+      "no-await-in-loop": "off"
     }
   }
