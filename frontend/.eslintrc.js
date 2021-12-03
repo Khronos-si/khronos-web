@@ -73,7 +73,7 @@ module.exports = {
     // Vue
     'space-before-function-paren': ['error', 'never'],
     'vue/script-indent': ['error', 4, { baseIndent: 1 }],
-    'multi-word-component-names': 'off',
+    'vue/multi-word-component-names': 'off',
     'vue/html-indent': [
       'error',
       4,
