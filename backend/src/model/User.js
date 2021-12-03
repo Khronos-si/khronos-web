@@ -19,6 +19,7 @@ const userSchema = new mongoose.Schema({
 		default: Date.now,
 	},
 	todoGroups: [{ type: mongoose.Schema.Types.ObjectId, ref: "TodoGroup" }],
+	sharedTodos: [{ type: mongoose.Schema.Types.ObjectId, ref: "TodoGroup" }],
 });
 
 module.exports = mongoose.model("User", userSchema);

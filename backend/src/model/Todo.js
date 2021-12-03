@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const todoEntrySchema = new mongoose.Schema({
+const todoSchema = new mongoose.Schema({
 	todoGroupId: {
 		type: mongoose.Types.ObjectId,
 		ref: "TodoGroup",
@@ -20,4 +20,4 @@ const todoEntrySchema = new mongoose.Schema({
 	},
 });
 
-module.exports = mongoose.model("TodoEntry", todoEntrySchema);
+module.exports = mongoose.model("Todo", todoSchema);

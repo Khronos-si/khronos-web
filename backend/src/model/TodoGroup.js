@@ -5,14 +5,21 @@ const todoGroupSchema = new mongoose.Schema({
 		type: String,
 		required: true,
 	},
-	userId: {
+	owner: {
 		type: mongoose.Types.ObjectId,
 		ref: "User",
 	},
-	todoEntrys: [
+	permissions: { type: Number, default: 0 },
+	sharedWith: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "TodoEntry",
+			ref: "User",
+		},
+	],
+	todos: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Todo",
 		},
 	],
 });
