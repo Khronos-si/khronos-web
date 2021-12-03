@@ -23,7 +23,7 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: true
-          DEFAULT_BRANCH: dev
+          DEFAULT_BRANCH: master
           FILTER_REGEX_INCLUDE: ./backend/*
           LINTER_RULES_PATH: ./backend
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.json
@@ -50,7 +50,7 @@ jobs:
         uses: github/super-linter@v4
         env:
           VALIDATE_ALL_CODEBASE: true
-          DEFAULT_BRANCH: dev
+          DEFAULT_BRANCH: master
           FILTER_REGEX_INCLUDE: ./frontend/*
           LINTER_RULES_PATH: ./frontend
           JAVASCRIPT_ES_CONFIG_FILE: .eslintrc.js
