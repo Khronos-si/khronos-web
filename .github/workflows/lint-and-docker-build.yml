@@ -51,9 +51,9 @@ jobs:
         env:
           VALIDATE_ALL_CODEBASE: true
           DEFAULT_BRANCH: master
-          FILTER_REGEX_INCLUDE: ./frontend/*
-          LINTER_RULES_PATH: ./frontend
-          JAVASCRIPT_ES_CONFIG_FILE: ./frontend/.eslintrc.js
+          FILTER_REGEX_INCLUDE: /frontend/*
+          LINTER_RULES_PATH: /frontend
+          JAVASCRIPT_ES_CONFIG_FILE: /frontend/.eslintrc.js
           VALIDATE_JAVASCRIPT_ES: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
