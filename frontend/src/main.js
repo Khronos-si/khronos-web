@@ -29,7 +29,6 @@ Vue.component('fa', FontAwesomeIcon)
 // axios
 import axios from './axios.js'
 
-
 // ADDS BEARER JWT TO EVERY REQUEST
 axios.interceptors.request.use(
   config => {

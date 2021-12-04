@@ -248,19 +248,18 @@
                 const thisIns = this
                 thisIns.$store.state.app.showLoader = true
 
-                // const payload = {
-                //     email: thisIns.userEmail,
-                //     password: thisIns.password,
-                //     remember_me: thisIns.rememberMe
-                // }
+                const payload = {
+                    email: thisIns.userEmail,
+                    password: thisIns.password
+                }
 
                 try {
                     // odvisno od zasnova projekta, lahko login vrne samo JWT token
                     // ali pa vrne tudi vse informacije o uporanbiku,
                     // v našem primeru rabimo narediti 2 klica, prilagodi po svoje po želji
-                    // const loginResponse = await this.$http.post('user/v1/login', payload)
-                    // const token = loginResponse.data
-                    // thisIns.$store.dispatch('user/login', token)
+                    const loginResponse = await this.$http.post('/api/user/login', payload)
+                    const token = loginResponse.data
+                    thisIns.$store.dispatch('user/login', token)
                     // const userDataResponse = await this.$http.get('user/v1/')
                     this.$store.dispatch('user/setUserData', {boy: 'Janko Novak'})
                 } catch (error) {
