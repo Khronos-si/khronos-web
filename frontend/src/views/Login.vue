@@ -260,8 +260,7 @@
                     const loginResponse = await this.$http.post('/api/user/login', payload)
                     const token = loginResponse.data
                     thisIns.$store.dispatch('user/login', token)
-                    // const userDataResponse = await this.$http.get('user/v1/')
-                    this.$store.dispatch('user/setUserData', {boy: 'Janko Novak'})
+                    this.$store.dispatch('user/setUserData', {email: payload.email})
                 } catch (error) {
                     thisIns.$printWarning(this.$t('login.wrong_password'))
                 } finally {

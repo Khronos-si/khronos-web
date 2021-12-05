@@ -16,7 +16,11 @@ export default {
     loggedIn: false,
     userData: null
   },
-  getters: {},
+  getters: {
+    getUserData: state => {
+      return state.userData
+    }
+  },
   mutations: {
     SET_LOGGED_IN(state) {
       state.loggedIn = true

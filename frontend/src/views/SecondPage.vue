@@ -1,31 +1,60 @@
 <template>
-    <b-card title="Create Awesome 🙌">
-        <b-card-text>This is your second page.</b-card-text>
-        <b-card-text>Chocolate sesame snaps pie carrot cake pastry pie lollipop muffin. Carrot cake dragée chupa chups jujubes. Macaroon liquorice cookie wafer tart marzipan bonbon. Gingerbread jelly-o dragée chocolate.</b-card-text>
-    
-        <calendar />
-        <!-- <date-picker v-model="date" />  -->
+    <div class="card" style="min-height: 75vh; max-height: 65vh;">
+        <div class="d-inline">
+            <div class="m-0 p-0" style="float: left" >
+                <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; border-right: 1px solid rgba(110,110,110,0.3);">
+                    <div class="px-2 pb-1 d-flex justify-content-center">
+                        <b-button class="btn btn-custom btn-block px-3"  v-b-modal.modal-add-todo>Add Task</b-button>
+                    </div>
 
-    </b-card>
+                    <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
+                        <span class="bullet bullet-sm mr-1 bullet-success" ></span>
+                        {{group.name}}
+                    </div>
+                </div>
+            </div>
 
+            <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;">
+                <todos :todoGroupId="selectedGroup" />
+            </div>
+        </div>
+
+        <add-todo></add-todo>
+    </div>
 </template>
 
 <script>
-    import { BCard, BCardText } from 'bootstrap-vue'
-    import { Calendar } from 'v-calendar'
+    import { BButton } from 'bootstrap-vue'
+    import Todos from './Components/Todos.vue'
+    import AddTodo from './Components/AddTodo.vue'
 
 
     export default {
         components: {
-            BCard,
-            BCardText,
-            Calendar
+            // BCard
+            // BCardText,
+            // Calendar,
+            BButton,
+            Todos,
+            // BModal,
+            // BFormInput,
+            // BFormGroup,
+            AddTodo
             // DatePicker
+        },
+        computed:{
+            todos() {
+                return this.$store.getters['todo/getTodos'](this.selectedGroup)
+            },
+            selectedGroup() {
+                return this.$store.getters['todo/getSelectedGroup']
+            }
         },
         data() {
             const month = new Date().getMonth()
             const year = new Date().getFullYear()
             return {
+                todoGroups: [],
                 masks: {
                     weekdays: 'WWW'
                 },
@@ -104,10 +133,76 @@
                     }
                 ]
             }
+        },
+        methods: {
+            setGroup(selected) {
+                this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': selected})
+            },
+            async getTodoGroups() {
+                const todo = this.todoGroupId
+                console.log(`/api/todo/group/${{todo}}`)
+                const data = await this.$http.get('/api/todo/group')
+
+                this.todoGroups = data.data
+                
+                this.$store.dispatch('todo/update_todos', { 'todos': data.data})
+                this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': this.todoGroups[0]['_id']})
+
+            }
+        },
+        mounted() {
+            this.getTodoGroups()
         }
     }
 </script>
 
 <style>
+    .selectedGroup {
+        border-left: 2px solid #7367f0;
+        padding-bottom: 5px;
+        padding-top: 5px;
+        color: #7367f0;
+    }
+    .normalGroup {
+        border-left: 2px solid transparent;
+        padding-bottom: 5px;
+        padding-top: 5px;
+    }
+     .normalGroup:hover {
+        color: #7367f0;
+    }
+   *::-webkit-scrollbar {
+        width: 2px;
+    }
 
+    /* Track */
+    *::-webkit-scrollbar-track {
+        background: transparent; 
+    }
+    
+    /* Handle */
+    *::-webkit-scrollbar-thumb {
+        background: #888; 
+    }
+
+    /* Handle on hover */
+    *::-webkit-scrollbar-thumb:hover {
+        background: #555; 
+    }
+
+    .btn-custom{
+        border-color: #7367f0 !important;
+        background-color: #7367f0 !important;
+    }
+    .btn-custom:active{
+        border-color: #7367f0 !important;
+        background-color: #5e50ee !important;
+    }
+    .btn-custom:focus{
+        border-color: #7367f0 !important;
+        background-color: #5e50ee !important;
+    }
+    .btn-custom:hover{
+        box-shadow: 0 8px 25px -8px #7367f0 !important;
+    }
 </style>
