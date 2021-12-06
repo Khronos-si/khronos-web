@@ -5,6 +5,9 @@ export default {
         selectedGroup: null
     },
     getters: {
+        getAllGroups: state => {
+            return state.todos
+        },
         getTodos: state => (idGroup) => {
             if (!state.todos) {
                 return []
@@ -25,12 +28,18 @@ export default {
             console.log(state.todos)
         },
         ADD_TODO_ITEM(state, payload) {
-            console.log(state.todos)
             const todos = state.todos.find(element => element._id === payload.todo_group).todos
             
             if (todos) {
                 todos.push(payload.todo_item)
             }
+        },
+        ADD_GROUP(state, payload) {
+            if (!state.todos) {
+                state.todos = []
+            }
+            
+            state.todos.push(payload.new_group)
         }
     },
     actions: {
@@ -42,6 +51,9 @@ export default {
         },
         set_selected_group({ commit }, payload) {
             commit('SET_SELECTED_GROUP', payload)
+        },
+        add_group({ commit }, payload) {
+            commit('ADD_GROUP', payload)
         }
     }
 }

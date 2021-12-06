@@ -10,8 +10,8 @@ export default [
     // src\@core\layouts\layout-vertical\components\vertical-nav-menu\components\vertical-nav-menu-items\VerticalNavMenuItems.vue
   },
   {
-    title: 'general.second_page',
-    route: 'second-page',
+    title: 'general.todos',
+    route: 'todos',
     icon: 'FileIcon'
     // required_permission: ['superuser', 'user']
   }

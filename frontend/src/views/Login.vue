@@ -4,9 +4,9 @@
 
             <!-- Brand logo-->
             <b-link class="brand-logo">
-                <vuexy-logo />
+                <!-- <vuexy-logo /> -->
                 <h2 class="brand-text text-primary ml-1">
-                    Vuexy
+                    LajfPlanner
                 </h2>
             </b-link>
             <!-- /Brand logo-->
@@ -41,7 +41,7 @@
                         title-tag="h2"
                         class="font-weight-bold mb-1"
                     >
-                        Welcome to Vuexy! 👋
+                        Welcome to LajfPlanner!
                     </b-card-title>
                     <b-card-text class="mb-2">
                         Please sign-in to your account and start the adventure
@@ -143,14 +143,14 @@
                     </b-card-text>
 
                     <!-- divider -->
-                    <div class="divider my-2">
+                    <!-- <div class="divider my-2">
                         <div class="divider-text">
                             or
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- social buttons -->
-                    <div class="auth-footer-btn d-flex justify-content-center">
+                    <!-- <div class="auth-footer-btn d-flex justify-content-center">
                         <b-button
                             variant="facebook"
                             href="javascript:void(0)"
@@ -175,7 +175,7 @@
                         >
                             <feather-icon icon="GithubIcon" />
                         </b-button>
-                    </div>
+                    </div> -->
                 </b-col>
             </b-col>
             <!-- /Login-->
@@ -186,7 +186,7 @@
 <script>
 /* eslint-disable global-require */
     import { ValidationProvider, ValidationObserver } from 'vee-validate'
-    import VuexyLogo from '@core/layouts/components/Logo.vue'
+    // import VuexyLogo from '@core/layouts/components/Logo.vue'
     import {
         BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton
     } from 'bootstrap-vue'
@@ -209,7 +209,7 @@
             BImg,
             BForm,
             BButton,
-            VuexyLogo,
+            // VuexyLogo,
             ValidationProvider,
             ValidationObserver
         },

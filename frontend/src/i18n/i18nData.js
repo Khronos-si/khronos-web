@@ -4,6 +4,7 @@ export default {
       profile: 'Profil',
       home: 'Domov',
       second_page: 'Druga stran',
+      todos: 'Opravila',
       statistics: 'Statistika',
       no: 'Ne',
       yes: 'Da',
@@ -25,6 +26,7 @@ export default {
       general: {
         profile: 'Profile',
         home: 'Home',
+        todos: 'Todos',
         second_page: 'Second page',
         statistics: 'Statistics',
         no: 'No',

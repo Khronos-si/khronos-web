@@ -6,7 +6,14 @@
                     <div class="px-2 pb-1 d-flex justify-content-center">
                         <b-button class="btn btn-custom btn-block px-3"  v-b-modal.modal-add-todo>Add Task</b-button>
                     </div>
-
+                    <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
+                        <div>
+                            Groups
+                        </div>
+                        <div v-on:click="addGroup()" style="cursor: pointer;">
+                            <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                        </div>
+                    </div>
                     <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
                         <span class="bullet bullet-sm mr-1 bullet-success" ></span>
                         {{group.name}}
@@ -20,6 +27,7 @@
         </div>
 
         <add-todo></add-todo>
+        <add-group></add-group>
     </div>
 </template>
 
@@ -27,6 +35,8 @@
     import { BButton } from 'bootstrap-vue'
     import Todos from './Components/Todos.vue'
     import AddTodo from './Components/AddTodo.vue'
+    import AddGroup from './Components/AddGroup.vue'
+    import { PlusIcon } from 'vue-feather-icons'
 
 
     export default {
@@ -36,13 +46,18 @@
             // Calendar,
             BButton,
             Todos,
+            PlusIcon,
             // BModal,
             // BFormInput,
             // BFormGroup,
-            AddTodo
+            AddTodo,
+            AddGroup
             // DatePicker
         },
         computed:{
+            todoGroups() {
+                return this.$store.getters['todo/getAllGroups']
+            },
             todos() {
                 return this.$store.getters['todo/getTodos'](this.selectedGroup)
             },
@@ -54,7 +69,6 @@
             const month = new Date().getMonth()
             const year = new Date().getFullYear()
             return {
-                todoGroups: [],
                 masks: {
                     weekdays: 'WWW'
                 },
@@ -135,6 +149,9 @@
             }
         },
         methods: {
+            addGroup() {
+                this.$bvModal.show('modal-add-group')
+            },
             setGroup(selected) {
                 this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': selected})
             },
@@ -143,10 +160,10 @@
                 console.log(`/api/todo/group/${{todo}}`)
                 const data = await this.$http.get('/api/todo/group')
 
-                this.todoGroups = data.data
+                // this.todoGroups = data.data
                 
                 this.$store.dispatch('todo/update_todos', { 'todos': data.data})
-                this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': this.todoGroups[0]['_id']})
+                this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': data.data[0]['_id']})
 
             }
         },
