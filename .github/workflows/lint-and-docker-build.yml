@@ -22,7 +22,7 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: dev
           FILTER_REGEX_INCLUDE: ./backend/*
           LINTER_RULES_PATH: ./backend
@@ -49,7 +49,7 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@v4
         env:
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: master
           FILTER_REGEX_INCLUDE: ./frontend/*
           LINTER_RULES_PATH: ./frontend
