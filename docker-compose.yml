@@ -42,15 +42,3 @@ services:
     depends_on:
       - db
       - backend
-
-  reverse-proxy:
-    container_name: reverse_proxy
-    image: nginx:1.17.10
-    depends_on:
-      - db
-      - frontend
-      - backend
-    volumes:
-      - ./utils/reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
