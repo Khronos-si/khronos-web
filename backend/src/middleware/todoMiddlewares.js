@@ -1,61 +1,123 @@
 const TodoGroup = require("../model/TodoGroup");
 const Todo = require("../model/Todo");
+const TodoTag = require("../model/TodoTag");
 const User = require("../model/User");
 
-const processTodo = async (req, res, next) => {
+const prepareUser = async (req, res, next) => {
 	const userId = req.user._id;
-	const todoId = req.params.id;
-	const todo = await Todo.findById(todoId);
+	const user = await User.findById(userId);
+	req.user = user;
+	return next();
+};
 
+const prepareGroupById = async (req, res, next) => {
+	const todoGroupId = req.body.todoGroupId || req.params.id;
+	const { user } = req;
+	const group = await TodoGroup.findOne({
+		_id: todoGroupId,
+		$or: [{ owner: user }, { _id: { $in: user.sharedTodos } }],
+	})
+		.populate({
+			path: "todos",
+			model: "Todo",
+			populate: { path: "tags", model: "TodoTag" },
+		})
+		.populate("sharedWith")
+		.populate("owner");
+
+	if (!group) return res.status(400).send("Todo group not found!");
+
+	req.isOwner = group.owner._id.equals(user._id);
+	req.canEdit = group.owner._id.equals(user._id) || group.permissions >= 1;
+	req.canDelete = group.owner._id.equals(user._id) || group.permissions >= 2;
+	req.group = group;
+
+	return next();
+};
+
+const prepareAllGroups = async (req, res, next) => {
+	const { user } = req;
+	const groups = await TodoGroup.find({
+		or: [{ owner: user }, { _id: { $in: user.sharedTodos } }],
+	})
+		.populate({
+			path: "todos",
+			model: "Todo",
+			populate: { path: "tags", model: "TodoTag" },
+		})
+		.populate("sharedWith")
+		.populate("owner");
+	req.groups = groups;
+	return next();
+};
+
+const prepareSharedGroups = async (req, res, next) => {
+	const { user } = req;
+	const groups = await TodoGroup.find({ _id: { $in: user.sharedTodos } })
+		.populate({
+			path: "todos",
+			model: "Todo",
+			populate: { path: "tags", model: "TodoTag" },
+		})
+		.populate("sharedWith")
+		.populate("owner");
+	req.groups = groups;
+	return next();
+};
+
+const prepareGroups = async (req, res, next) => {
+	const { user } = req;
+	const groups = await TodoGroup.find({ owner: user })
+		.populate({
+			path: "todos",
+			model: "Todo",
+			populate: { path: "tags", model: "TodoTag" },
+		})
+		.populate("sharedWith")
+		.populate("owner");
+	req.groups = groups;
+	return next();
+};
+
+// ******************************
+// 			TODO
+// ******************************
+
+const prepareTodoById = async (req, res, next) => {
+	const todoId = req.body.todoId || req.params.id;
+	const todo = await Todo.findById(todoId).populate("tags");
 	if (!todo) return res.status(400).send("Requested todo doesn't exist");
-
-	const user = await User.findById(userId);
-
-	const todoGroup = await TodoGroup.findOne({
-		$or: [
-			{ _id: todo.todoGroupId, owner: user },
-			{ _id: { $in: user.sharedTodos } },
-		],
-	});
-
-	if (!todoGroup) return res.status(400).send("Todo not found!");
-
-	req.isOwner = todoGroup.owner._id.equals(user._id);
-	req.canEdit =
-		todoGroup.owner._id.equals(user._id) || todoGroup.permissions >= 1;
-	req.canDelete =
-		todoGroup.owner._id.equals(user._id) || todoGroup.permissions >= 2;
 	req.todo = todo;
-	req.todoGroup = todoGroup;
-	req.user = user;
-
+	req.body.todoGroupId = todo.todoGroup._id.toString();
 	return next();
 };
 
-const processTodoGroup = async (req, res, next) => {
-	const userId = req.user._id;
-	const todoGroupId = req.params.id || req.body.todoGroupId;
-	const user = await User.findById(userId);
+const prepareTodoTags = async (req, res, next) => {
+	const { user } = req;
+	const { tags } = req.body;
+	const tags_ = await TodoTag.find({ _id: { $in: tags }, owner: user });
+	req.tags = tags_;
+	return next();
+};
 
-	const todoGroup = await TodoGroup.findOne({
-		$or: [
-			{ _id: todoGroupId, owner: user },
-			{ _id: { $in: user.sharedTodos } },
-		],
+const prepareTodoTagById = async (req, res, next) => {
+	const tagId = req.params.id;
+	const { user } = req;
+	const tag = await TodoTag.findOne({ _id: tagId, owner: user }).populate({
+		path: "appliedTo",
+		model: "Todo",
 	});
-
-	if (!todoGroup) return res.status(400).send("Todo group not found!");
-
-	req.isOwner = todoGroup.owner._id.equals(user._id);
-	req.canEdit =
-		todoGroup.owner._id.equals(user._id) || todoGroup.permissions >= 1;
-	req.canDelete =
-		todoGroup.owner._id.equals(user._id) || todoGroup.permissions >= 2;
-	req.todoGroup = todoGroup;
-	req.user = user;
-
+	req.tag = tag;
 	return next();
 };
 
-module.exports.processTodo = processTodo;
-module.exports.processTodoGroup = processTodoGroup;
+module.exports = {
+	prepareUser,
+	prepareGroupById,
+	prepareAllGroups,
+	prepareSharedGroups,
+	prepareGroups,
+	prepareTodoById,
+	prepareTodoTags,
+	prepareTodoTagById,
+};
