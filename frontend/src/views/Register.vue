@@ -44,7 +44,7 @@
                         Welcome to LajfPlanner!
                     </b-card-title>
                     <b-card-text class="mb-2">
-                        Please sign-in to your account and start the adventure
+                        Please enter you info.
                     </b-card-text>
 
                     <!-- form -->
@@ -53,6 +53,22 @@
                             class="auth-login-form mt-2"
                             @submit.prevent
                         >
+                            <!-- name -->
+                            <b-form-group
+                                label="Name"
+                                label-for="login-name"
+                                invalid-feedback="Name is required"
+                                :state="nameState"
+                            >
+                                <b-form-input
+                                    id="login-name"
+                                    v-model="userName"
+                                    :state="nameState"
+                                    placeholder="John Doe"
+                                    required
+                                />
+                            </b-form-group>
+
                             <!-- email -->
                             <b-form-group
                                 label="Email"
@@ -78,9 +94,6 @@
                             <b-form-group>
                                 <div class="d-flex justify-content-between">
                                     <label for="login-password">Password</label>
-                                    <b-link :to="{name:'auth-forgot-password-v2'}">
-                                        <small>Forgot Password?</small>
-                                    </b-link>
                                 </div>
                                 <validation-provider
                                     #default="{ errors }"
@@ -112,17 +125,6 @@
                                 </validation-provider>
                             </b-form-group>
 
-                            <!-- checkbox -->
-                            <b-form-group>
-                                <b-form-checkbox
-                                    id="remember-me"
-                                    v-model="rememberMe"
-                                    name="checkbox-1"
-                                >
-                                    Remember Me
-                                </b-form-checkbox>
-                            </b-form-group>
-
                             <!-- submit buttons -->
                             <b-button
                                 type="submit"
@@ -130,52 +132,27 @@
                                 block
                                 @click="validationForm"
                             >
-                                Sign in
+                                Create an account
                             </b-button>
                         </b-form>
                     </validation-observer>
 
+                    <div class="text-center pt-1 text-success" v-if="registrationSuccessfull">
+                        Registration sucesfull. Redirecting you to login. 
+                        <div class="mt-1">
+                            <b-spinner
+                                variant="success"
+                            ></b-spinner>
+                        </div>
+                        
+                    </div>
+
                     <b-card-text class="text-center mt-2">
-                        <span>New on our platform? </span>
-                        <b-link :to="{name:'register'}">
-                            <span>&nbsp;Create an account</span>
+                        <span>Already singed up?</span>
+                        <b-link :to="{name:'login'}">
+                            <span>&nbsp;Login to your account</span>
                         </b-link>
                     </b-card-text>
-
-                    <!-- divider -->
-                    <!-- <div class="divider my-2">
-                        <div class="divider-text">
-                            or
-                        </div>
-                    </div> -->
-
-                    <!-- social buttons -->
-                    <!-- <div class="auth-footer-btn d-flex justify-content-center">
-                        <b-button
-                            variant="facebook"
-                            href="javascript:void(0)"
-                        >
-                            <feather-icon icon="FacebookIcon" />
-                        </b-button>
-                        <b-button
-                            variant="twitter"
-                            href="javascript:void(0)"
-                        >
-                            <feather-icon icon="TwitterIcon" />
-                        </b-button>
-                        <b-button
-                            variant="google"
-                            href="javascript:void(0)"
-                        >
-                            <feather-icon icon="MailIcon" />
-                        </b-button>
-                        <b-button
-                            variant="github"
-                            href="javascript:void(0)"
-                        >
-                            <feather-icon icon="GithubIcon" />
-                        </b-button>
-                    </div> -->
                 </b-col>
             </b-col>
             <!-- /Login-->
@@ -184,11 +161,10 @@
 </template>
 
 <script>
-/* eslint-disable global-require */
     import { ValidationProvider, ValidationObserver } from 'vee-validate'
     // import VuexyLogo from '@core/layouts/components/Logo.vue'
     import {
-        BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BFormCheckbox, BCardText, BCardTitle, BImg, BForm, BButton
+        BRow, BCol, BLink, BFormGroup, BFormInput, BInputGroupAppend, BInputGroup, BCardText, BCardTitle, BImg, BForm, BButton, BSpinner
     } from 'bootstrap-vue'
     import { required, email } from '@validations'
     import { togglePasswordVisibility } from '@core/mixins/ui/forms'
@@ -203,22 +179,24 @@
             BFormInput,
             BInputGroupAppend,
             BInputGroup,
-            BFormCheckbox,
             BCardText,
             BCardTitle,
             BImg,
             BForm,
             BButton,
             // VuexyLogo,
+            BSpinner,
             ValidationProvider,
             ValidationObserver
         },
         mixins: [togglePasswordVisibility],
         data() {
             return {
+                registrationSuccessfull: false,
+                nameState: null,
+                userName: '',
                 password: '',
                 userEmail: '',
-                rememberMe: false,
                 sideImg: require('@/assets/images/pages/login-v2.svg'),
                 // validation rulesimport store from '@/store/index'
                 required,
@@ -226,9 +204,6 @@
             }
         },
         computed: {
-            registeredUser() {
-                return this.$store.getters['user/getNewEmail']
-            },
             passwordToggleIcon() {
                 return this.passwordFieldType === 'password' ? 'EyeIcon' : 'EyeOffIcon'
             },
@@ -244,14 +219,15 @@
         methods: {
             validationForm() {
                 this.$refs.loginValidation.validate().then(() => {
-                    this.loginJWT()
+                    this.register()
                 })
             },
-            async loginJWT() {
+            async register() {
                 const thisIns = this
                 thisIns.$store.state.app.showLoader = true
 
                 const payload = {
+                    name: thisIns.userName,
                     email: thisIns.userEmail,
                     password: thisIns.password
                 }
@@ -260,10 +236,16 @@
                     // odvisno od zasnova projekta, lahko login vrne samo JWT token
                     // ali pa vrne tudi vse informacije o uporanbiku,
                     // v našem primeru rabimo narediti 2 klica, prilagodi po svoje po želji
-                    const loginResponse = await this.$http.post('/api/user/login', payload)
-                    const token = loginResponse.data
-                    thisIns.$store.dispatch('user/login', token)
-                    this.$store.dispatch('user/setUserData', {email: payload.email})
+                    // const loginResponse = await this.$http.post('/api/user/register', payload)
+                    // const email = loginResponse.data.email
+                    const email = payload.email
+                    this.$store.dispatch('user/registered_user', { email})
+                    this.registrationSuccessfull = true
+
+                    const thisIns = this
+                    setTimeout(function() {
+                        thisIns.$router.push({ name: 'login' })
+                    }, 3000)
                 } catch (error) {
                     thisIns.$printWarning(this.$t('login.wrong_password'))
                 } finally {
@@ -271,12 +253,6 @@
                 }
             }
 
-        },
-        mounted() {
-            if (this.registeredUser !== '') {
-                this.userEmail = this.registeredUser
-                this.$store.dispatch('user/registered_user', { 'email': ''})
-            }
         }
     }
 </script>

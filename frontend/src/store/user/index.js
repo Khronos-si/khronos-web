@@ -14,11 +14,15 @@ export default {
   state: {
     AppActiveUser: userDefaults,
     loggedIn: false,
-    userData: null
+    userData: null,
+    registerEmail: ''
   },
   getters: {
     getUserData: state => {
       return state.userData
+    },
+    getNewEmail: state => {
+      return state.registerEmail
     }
   },
   mutations: {
@@ -27,12 +31,18 @@ export default {
     },
     UPDATE_USER_DATA(state, data) {
       state.userData = data
+    },
+    REGISTERED_USER(state, payload) {
+      state.registerEmail = payload.email
     }
   },
   actions: {
     login({ commit }, payload) {
       authService.setLoginParameters(payload)
       commit('SET_LOGGED_IN')
+    },
+    registered_user({ commit }, payload) {
+      commit('REGISTERED_USER', payload)
     },
     setUserData({ commit }, payload) {
       commit('UPDATE_USER_DATA', payload)
