@@ -1,15 +1,9 @@
 const router = require("express").Router();
 const verifyToken = require("../middleware/verifyToken");
 
-const TodoGroup = require("../model/TodoGroup");
-const Todo = require("../model/Todo");
-const TodoTag = require("../model/TodoTag");
-const User = require("../model/User");
-
 const {
 	prepareUser,
 	prepareGroupById,
-	prepareAllGroups,
 	prepareSharedGroups,
 	prepareGroups,
 	prepareTodoById,

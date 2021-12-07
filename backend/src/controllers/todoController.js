@@ -77,7 +77,6 @@ const getTodoById = async (req, res) => {
 const getTodoTags = async (req, res) => {
 	const { user } = req;
 	const tags = await TodoTag.find({ owner: user });
-	console.log(tags);
 	return res.json([tags.map(_todoTagToJSON)]);
 };
 

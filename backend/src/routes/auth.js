@@ -48,7 +48,7 @@ router.post("/login", async (req, res) => {
 	const validPassword = await bcrypt.compare(req.body.password, user.password);
 	if (!validPassword) return res.status(400).send("invalid password");
 
-	const validUntil = new Date(Date.now()).toISOString();
+	const validUntil = new Date(Date.now() + 4 * 60 * 60 * 1000);
 	const token = jwt.sign({ _id: user._id, validUntil }, process.env.JWT_SECRET);
 
 	return res.header("auth-token", token).send(token);
