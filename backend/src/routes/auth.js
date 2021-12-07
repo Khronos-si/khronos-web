@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Avatar = require("avatar-builder");
 const User = require("../model/User");
 const { registerValidation, loginValidation } = require("../utils/validation");
 
@@ -14,10 +15,15 @@ router.post("/register", async (req, res) => {
 	const salt = await bcrypt.genSalt(10);
 	const hashPassword = await bcrypt.hash(req.body.password, salt);
 
+	const avatar = Avatar.githubBuilder(128);
+
+	const img = await avatar.create(req.body.name);
+
 	const user = new User({
 		name: req.body.name,
 		email: req.body.email,
 		password: hashPassword,
+		avatar: img,
 	});
 
 	try {
@@ -42,10 +48,8 @@ router.post("/login", async (req, res) => {
 	const validPassword = await bcrypt.compare(req.body.password, user.password);
 	if (!validPassword) return res.status(400).send("invalid password");
 
-	const token = jwt.sign(
-		{ _id: user._id, expiresIn: "12h" },
-		process.env.JWT_SECRET
-	);
+	const validUntil = new Date(Date.now() + 4 * 60 * 60 * 1000);
+	const token = jwt.sign({ _id: user._id, validUntil }, process.env.JWT_SECRET);
 
 	return res.header("auth-token", token).send(token);
 });

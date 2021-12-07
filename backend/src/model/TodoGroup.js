@@ -9,6 +9,10 @@ const todoGroupSchema = new mongoose.Schema({
 		type: mongoose.Types.ObjectId,
 		ref: "User",
 	},
+	color: {
+		type: String,
+		default: "#ff8000",
+	},
 	permissions: { type: Number, default: 0 },
 	sharedWith: [
 		{
@@ -24,4 +28,4 @@ const todoGroupSchema = new mongoose.Schema({
 	],
 });
 
-module.exports = mongoose.model("TodoGroup", todoGroupSchema);
+module.exports = mongoose.model("TodoGroup", todoGroupSchema, "TodoGroup");
