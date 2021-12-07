@@ -31,6 +31,11 @@ const authService = {
   isAuthenticated() {
     const jwt = localStorage.getItem(jwtToken)
     const decoded = jsonwebtoken.decode(jwt)
+    
+    console.log('NOV DATUM')
+    console.log(new Date(decoded.validUntil))
+    console.log('STAR DATUM')
+    console.log(new Date(Date.now()))
 
     return (
       jwt

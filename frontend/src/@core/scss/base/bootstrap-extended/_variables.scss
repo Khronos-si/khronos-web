@@ -7,6 +7,8 @@
 //  Author URL: http://www.themeforest.net/user/pixinvent
 //  ================================================================================================
 
+//TUKAJ SO DEFINIRANE BARVE SUCCES WARNING ITD.....
+
 // Color system
 
 $white: #fff !default;
@@ -23,12 +25,12 @@ $gray-900: #2a2e30 !default;
 $black: #22292f !default; // 231f48 22292f
 
 $purple: #7367f0 !default; //$primary
-$green: #28c76f !default; //$success
-$blue: #00cfe8 !default; //$info
-$orange: #ff9f43 !default; //$warning
-$red: #ea5455 !default; //$danger
+$green: #6ec193 !default; //$success
+$blue: #53afbe !default; //$info
+$orange: #feb449 !default; //$warning
+$red: #fe5c36 !default; //$danger
 
-$primary: $purple !default;
+$primary: $blue !default;
 $secondary: #82868b !default;
 $info: $blue !default;
 $warning: $orange !default;

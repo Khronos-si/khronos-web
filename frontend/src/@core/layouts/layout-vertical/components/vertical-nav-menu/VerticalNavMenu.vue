@@ -24,18 +24,27 @@
                             class="navbar-brand"
                             to="/"
                         >
-                            <span class="brand-logo">
-                                <!-- <b-img
+                                    
+                            <span v-show="(isMouseHovered && isVerticalMenuCollapsed) || !isVerticalMenuCollapsed">
+                                <b-img
                                     :src="appLogoImage"
                                     alt="logo"
-                                /> -->
+                                    style="width: 180px !important;"
+                                />
                             </span>
-                            <h2 class="brand-text">
+                            <span v-show="(!isMouseHovered && isVerticalMenuCollapsed)" style="padding-left: 4px;">
+                                <b-img
+                                    :src="appLogoNoText"
+                                    alt="logo"
+                                    style="height: 32px !important;"
+                                    
+                                />
+                            </span>
+                            <!-- <h2 class="brand-text">
                                 {{ appName }}
-                            </h2>
+                            </h2> -->
                         </b-link>
                     </li>
-
                     <!-- Toggler Button -->
                     <li class="nav-item nav-toggle">
                         <b-link class="nav-link modern-nav-toggle">
@@ -83,7 +92,7 @@
 <script>
     import navMenuItems from '@/navigation/vertical'
     import VuePerfectScrollbar from 'vue-perfect-scrollbar'
-    import { BLink } from 'bootstrap-vue'
+    import { BLink, BImg } from 'bootstrap-vue'
     import { provide, computed, ref } from '@vue/composition-api'
     import useAppConfig from '@core/app-config/useAppConfig'
     import { $themeConfig } from '@themeConfig'
@@ -94,7 +103,8 @@
         components: {
             VuePerfectScrollbar,
             VerticalNavMenuItems,
-            BLink
+            BLink,
+            BImg
         },
         props: {
             isVerticalMenuActive: {
@@ -130,9 +140,10 @@
             const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'))
 
             // App Name
-            const { appName, appLogoImage } = $themeConfig.app
+            const { appName, appLogoImage, appLogoNoText } = $themeConfig.app
 
             return {
+                appLogoNoText,
                 navMenuItems,
                 perfectScrollbarSettings,
                 isVerticalMenuCollapsed,

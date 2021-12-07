@@ -6,7 +6,7 @@
             <b-link class="brand-logo">
                 <!-- <vuexy-logo /> -->
                 <h2 class="brand-text text-primary ml-1">
-                    LajfPlanner
+                    <b-img :src="appLogoImage" style="width: 180px !important;"></b-img>
                 </h2>
             </b-link>
             <!-- /Brand logo-->
@@ -169,6 +169,8 @@
     import { required, email } from '@validations'
     import { togglePasswordVisibility } from '@core/mixins/ui/forms'
     import store from '@/store/index'
+    import { $themeConfig } from '@themeConfig'
+
 
     export default {
         components: {
@@ -236,9 +238,9 @@
                     // odvisno od zasnova projekta, lahko login vrne samo JWT token
                     // ali pa vrne tudi vse informacije o uporanbiku,
                     // v našem primeru rabimo narediti 2 klica, prilagodi po svoje po želji
-                    // const loginResponse = await this.$http.post('/api/user/register', payload)
-                    // const email = loginResponse.data.email
-                    const email = payload.email
+                    const loginResponse = await this.$http.post('/api/user/register', payload)
+                    const email = loginResponse.data.email
+                    // const email = payload.email
                     this.$store.dispatch('user/registered_user', { email})
                     this.registrationSuccessfull = true
 
@@ -253,6 +255,13 @@
                 }
             }
 
+        },
+        setup() {
+            const { appName, appLogoImage } = $themeConfig.app
+            return {
+                appName,
+                appLogoImage
+            }
         }
     }
 </script>

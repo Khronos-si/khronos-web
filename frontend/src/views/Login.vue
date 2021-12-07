@@ -6,7 +6,7 @@
             <b-link class="brand-logo">
                 <!-- <vuexy-logo /> -->
                 <h2 class="brand-text text-primary ml-1">
-                    LajfPlanner
+                    <b-img :src="appLogoImage" style="width: 180px !important;"></b-img>
                 </h2>
             </b-link>
             <!-- /Brand logo-->
@@ -193,6 +193,8 @@
     import { required, email } from '@validations'
     import { togglePasswordVisibility } from '@core/mixins/ui/forms'
     import store from '@/store/index'
+    import { $themeConfig } from '@themeConfig'
+
 
     export default {
         components: {
@@ -276,6 +278,13 @@
             if (this.registeredUser !== '') {
                 this.userEmail = this.registeredUser
                 this.$store.dispatch('user/registered_user', { 'email': ''})
+            }
+        },
+        setup() {
+            const { appName, appLogoImage } = $themeConfig.app
+            return {
+                appName,
+                appLogoImage
             }
         }
     }

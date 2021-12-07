@@ -112,8 +112,9 @@
   }
 
   // main navbar and header navbar shadow(generic navbar)
+  //Zgornji meni shadow v barvi 40,42,45 -> 282a2d in 46,49,52 -> 2e3134
   .header-navbar-shadow {
-    background: linear-gradient(180deg, rgba(22, 29, 49, 0.9) 44%, rgba(22, 29, 49, 0.43) 73%, rgba(22, 29, 49, 0));
+    background: linear-gradient(180deg, rgba(40, 42, 45, 0.9) 44%, rgba(46, 49, 52, 0.43) 73%, rgba(40, 42, 45, 0));
   }
 
   // main header navbar dark style

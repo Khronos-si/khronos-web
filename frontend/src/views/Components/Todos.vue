@@ -1,7 +1,7 @@
 <template>
     <div v-if="todos">
         <!-- {{todos}} -->
-        <div class="row py-1 row-todos" v-for="(item, id) in todos" :key="'Todos_' + id">
+        <div class="row py-1" :class="id===0? 'row-first': 'row-todos'" v-for="(item, id) in todos" :key="'Todos_' + id">
             <div class="col-2 d-flex justify-content-center">
                 <b-form-checkbox
                     id="checkbox-group-1"
@@ -64,6 +64,13 @@
 
 
 <style scoped>
+    .row-first{
+        border-top:    none !important;
+        border-right:  1px solid rgba(110,110,110,0.3);
+        border-bottom: 0px solid rgba(110,110,110,0.3);
+        border-left:   0px solid  rgba(110,110,110,0.3);
+        overflow: hidden;
+    }
     .row-todos{
         border-top:    1px solid rgba(110,110,110,0.3);
         border-right:  1px solid rgba(110,110,110,0.3);

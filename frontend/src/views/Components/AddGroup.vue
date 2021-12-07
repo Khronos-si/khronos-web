@@ -28,6 +28,7 @@
                 label-for="perm-input"
                 invalid-feedback="Permisions are required"
                 :state="permState"
+                v-if="sharedWith.length > 0"
             >
                 <!-- <b-form-input
                     type="number"

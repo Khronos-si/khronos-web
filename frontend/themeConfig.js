@@ -9,9 +9,11 @@ export const $themeBreakpoints = {}
 // APP CONFIG
 export const $themeConfig = {
   app: {
-    appName: 'LajfPlanner®', // Will update name in navigation menu (Branding)
+    appName: 'Laj', // Will update name in navigation menu (Branding)
     // eslint-disable-next-line global-require
-    appLogoImage: require('@/assets/images/logo/logo.svg') // Will update logo in navigation menu (Branding)
+    appLogoImage: require('@/assets/images/logo/KHRONOS_Logo.svg'), // Will update logo in navigation menu (Branding)
+    appLogoNoText: require('@/assets/images/logo/logo.svg') // Will update logo in navigation menu (Branding)
+
   },
   layout: {
     isRTL: false,

@@ -173,7 +173,9 @@
     }
 </script>
 
-<style>
+<style lang="scss">
+    @import '~@core/scss/base/bootstrap-extended/include';
+
     .selectedGroup {
         border-left: 2px solid #7367f0;
         padding-bottom: 5px;
@@ -208,18 +210,21 @@
     }
 
     .btn-custom{
-        border-color: #7367f0 !important;
-        background-color: #7367f0 !important;
+        border-color: $blue !important;
+        background-color: $blue !important;
     }
     .btn-custom:active{
-        border-color: #7367f0 !important;
-        background-color: #5e50ee !important;
+        border-color: $blue !important;
+        background-color: $blue !important;
     }
     .btn-custom:focus{
-        border-color: #7367f0 !important;
-        background-color: #5e50ee !important;
+        border-color: $blue !important;
+        background-color: $blue !important;
     }
     .btn-custom:hover{
-        box-shadow: 0 8px 25px -8px #7367f0 !important;
+        box-shadow: 0 8px 25px -8px $blue !important;
+    }
+    .card{
+        border-radius: 15px;
     }
 </style>
