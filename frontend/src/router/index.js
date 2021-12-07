@@ -25,7 +25,7 @@ const router = new VueRouter({
             active: true
           }
         ],
-        requiresAuth: false // UPORABNIKU NI TREBA BITI PRIJAVLJEN
+        requiresAuth: true // UPORABNIKU NI TREBA BITI PRIJAVLJEN
         // PRESTAVI NA TRUE
         
         // roles: ['admin'] // dovolimo samo adminu vpogled na to stran
@@ -45,7 +45,7 @@ const router = new VueRouter({
             active: true
           }
         ],
-        requiresAuth: false
+        requiresAuth: true
       }
     },
     {
