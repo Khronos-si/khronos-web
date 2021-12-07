@@ -9267,9 +9267,9 @@ vue-router@3.4.9:
   integrity sha512-CGAKWN44RqXW06oC+u4mPgHLQQi2t6vLD/JbGRDAXm0YpMv0bgpKuU5bBd7AvMgfTz9kXVRIWKHqRwGEb8xFkA==
 
 vue-select@^3.11.2:
-  version "3.11.2"
-  resolved "https://registry.npmjs.org/vue-select/-/vue-select-3.11.2.tgz"
-  integrity sha512-pIOcY8ajWNSwg8Ns4eHVr5ZWwqKCSZeQRymTnlUI8i+3QiQXF6JIM4lylK6mVfbccs4S6vOyxB7zmJBpp7tDUg==
+  version "3.16.0"
+  resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.16.0.tgz#db2ee2ddf80bd8876ce57738107b8a1a741862f4"
+  integrity sha512-F0x7HXTUc5eq7YSjR0uX77RGA+Yk2+I8aMW+NePyPqRX9OPSiDtKpezFIFhnhxqrOvMh4uVR0jHkXIDmzs6nYQ==
 
 vue-slider-component@3.2.11:
   version "3.2.11"

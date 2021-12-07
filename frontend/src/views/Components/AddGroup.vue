@@ -4,6 +4,7 @@
         id="modal-add-group"
         ref="modal"
         title="Add group"
+        transition=""
         @show="resetModal"
         @hidden="resetModal"
         @ok="handleOk"
@@ -22,6 +23,31 @@
                     required
                 ></b-form-input>
             </b-form-group>
+            
+            <b-form-group
+                label="Color"
+                label-for="color-input"
+                invalid-feedback="Color is required"
+                :state="colorState"
+            >
+                <v-select
+                    v-model="color"
+                    label="color"
+                    :options="optionColor"
+                    placeholder="Choose color"
+                    style="max-height: 100px;"
+                >
+                    <template #selected-option="item">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + item.color + '!important;'"></span> {{item.color}}
+
+                    </template>
+                    
+                    <template #option="item">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + item.color + '!important;'"></span> {{item.color}}
+                    </template>
+
+                </v-select>
+            </b-form-group>
 
             <b-form-group
                 label="Permisions"
@@ -30,13 +56,6 @@
                 :state="permState"
                 v-if="sharedWith.length > 0"
             >
-                <!-- <b-form-input
-                    type="number"
-                    id="perm-input"
-                    v-model="permissions"
-                    :state="permState"
-                    required
-                ></b-form-input> -->
                 <v-select
                     v-model="permissions"
                     label="title"
@@ -87,27 +106,49 @@
         },
         data() {
             return {
+                optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
                 optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
+                color: '',
                 name: '',
                 permissions: '',
                 sharedWith: [],
                 nameState: null,
-                permState: null
+                permState: null,
+                colorState: null
             }
         },
         methods: {
             checkFormValidity() {
-                const valid = this.$refs.form.checkValidity()
+                let valid = this.$refs.form.checkValidity()
+                
+
+                if ((this.color === '' || !this.color)) valid = false 
+
+                if (this.sharedWith && this.sharedWith.length > 0 && (this.permissions === '' || !this.permissions)) valid = false
+                    
                 this.nameState = valid
                 this.permState = valid
+                this.colorState = valid
+
                 return valid
             },
             resetModal() {
+                this.color = ''
                 this.name = ''
                 this.nameState = null
                 this.permissions = ''
                 this.sharedWith = ''
                 this.permState = null
+                this.colorState = null
+            },
+            clicked(bvModalEvt) {
+                console.log(bvModalEvt)
+                console.log('TEST 1')
+            },
+            modalHidden(bvModalEvt) {
+                console.log(bvModalEvt)
+                // console.log('TEST')
+                // bvModalEvt.preventDefault()
             },
             handleOk(bvModalEvt) {
                 // Prevent modal from closing

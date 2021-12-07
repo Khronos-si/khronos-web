@@ -15,7 +15,7 @@
                         </div>
                     </div>
                     <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
-                        <span class="bullet bullet-sm mr-1 bullet-success" ></span>
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
                         {{group.name}}
                     </div>
                 </div>
