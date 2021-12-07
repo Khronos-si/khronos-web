@@ -94,7 +94,7 @@ router.beforeEach((to, from, next) => {
   }
 
   // če stran, na katero želimo iti vsebuje meta podatek requiresAuth
-  // in iz authService zvemo, da user ni prijavljen, ga pošljemo na login
+  // in iz authService zvemo, da user ni prijavljen, ga pošljemo na login 
   if (to.meta.requiresAuth && !authService.isAuthenticated()) {
     return next('/login')
   }
