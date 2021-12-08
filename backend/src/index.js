@@ -9,8 +9,9 @@ const app = express();
 dotenv.config({ path: `${__dirname}/.env` });
 
 // Import routes
-const authRoute = require("./routes/auth");
+const userRoute = require("./routes/user");
 const todoRoute = require("./routes/todo");
+const eventRoute = require("./routes/event");
 
 // Connect to DB
 mongoose.connect(
@@ -25,7 +26,8 @@ mongoose.connect(
 
 // Route Middleware
 app.use(express.json());
-app.use("/api/user", authRoute);
+app.use("/api/user", userRoute);
 app.use("/api/todo", todoRoute);
+app.use("/api/event", eventRoute);
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

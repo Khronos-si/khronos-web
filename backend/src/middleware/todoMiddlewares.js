@@ -1,14 +1,6 @@
 const TodoGroup = require("../model/TodoGroup");
 const Todo = require("../model/Todo");
 const TodoTag = require("../model/TodoTag");
-const User = require("../model/User");
-
-const prepareUser = async (req, res, next) => {
-	const userId = req.user._id;
-	const user = await User.findById(userId);
-	req.user = user;
-	return next();
-};
 
 const prepareGroupById = async (req, res, next) => {
 	const todoGroupId = req.body.todoGroupId || req.params.id;
@@ -112,7 +104,6 @@ const prepareTodoTagById = async (req, res, next) => {
 };
 
 module.exports = {
-	prepareUser,
 	prepareGroupById,
 	prepareAllGroups,
 	prepareSharedGroups,
