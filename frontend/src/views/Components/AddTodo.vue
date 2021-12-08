@@ -63,9 +63,6 @@
             BFormCheckbox
         },
         computed: {
-            todos() {
-                return this.$store.getters['todo/getTodos'](this.selectedGroup)
-            },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
             }

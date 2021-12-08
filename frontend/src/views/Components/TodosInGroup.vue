@@ -2,7 +2,7 @@
     <div >
         <!-- MY TODOS -->
         <div v-if="todos && todos.length > 0"> 
-            <div class="row py-1" :class="id===0? 'row-first': 'row-todos'" v-for="(item, id) in todos" :key="'Todos_' + id" @click="editTodo(item)">
+            <div class="row py-1 item" :class="id===0? 'row-first': 'row-todos'" v-for="(item, id) in todos" :key="'Todos_' + id" @click="editTodo(item)" style="cursor: pointer;">
                 <div class="col-2 d-flex justify-content-center">
                     <b-form-checkbox
                         id="checkbox-group-1"
@@ -83,7 +83,9 @@
 </script>
 
 
-<style scoped>
+<style lang="scss" scoped>
+    @import '~@core/scss/base/bootstrap-extended/include';
+
     .row-first{
         border-top:    none !important;
         border-right:  1px solid rgba(110,110,110,0.3);
@@ -97,5 +99,8 @@
         border-bottom: 0px solid rgba(110,110,110,0.3);
         border-left:   0px solid  rgba(110,110,110,0.3);
         overflow: hidden;
+    }
+    .item:hover{
+        color: $primary;
     }
 </style>

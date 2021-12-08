@@ -146,11 +146,24 @@ export default {
             state.todos = payload.todos
         },
         ADD_TODO_ITEM(state, payload) {
-            const todos = state.todos.find(element => element._id === payload.todo_group).todos
-            
-            if (todos) {
-                todos.push(payload.todo_item)
+            if (state.todos) {
+                const group = state.todos.find(element => element._id === payload.todo_group)
+
+                if (group) {
+                    group.todos.push(payload.todo_item)
+                    return
+                }
             }
+
+            if (state.sharedTodos) {
+                const group = state.sharedTodos.find(element => element._id === payload.todo_group)
+
+                if (group) {
+                    group.todos.push(payload.todo_item)
+                }
+            }
+            
+            
         },
         ADD_GROUP(state, payload) {
             if (!state.todos) {

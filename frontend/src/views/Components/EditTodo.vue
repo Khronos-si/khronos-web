@@ -7,48 +7,51 @@
         @hidden="resetModal"
         @ok="handleOk"
     >
-        <form ref="form" @submit.stop.prevent="handleSubmit" v-if="groupPermissions == null || groupPermissions > 0">
-            <b-form-group
-                label="Name"
-                label-for="name-input"
-                invalid-feedback="Name is required"
-                :state="nameState"
-            >
-                <b-form-input
-                    id="name-input"
-                    v-model="name"
+        <div>
+            <form ref="form" @submit.stop.prevent="handleSubmit" v-if="groupPermissions == null || groupPermissions > 0">
+                <b-form-group
+                    label="Name"
+                    label-for="name-input"
+                    invalid-feedback="Name is required"
                     :state="nameState"
-                    required
-                ></b-form-input>
-            </b-form-group>
+                >
+                    <b-form-input
+                        id="name-input"
+                        v-model="name"
+                        :state="nameState"
+                        required
+                    ></b-form-input>
+                </b-form-group>
 
-            <b-form-group
-                label="Description"
-                label-for="desc-input"
-                invalid-feedback="Description is required"
-                :state="descState"
-            >
-                <b-form-input
-                    id="desc-input"
-                    v-model="description"
+                <b-form-group
+                    label="Description"
+                    label-for="desc-input"
+                    invalid-feedback="Description is required"
                     :state="descState"
-                    required
-                ></b-form-input>
-            </b-form-group>
+                >
+                    <b-form-input
+                        id="desc-input"
+                        v-model="description"
+                        :state="descState"
+                        required
+                    ></b-form-input>
+                </b-form-group>
 
-            <b-form-group
-                label="Status"
-                label-for="stat-input"
-            >
-                <b-form-checkbox
-                    id="stat-input"
-                    v-model="status"
-                    required
-                ></b-form-checkbox>
-            </b-form-group>
-        </form>
+                <b-form-group
+                    label="Status"
+                    label-for="stat-input"
+                >
+                    <b-form-checkbox
+                        id="stat-input"
+                        v-model="status"
+                        required
+                    ></b-form-checkbox>
+                </b-form-group>
+            </form>
+        </div>
+        
 
-        <div v-if="groupPermissions == 0">
+        <div v-if="groupPermissions == 0 && todo">
             <!-- <div style="font-size: 1.5rem;">
                 {{todo.name}}
             </div> -->
@@ -118,8 +121,8 @@
             }
         },
         watch:{
-            todo() {
-                this.setModalValues()
+            todo(val) {
+                if (val) this.setModalValues()
             }
         },
         methods: {
