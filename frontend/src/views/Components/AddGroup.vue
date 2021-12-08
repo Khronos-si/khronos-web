@@ -172,19 +172,22 @@
                 const payload = {
                     'name': this.name,
                     'permissions': this.permissions.permisson,
-                    'shareWith': this.sharedWith
+                    'shareWith': this.sharedWith,
+                    'color': this.color
                 }
 
-                const data = await this.$http.post('/api/todo/group', payload)
+                try {
+                    const data = await this.$http.post('/api/todo/group', payload)
                 
-                const newGroup = data.data
-                newGroup.todos = []
+                    const newGroup = data.data
 
-                console.log(newGroup)
+                    this.$store.dispatch('todo/add_group', { 'new_group': newGroup})
 
-                this.$store.dispatch('todo/add_group', { 'new_group': newGroup})
-
-                this.$bvModal.hide('modal-add-group')
+                    this.$bvModal.hide('modal-add-group')
+                } catch (err) {
+                    console.log(err)
+                }
+               
 
             }
            

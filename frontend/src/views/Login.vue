@@ -263,10 +263,13 @@
                     // ali pa vrne tudi vse informacije o uporanbiku,
                     // v našem primeru rabimo narediti 2 klica, prilagodi po svoje po želji
                     const loginResponse = await this.$http.post('/api/user/login', payload)
-                    const token = loginResponse.data
+                    const userData = loginResponse.data
+                    console.log(loginResponse)
+                    const token = loginResponse.headers['auth-token']
                     thisIns.$store.dispatch('user/login', token)
-                    this.$store.dispatch('user/setUserData', {email: payload.email})
+                    this.$store.dispatch('user/setUserData', {email: payload.email, userData})
                 } catch (error) {
+                    console.log(error)
                     thisIns.$printWarning(this.$t('login.wrong_password'))
                 } finally {
                     thisIns.$store.state.app.showLoader = false
