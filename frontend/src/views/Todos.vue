@@ -1,5 +1,5 @@
 <template>
-    <div class="card" style="min-height: 75vh; max-height: 65vh;" ref="card">
+    <div class="card" style="min-height: 75vh; max-height: 65vh;" ref="card-div">
         <div class="d-inline">
             <div class="m-0 p-0" style="float: left" >
                 <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; border-right: 1px solid rgba(110,110,110,0.3);">
@@ -14,25 +14,28 @@
                             <plus-icon size="1.4x" class="custom-class"></plus-icon>
                         </div>
                     </div>
-                    <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
+                    <div v-if="selectedGroup && todoGroups && todoGroups.length > 0">
+                        <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
                         
-                        <div>
-                            <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
-                            {{group.name}}
-                        </div>
-                        <div>
+                            <div>
+                                <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
+                                {{group.name}}
+                            </div>
+                            <div>
                             <!-- <span class="badge badge-pill badge-warning ml-1">Shared by Nik</span> -->
                             <!-- <settings-icon size="1.4x" class="custom-class"  style="color: #434343"></settings-icon> -->
                             <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
+                            </div>
                         </div>
                     </div>
+                   
                 </div>
             </div>
             <div class="d-flex justify-content-end mr-1" style="padding-top: 10px; stroke:white !important;">
                 <!-- <trash-2-icon size="1.4x" class="custom-class" style="margin-right: 5px;"></trash-2-icon> -->
             
                 <div>
-                    <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="$refs['card']" no-caret>
+                    <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                         <template #button-content>
                             <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
                         </template>
@@ -42,13 +45,14 @@
                 </div>
                 
             </div>
-            <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;">
+            <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;" v-if="selectedGroup">
                 <todos :todoGroupId="selectedGroup" />
             </div>
         </div>
        
         <add-todo></add-todo>
         <add-group></add-group>
+        <edit-todo></edit-todo>
     </div>
 </template>
 
@@ -58,6 +62,7 @@
     import AddTodo from './Components/AddTodo.vue'
     import AddGroup from './Components/AddGroup.vue'
     import { PlusIcon, MoreVerticalIcon } from 'vue-feather-icons'
+    import EditTodo from './Components/EditTodo.vue'
 
 
     export default {
@@ -77,7 +82,8 @@
             // BFormInput,
             // BFormGroup,
             AddTodo,
-            AddGroup
+            AddGroup,
+            EditTodo
             // DatePicker
         },
         computed:{
@@ -95,6 +101,7 @@
             const month = new Date().getMonth()
             const year = new Date().getFullYear()
             return {
+                cardDiv: null,
                 showEditGroup: false,
                 moreOptionsIcon: require('@/assets/svg/more-vertical.svg'),
                 deleteIcon: require('@/assets/svg/trash.svg'),
@@ -179,17 +186,22 @@
         },
         methods: {
             editGroup() {
-
+                this.$bvModal.show('modal-edit-group')
             },
             async deleteGroup() {
-                console.log('SM KLE NOT')
                 // /api/todo/group/
                 const todoGroup = this.selectedGroup
-                console.log(this.selectedGroup)
-                console.log(`/api/todo/group/${todoGroup}`)
-                const data = await this.$http.delete(`/api/todo/group${todoGroup}`)
+                try {
+                    const data = await this.$http.delete(`/api/todo/group/${todoGroup}`)
 
-                console.log(data)
+                    if (data.status === 200) {
+                        this.$store.dispatch('todo/delete_group', { 'group_id': todoGroup})
+                    }
+
+                } catch (err) {
+                    console.log(err)
+                }
+
             },
             addGroup() {
                 this.$bvModal.show('modal-add-group')
@@ -200,7 +212,9 @@
             async getTodoGroups() {
                 const data = await this.$http.get('/api/todo/group')
 
-                // this.todoGroups = data.data
+                if (data.data.length === 0) {
+                    return
+                }
                 
                 this.$store.dispatch('todo/update_todos', { 'todos': data.data})
                 this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': data.data[0]['_id']})
@@ -209,6 +223,8 @@
         },
         mounted() {
             this.getTodoGroups()
+
+            this.cardDiv = this.$refs['card-div']
         }
     }
 </script>

@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
     namespaced: true,
     state: {
@@ -9,7 +11,7 @@ export default {
             return state.todos
         },
         getTodos: state => (idGroup) => {
-            if (!state.todos) {
+            if (!state.todos || !idGroup) {
                 return []
             }
 
@@ -17,6 +19,13 @@ export default {
         },
         getSelectedGroup: state => {
             return state.selectedGroup
+        },
+        getGroupById: state => (id) => {
+            if (!state.todos || !id) {
+                return null
+            }
+
+            return state.todos.find(element => element._id === id)
         }
     },
     mutations: {
@@ -25,7 +34,6 @@ export default {
         },
         UPDATE_TODOS(state, payload) {
             state.todos = payload.todos
-            console.log(state.todos)
         },
         ADD_TODO_ITEM(state, payload) {
             const todos = state.todos.find(element => element._id === payload.todo_group).todos
@@ -36,10 +44,43 @@ export default {
         },
         ADD_GROUP(state, payload) {
             if (!state.todos) {
-                state.todos = []
+                state.todos = new Array()
+            }
+
+            if (state.todos.length === 0) {
+                state.selectedGroup = payload.new_group._id
             }
             
             state.todos.push(payload.new_group)
+        },
+        EDIT_GROUP(state, payload) {
+            if (!state.todos) {
+                state.todos = new Array()
+            }
+
+            const index = state.todos.findIndex(element => element._id === payload.group_id)
+            
+            Vue.delete(state.todos, index)
+            state.todos.splice(index, 0, payload.group_new)
+        },
+        DELETE_GROUP(state, payload) {
+            if (!state.todos) {
+                state.todos = []
+                state.selectedGroup = null
+                return
+            }
+            const index = state.todos.findIndex(element => element._id === payload.group_id)
+            Vue.delete(state.todos, index)
+
+            if (state.todos[index] !== undefined) {
+                state.selectedGroup = state.todos[index]._id
+            } else if (state.todos[index + 1] !== undefined) {
+                state.selectedGroup = state.todos[index + 1]._id
+            } else if (state.todos[index - 1] !== undefined) {
+                state.selectedGroup = state.todos[index - 1]._id
+            } else {
+                state.selectedGroup = null
+            }
         }
     },
     actions: {
@@ -54,6 +95,12 @@ export default {
         },
         add_group({ commit }, payload) {
             commit('ADD_GROUP', payload)
+        },
+        delete_group({ commit }, payload) {
+            commit('DELETE_GROUP', payload)
+        },
+        edit_group({ commit }, payload) {
+            commit('EDIT_GROUP', payload)
         }
     }
 }
