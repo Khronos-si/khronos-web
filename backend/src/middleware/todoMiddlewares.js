@@ -6,8 +6,10 @@ const prepareGroupById = async (req, res, next) => {
 	const todoGroupId = req.body.todoGroupId || req.params.id;
 	const { user } = req;
 	const group = await TodoGroup.findOne({
-		_id: todoGroupId,
-		$or: [{ owner: user }, { _id: { $in: user.sharedTodos } }],
+		$and: {
+			_id: todoGroupId,
+			$or: [{ owner: user }, { _id: { $in: user.sharedTodos } }],
+		},
 	})
 		.populate({
 			path: "todos",
