@@ -69,7 +69,6 @@
             >
                 <v-select
                     id="shared-select"
-                    label="email"
                     v-model="sharedWith"
                     multiple
                     taggable
@@ -133,11 +132,20 @@
                 return valid
             },
             resetModal() {
+
+                const sharedEmails = []
+
+                if (this.group.sharedWith) {
+                    for (const item of this.group.sharedWith) {
+                        sharedEmails.push(item.email)
+                    }
+                }
+               
                 
                 this.permissions = this.optionPermissions[this.group.permissions]
                 this.color = this.group.color
                 this.name = this.group.name
-                this.sharedWith = this.group.sharedWith
+                this.sharedWith = sharedEmails
                 this.nameState = null
                 this.permState = null
                 this.colorState = null
@@ -168,23 +176,15 @@
             async editGroup() {
 
 
-                const sharedEmails = []
-
-                if (this.sharedWith) {
-                    for (const item of this.sharedWith) {
-                        sharedEmails.push(item.email)
-                    }
-                }
-                
                 this.permissionsUsers = null
 
-                if (sharedEmails.length !== 0) this.permissionsUsers = this.permissions.permisson
+                if (this.sharedWith && this.sharedWith.length !== 0) this.permissionsUsers = this.permissions.permisson
 
                 const payload = {
                     'id': this.selectedGroup,
                     'name': this.name,
                     'permissions': this.permissionsUsers,
-                    'shareWith': sharedEmails,
+                    'shareWith': this.sharedWith,
                     'color': this.color
                 }
 
