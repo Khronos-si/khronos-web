@@ -4,18 +4,81 @@ export default {
     namespaced: true,
     state: {
         todos: null,
+        sharedTodos: null,
         selectedGroup: null
     },
     getters: {
+        //Both
+        getGroupOwner: state => (idGroup) => {
+
+            if (state.todos && idGroup) {
+                const group = state.todos.find(element => element._id === idGroup)
+
+                if (!group) {
+                
+                    if (state.todos) {
+                        const groupShared = state.sharedTodos.find(element => element._id === idGroup)
+                        
+                        if (groupShared) {
+                            return groupShared.owner.email
+                        }
+                    }
+
+                    return null
+                    }
+            
+                return group.owner.email
+
+            }
+                
+        },
+        getGroupPremissions: state => (idGroup) => {
+            if (state.sharedTodos && idGroup) {
+                const group = state.sharedTodos.find(element => element._id === idGroup)
+
+                if (group) {
+                    return group.permissions
+                }
+            }
+            return null
+        },
+
+        //Shared
+        getAllSharedGroups: state => {
+            return state.sharedTodos
+        },
+        getSharedTodos: state => (idGroup) => {
+            if (!state.sharedTodos || !idGroup) {
+                return []
+            }
+
+            const group = state.sharedTodos.find(element => element._id === idGroup)
+
+            if (!group) return []
+            else return group.todos
+        },
+        getSharedGroupById: state => (id) => {
+            if (!state.sharedTodos || !id) {
+                return null
+            }
+
+            return state.sharedTodos.find(element => element._id === id)
+        },
+
+        //Mine
         getAllGroups: state => {
             return state.todos
         },
+       
         getTodos: state => (idGroup) => {
             if (!state.todos || !idGroup) {
                 return []
             }
 
-            return state.todos.find(element => element._id === idGroup).todos
+            const group = state.todos.find(element => element._id === idGroup)
+
+            if (!group) return []
+            else return group.todos
         },
         getSelectedGroup: state => {
             return state.selectedGroup
@@ -29,9 +92,56 @@ export default {
         }
     },
     mutations: {
+        //Both
         SET_SELECTED_GROUP(state, payload) {
             state.selectedGroup = payload.selectedGroup
         },
+        DELETE_TODO(state, payload) {
+
+            if (state.sharedTodos && payload.idGroup) {
+                const group = state.sharedTodos.find(element => element._id === payload.idGroup)
+
+                if (group) {
+                    const todoIndex = group.todos.findIndex(element => element._id === payload.idTodo)
+                    
+                    if (todoIndex) Vue.delete(group.todos, todoIndex)
+                }
+            }
+
+            if (state.todos) {
+                const group = state.todos.find(element => element._id === payload.idGroup)
+
+                if (group) {
+                    const todoIndex = group.todos.findIndex(element => element._id === payload.idTodo)
+                    
+                    if (todoIndex >= 0) Vue.delete(group.todos, todoIndex)
+                }
+            }
+
+            console.log('IZTOP')
+            console.log(state.todos)
+
+            return null
+        },
+
+
+        //SHARED
+        UPDATE_SHARED_TODOS(state, payload) {
+            state.todos = payload.todos
+        },
+        ADD_SHARED_TODO_ITEM(state, payload) {
+            const todos = state.sharedTodos.find(element => element._id === payload.todo_group).todos
+            
+            if (todos) {
+                todos.push(payload.todo_item)
+            }
+        },
+        SET_SHARED_GROUP(state, payload) {
+            state.sharedTodos = payload.todos
+        },
+
+        //Mine
+        
         UPDATE_TODOS(state, payload) {
             state.todos = payload.todos
         },
@@ -101,6 +211,18 @@ export default {
         },
         edit_group({ commit }, payload) {
             commit('EDIT_GROUP', payload)
+        },
+        update_shared_todos({ commit }, payload) {
+            commit('UPDATE_SHARED_TODOS', payload)
+        },
+        add_shared_todo_item({ commit }, payload) {
+            commit('ADD_SHARED_TODO_ITEM', payload)
+        },
+        set_shared_group({ commit }, payload) {
+            commit('SET_SHARED_GROUP', payload)
+        },
+        delete_todo({ commit }, payload) {
+            commit('DELETE_TODO', payload)
         }
     }
 }

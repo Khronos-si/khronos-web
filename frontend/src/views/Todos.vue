@@ -4,11 +4,11 @@
             <div class="m-0 p-0" style="float: left" >
                 <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; border-right: 1px solid rgba(110,110,110,0.3);">
                     <div class="px-2 pb-1 d-flex justify-content-center">
-                        <b-button class="btn btn-custom btn-block px-3"  v-b-modal.modal-add-todo>Add Task</b-button>
+                        <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-todo>Add Task</b-button>
                     </div>
                     <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
                         <div>
-                            Groups
+                            My Groups
                         </div>
                         <div v-on:click="addGroup()" style="cursor: pointer;">
                             <plus-icon size="1.4x" class="custom-class"></plus-icon>
@@ -21,8 +21,30 @@
                                 <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
                                 {{group.name}}
                             </div>
+                            <div  v-if="userEmail != group.owner.email">
+                                <!-- {{group.owner.email}} -->
+                                <span class="badge badge-pill badge-warning ml-1">Shared</span>
+                            <!-- <settings-icon size="1.4x" class="custom-class"  style="color: #434343"></settings-icon> -->
+                            <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between px-2 mt-1" style="padding-bottom: 5px;">
+                        <div>
+                            Shared Groups
+                        </div>
+                    </div>
+                    <div v-if="selectedGroup && shareTodoGroups && shareTodoGroups.length > 0">
+                        <div v-for="(group,id) in shareTodoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
+                        
                             <div>
-                            <!-- <span class="badge badge-pill badge-warning ml-1">Shared by Nik</span> -->
+                                <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
+                                {{group.name}}
+                            </div>
+                            <div  v-if="userEmail != group.owner.email">
+                                <!-- {{group.owner.email}} -->
+                                <span class="badge badge-pill badge-warning ml-1">{{group.owner.name}}</span>
                             <!-- <settings-icon size="1.4x" class="custom-class"  style="color: #434343"></settings-icon> -->
                             <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
                             </div>
@@ -34,7 +56,7 @@
             <div class="d-flex justify-content-end mr-1" style="padding-top: 10px; stroke:white !important;">
                 <!-- <trash-2-icon size="1.4x" class="custom-class" style="margin-right: 5px;"></trash-2-icon> -->
             
-                <div>
+                <div  v-if="userEmail == ownerOfTheGroup">
                     <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                         <template #button-content>
                             <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
@@ -46,23 +68,23 @@
                 
             </div>
             <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;" v-if="selectedGroup">
-                <todos :todoGroupId="selectedGroup" />
+                <todos-in-group :todoGroupId="selectedGroup" />
             </div>
         </div>
        
         <add-todo></add-todo>
         <add-group></add-group>
-        <edit-todo></edit-todo>
+        <edit-group></edit-group>
     </div>
 </template>
 
 <script>
     import { BButton, BDropdown, BDropdownItemButton } from 'bootstrap-vue'
-    import Todos from './Components/Todos.vue'
+    import TodosInGroup from './Components/TodosInGroup.vue'
     import AddTodo from './Components/AddTodo.vue'
     import AddGroup from './Components/AddGroup.vue'
     import { PlusIcon, MoreVerticalIcon } from 'vue-feather-icons'
-    import EditTodo from './Components/EditTodo.vue'
+    import EditGroup from './Components/EditGroup.vue'
 
 
     export default {
@@ -73,7 +95,7 @@
             BButton,
             BDropdown,
             BDropdownItemButton,
-            Todos,
+            TodosInGroup,
             PlusIcon,
             MoreVerticalIcon,
             // SettingsIcon,
@@ -83,10 +105,22 @@
             // BFormGroup,
             AddTodo,
             AddGroup,
-            EditTodo
+            EditGroup
             // DatePicker
         },
         computed:{
+            ownerOfTheGroup() {
+                return this.$store.getters['todo/getGroupOwner'](this.selectedGroup)
+            },
+            shareTodoGroups() {
+                return this.$store.getters['todo/getAllSharedGroups']
+            },
+            sharedTodos() {
+                return this.$store.getters['todo/getSharedTodos'](this.selectedGroup)
+            },
+            userEmail() {
+                return this.$store.getters['user/getUserEmail']
+            },
             todoGroups() {
                 return this.$store.getters['todo/getAllGroups']
             },
@@ -188,6 +222,7 @@
             editGroup() {
                 this.$bvModal.show('modal-edit-group')
             },
+            
             async deleteGroup() {
                 // /api/todo/group/
                 const todoGroup = this.selectedGroup
@@ -210,14 +245,34 @@
                 this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': selected})
             },
             async getTodoGroups() {
-                const data = await this.$http.get('/api/todo/group')
 
-                if (data.data.length === 0) {
-                    return
+                try {
+
+                    const data = await this.$http.get('/api/todo/group')
+
+                    if (data.data.length === 0) {
+                        return
+                    }
+
+                    this.$store.dispatch('todo/update_todos', { 'todos': data.data})
+                    this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': data.data[0]['_id']})
+                } catch (err) {
+                    console.log(err)
+                }
+
+                try {
+
+                    const data = await this.$http.get('/api/todo/shared-with-me')
+
+                    if (data.data.length === 0) {
+                        return
+                    }
+                    console.log(data)
+                    this.$store.dispatch('todo/set_shared_group', { 'todos': data.data})
+                } catch (err) {
+                    console.log(err)
                 }
                 
-                this.$store.dispatch('todo/update_todos', { 'todos': data.data})
-                this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': data.data[0]['_id']})
 
             }
         },
@@ -273,10 +328,6 @@
         border-color: $blue !important;
         background-color: $blue !important;
     }
-    .btn-custom:focus{
-        border-color: $blue !important;
-        background-color: $blue !important;
-    }
     .btn-custom:hover{
         box-shadow: 0 8px 25px -8px $blue !important;
     }
@@ -303,7 +354,7 @@
     }
     .dropdown-custom:target{
         border: none;
-        background: transparent !important;
+        background-color: transparent !important;
     }
     .dropdown-custom:visited{
         border: none;
@@ -322,5 +373,16 @@
 
     .dropdown-item {
         width: 100% !important;
+    }
+
+    .btn-custom:target{
+        border: 1px solid;
+        border-color: $blue !important;
+        background-color: $blue !important;
+    }
+    .btn-custom:focus{
+        border: 1px solid;
+        border-color: $blue !important;
+        background-color: $blue !important;
     }
 </style>

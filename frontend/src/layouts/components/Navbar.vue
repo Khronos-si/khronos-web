@@ -38,7 +38,7 @@
                         size="40"
                         variant="light-primary"
                         badge
-                        :src="require('@/assets/images/avatars/13-small.png')"
+                        :src="`data:image/png;base64,${userData.userData.avatar}`"
                         class="badge-minimal"
                         badge-variant="success"
                     />
@@ -102,6 +102,12 @@
     import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue'
 
     export default {
+        computed: {
+            userData() {
+                console.log(this.$store.getters['user/getUserData'])
+                return this.$store.getters['user/getUserData']
+            }
+        },
         components: {
             BLink,
             BNavbarNav,

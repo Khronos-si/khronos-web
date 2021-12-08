@@ -1,15 +1,13 @@
 <template>
 
     <b-modal
-        id="modal-edit-group"
+        id="modal-edit-todo"
         ref="modal"
-        title="Edit group"
-        transition=""
-        @show="resetModal"
+        :title="modalTitle"
         @hidden="resetModal"
         @ok="handleOk"
-    >   
-        <form ref="form" @submit.stop.prevent="handleSubmit">
+    >
+        <form ref="form" @submit.stop.prevent="handleSubmit" v-if="groupPermissions == null || groupPermissions > 0">
             <b-form-group
                 label="Name"
                 label-for="name-input"
@@ -23,133 +21,149 @@
                     required
                 ></b-form-input>
             </b-form-group>
-            
-            <b-form-group
-                label="Color"
-                label-for="color-input"
-                invalid-feedback="Color is required"
-                :state="colorState"
-            >
-                <v-select
-                    v-model="color"
-                    label="color"
-                    :options="optionColor"
-                    placeholder="Choose color"
-                    style="max-height: 100px;"
-                >
-                    <template #selected-option="item">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + item.color + '!important;'"></span> {{item.color}}
-                    </template>
-                    
-                    <template #option="item">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + item.color + '!important;'"></span> {{item.color}}
-                    </template>
 
-                </v-select>
+            <b-form-group
+                label="Description"
+                label-for="desc-input"
+                invalid-feedback="Description is required"
+                :state="descState"
+            >
+                <b-form-input
+                    id="desc-input"
+                    v-model="description"
+                    :state="descState"
+                    required
+                ></b-form-input>
             </b-form-group>
 
             <b-form-group
-                label="Permisions"
-                label-for="perm-input"
-                invalid-feedback="Permisions are required"
-                :state="permState"
-                v-if="sharedWith.length > 0"
+                label="Status"
+                label-for="stat-input"
             >
-                <v-select
-                    v-model="permissions"
-                    label="title"
-                    :options="optionPermissions"
-                    placeholder="Choose permissions"
-                />
-            </b-form-group>
-
-            <b-form-group
-                label="Shared with"
-                label-for="shared-select"
-            >
-                <v-select
-                    id="shared-select"
-                    label="email"
-                    v-model="sharedWith"
-                    multiple
-                    taggable
-                    push-tags
-                    placeholder="Add Options"
-                />
+                <b-form-checkbox
+                    id="stat-input"
+                    v-model="status"
+                    required
+                ></b-form-checkbox>
             </b-form-group>
         </form>
+
+        <div v-if="groupPermissions == 0">
+            <!-- <div style="font-size: 1.5rem;">
+                {{todo.name}}
+            </div> -->
+
+            <div class="my-2">
+                {{todo.description}}
+            </div>
+        </div>
+
+        <template #modal-footer="{ ok, cancel }">
+           
+            <!-- <div v-if="groupPermissions == null || groupPermissions > 0"> -->
+
+            <b-button class="btn-danger btn" @click="deleteTodo()" v-if="groupPermissions == null || groupPermissions == 2">
+                Delete
+            </b-button>
+
+            <b-button class="btn-secondary btn" @click="cancel()" v-if="groupPermissions == null || groupPermissions > 0">
+                Cancel
+            </b-button>
+
+            <button class="btn btn-primary" @click="ok()" v-if="groupPermissions == null || groupPermissions > 0">
+                OK
+            </button>
+
+            <button class="btn btn-primary" @click="hide()" v-if="groupPermissions == 0">
+                Done
+            </button>
+
+        </template>
+
     </b-modal>
 </template>
 
 <script>
-    import { BModal, BFormInput, BFormGroup   } from 'bootstrap-vue'
-    import vSelect from 'vue-select'
-    // import 'vue-select/dist/vue-select.css'
-    // import 'vue-select/src/scss/vue-select.scss'
-    // import 'vue-select/dist/vue-select.css';
-
+    import { BModal, BFormInput, BFormGroup, BFormCheckbox, BButton  } from 'bootstrap-vue'
 
     export default {
         components: {
             BModal,
             BFormInput,
             BFormGroup,
-            vSelect
+            BButton,
+            BFormCheckbox
         },
         computed: {
-            group() {
-                return this.$store.getters['todo/getGroupById'](this.selectedGroup)
+            groupPermissions() {
+                return this.$store.getters['todo/getGroupPremissions'](this.selectedGroup)
             },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
             }
         },
+        props: {
+            todo:{
+                type: Object
+            }
+        },
         data() {
             return {
-                optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
-                optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
-                color: '',
+                modalTitle: '',
                 name: '',
-                permissions: '',
-                sharedWith: [],
+                description: '',
+                status: '',
                 nameState: null,
-                permState: null,
-                colorState: null
+                descState: null
+            }
+        },
+        watch:{
+            todo() {
+                this.setModalValues()
             }
         },
         methods: {
-            checkFormValidity() {
-                let valid = this.$refs.form.checkValidity()
-                
+            async deleteTodo() {
 
-                if ((this.color === '' || !this.color)) valid = false 
+                const todoId = this.todo._id
 
-                if (this.sharedWith && this.sharedWith.length > 0 && (this.permissions === '' || !this.permissions)) valid = false
+                try {
+                    const data = await this.$http.delete(`/api/todo/${todoId}`)
                     
-                this.nameState = valid
-                this.permState = valid
-                this.colorState = valid
+                    if (data.status === 200) {
+                        this.$store.dispatch('todo/delete_todo', { 'idGroup': this.selectedGroup, 'idTodo': todoId})
+                    }
 
+                    this.$bvModal.hide('modal-edit-todo')
+
+                } catch (err) {
+                    console.log(err)
+                }
+
+            },
+            checkFormValidity() {
+                const valid = this.$refs.form.checkValidity()
+                this.nameState = valid
+                this.descState = valid
                 return valid
             },
-            resetModal() {
-                
-                this.permissions = this.optionPermissions[this.group.permissions]
-                this.color = this.group.color
-                this.name = this.group.name
-                this.sharedWith = this.group.sharedWith
+            setModalValues() {
+                console.log(this.todo.name)
+                if (this.groupPermissions === 0) this.modalTitle = this.todo.name
+                else this.modalTitle = 'Edit todo'
+
+                this.name = this.todo.name
                 this.nameState = null
-                this.permState = null
-                this.colorState = null
+                this.description = this.todo.description
+                this.status = this.todo.status
+                this.descState = null
             },
-            clicked(bvModalEvt) {
-                console.log(bvModalEvt)
-                console.log('TEST 1')
-            },
-            modalHidden(bvModalEvt) {
-                console.log(bvModalEvt)
-                // console.log('TEST')
-                // bvModalEvt.preventDefault()
+            resetModal() {
+                this.name = ''
+                this.nameState = null
+                this.description = ''
+                this.status = ''
+                this.descState = null
             },
             handleOk(bvModalEvt) {
                 // Prevent modal from closing
@@ -163,57 +177,32 @@
                     return
                 }
                 
-                this.editGroup()
+                this.editTodo()
             },
-            async editGroup() {
-
-
-                const sharedEmails = []
-
-                if (this.sharedWith) {
-                    for (const item of this.sharedWith) {
-                        sharedEmails.push(item.email)
-                    }
-                }
-                
-                this.permissionsUsers = null
-
-                if (sharedEmails.length !== 0) this.permissionsUsers = this.permissions.permisson
+            async editTodo() {
+                const todo = this.selectedGroup
 
                 const payload = {
-                    'id': this.selectedGroup,
+                    'todoGroupId': todo,
                     'name': this.name,
-                    'permissions': this.permissionsUsers,
-                    'shareWith': sharedEmails,
-                    'color': this.color
+                    'description': this.description,
+                    'status': this.status
                 }
+                console.log(payload)
 
-                try {
-                    const todo = this.selectedGroup
-                    const data = await this.$http.put(`/api/todo/group/${todo}`, payload)
+                // const data = await this.$http.post('/api/todo', payload)
 
-                    if (data.status === 200) {
-                        const newGroup = data.data
-                        
-                        this.$store.dispatch('todo/edit_group', { 'group_new': newGroup, 'group_id': this.selectedGroup})
-                    }
+                // this.$store.dispatch('todo/add_todo_item', { 'todo_item': data.data, 'todo_group': todo})
 
-                    this.$bvModal.hide('modal-edit-group')
-                } catch (err) {
-                    console.log(err)
-                }
-               
+
+                this.$bvModal.hide('modal-edit-todo')
 
             }
+           
         }
     }
 </script>
 
-<style lang="scss">
-    @import '~@core/scss/vue/libs/vue-select.scss';
-
-    button.vs__deselect{
-        fill: rgb(32, 31, 31) !important;
-    }
+<style>
+    
 </style>
-

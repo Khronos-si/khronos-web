@@ -18,6 +18,9 @@ export default {
     registerEmail: ''
   },
   getters: {
+    getUserEmail: state => {
+      return state.userData.email
+    },
     getUserData: state => {
       return state.userData
     },
