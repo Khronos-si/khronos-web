@@ -9,7 +9,7 @@
                         v-model="selected"
                     ></b-form-checkbox>
                 </div>
-                <div class="col-10 text-left d-flex justify-content-between">
+                <div class="col-10 text-left d-flex justify-content-between" v-if="item">
                     {{item.name}}
                     <span class="badge badge-pill badge-warning mr-2">Important</span>
                 </div>
@@ -25,7 +25,7 @@
                         v-model="selected"
                     ></b-form-checkbox>
                 </div>
-                <div class="col-10 text-left d-flex justify-content-between">
+                <div class="col-10 text-left d-flex justify-content-between" v-if="item">
                     {{item.name}}
                     <span class="badge badge-pill badge-warning mr-2">Important</span>
                 </div>

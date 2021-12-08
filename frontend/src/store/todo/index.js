@@ -123,6 +123,39 @@ export default {
 
             return null
         },
+        EDIT_TODO(state, payload) {
+            console.log('Start')
+            console.log(state.todos)
+            if (state.sharedTodos && payload.idGroup) {
+                const group = state.sharedTodos.find(element => element._id === payload.idGroup)
+
+                if (group) {
+                    const todoIndex = group.todos.findIndex(element => element._id === payload.idTodo)
+                    
+                    if (todoIndex) {
+
+                    Vue.delete(group.todos, todoIndex)
+                    group.todos.splice(todoIndex, 0, payload.todo_new)
+                    }
+                }
+            }
+
+            if (state.todos) {
+                const group = state.todos.find(element => element._id === payload.idGroup)
+
+                if (group) {
+                    const todoIndex = group.todos.findIndex(element => element._id === payload.idTodo)
+                    
+                    if (todoIndex >= 0) {
+                        Vue.delete(group.todos, todoIndex)
+                        group.todos.splice(todoIndex, 0, payload.todo_new)
+                    }
+                }
+            }
+            
+            console.log('konc')
+            console.log(state.todos)
+        },
 
 
         //SHARED
@@ -236,6 +269,9 @@ export default {
         },
         delete_todo({ commit }, payload) {
             commit('DELETE_TODO', payload)
+        },
+        edit_todo({ commit }, payload) {
+            commit('EDIT_TODO', payload)
         }
     }
 }

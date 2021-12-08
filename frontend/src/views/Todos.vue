@@ -248,7 +248,6 @@
                 this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': selected})
             },
             async getTodoGroups() {
-
                 try {
 
                     const data = await this.$http.get('/api/todo/group')

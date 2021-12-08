@@ -176,6 +176,7 @@
             },
             handleSubmit() {
                 // Exit when the form isn't valid
+
                 if (!this.checkFormValidity()) {
                     return
                 }
@@ -183,22 +184,31 @@
                 this.editTodo()
             },
             async editTodo() {
-                const todo = this.selectedGroup
+                const group = this.selectedGroup
+                const todoId = this.todo._id
+
+
+                console.log('KOKOKOKOKOKOKOK')
 
                 const payload = {
-                    'todoGroupId': todo,
+                    'id': todoId,
                     'name': this.name,
                     'description': this.description,
                     'status': this.status
                 }
-                console.log(payload)
+                try {
+                    const data = await this.$http.put(`/api/todo/${todoId}`, payload)
 
-                // const data = await this.$http.post('/api/todo', payload)
+                    console.log('MO KLE ')
+                    console.log(data.data)
 
-                // this.$store.dispatch('todo/add_todo_item', { 'todo_item': data.data, 'todo_group': todo})
+                    this.$store.dispatch('todo/edit_todo', { 'idGroup': group, 'idTodo': todoId, 'todo_new': data.data})
 
-
-                this.$bvModal.hide('modal-edit-todo')
+                    this.$bvModal.hide('modal-edit-todo')
+                } catch (err) {
+                    console.log(err)
+                }
+                
 
             }
            
