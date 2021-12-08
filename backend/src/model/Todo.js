@@ -4,6 +4,7 @@ const todoSchema = new mongoose.Schema({
 	todoGroup: {
 		type: mongoose.Types.ObjectId,
 		ref: "TodoGroup",
+		required: true,
 	},
 	name: {
 		type: String,
@@ -15,8 +16,8 @@ const todoSchema = new mongoose.Schema({
 	},
 	status: {
 		type: Boolean,
-		required: true,
 		default: false,
+		required: true,
 	},
 	tags: [
 		{

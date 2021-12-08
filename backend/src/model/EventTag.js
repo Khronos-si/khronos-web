@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const todoTagSchema = new mongoose.Schema({
+const eventTagSchema = new mongoose.Schema({
 	name: {
 		type: String,
 		required: true,
@@ -14,12 +14,13 @@ const todoTagSchema = new mongoose.Schema({
 		ref: "User",
 		required: true,
 	},
+	default: { type: Boolean, default: false },
 	appliedTo: [
 		{
 			type: mongoose.Schema.Types.ObjectId,
-			ref: "Todo",
+			ref: "Event",
 		},
 	],
 });
 
-module.exports = mongoose.model("TodoTag", todoTagSchema, "TodoTag");
+module.exports = mongoose.model("EventTag", eventTagSchema, "EventTag");

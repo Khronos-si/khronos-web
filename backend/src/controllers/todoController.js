@@ -17,25 +17,24 @@ const _todoToJSON = (todo) => ({
 	tags: todo.tags.map(_todoTagToJSON),
 });
 
-const _todoGroupsToJSON = (todoGroups) =>
-	todoGroups.map((e) => ({
-		_id: e._id,
-		name: e.name,
-		permissions: e.permissions,
-		sharedWith: e.sharedWith.map((x) => ({
-			_id: x._id,
-			name: x.name,
-			email: x.email,
-		})),
-		color: e.color,
-		owner: {
-			_id: e.owner._id,
-			name: e.owner.name,
-			email: e.owner.email,
-			avatar: e.owner.avatar.toString("base64"),
-		},
-		todos: e.todos.map(_todoToJSON),
-	}));
+const _todoGroupToJSON = (todoGroup) => ({
+	_id: todoGroup._id,
+	name: todoGroup.name,
+	permissions: todoGroup.permissions,
+	sharedWith: todoGroup.sharedWith.map((x) => ({
+		_id: x._id,
+		name: x.name,
+		email: x.email,
+	})),
+	color: todoGroup.color,
+	owner: {
+		_id: todoGroup.owner._id,
+		name: todoGroup.owner.name,
+		email: todoGroup.owner.email,
+		avatar: todoGroup.owner.avatar.toString("base64"),
+	},
+	todos: todoGroup.todos.map(_todoToJSON),
+});
 
 const _deleteTodo = async (todo, group) => {
 	// Remove from group
@@ -56,17 +55,17 @@ const _deleteTodo = async (todo, group) => {
 
 const getTodoGroups = async (req, res) => {
 	const { groups } = req;
-	return res.json(_todoGroupsToJSON(groups));
+	return res.json(groups.map(_todoGroupToJSON));
 };
 
 const getTodoGroupById = async (req, res) => {
 	const { group } = req;
-	return res.json(_todoGroupsToJSON([group]));
+	return res.json(_todoGroupToJSON(group));
 };
 
 const getTodoGroupsSharedWithUser = async (req, res) => {
 	const { groups } = req;
-	return res.json(_todoGroupsToJSON(groups));
+	return res.json(groups.map(_todoGroupToJSON));
 };
 
 const getTodoById = async (req, res) => {
@@ -120,7 +119,7 @@ const addTodoGroup = async (req, res) => {
 			await e.save();
 		}
 
-		return res.json(_todoGroupsToJSON([savedGroup]));
+		return res.json(_todoGroupToJSON(savedGroup));
 	} catch (err) {
 		return res.status(400).send(err);
 	}
@@ -271,27 +270,29 @@ const updateTodoGroup = async (req, res) => {
 			return res
 				.status(400)
 				.send("You cant share a todo to yourself. Find some friends");
-		const u = await await User.findOne({ email: e }).select("_id");
+		const u = await await User.findOne({ email: e });
 		if (!u) return res.status(400).send(`Email ${e} not found!`);
 		sharedWithUsers.push(u);
 	}
 
 	// Remove users
-	for (const e of group.sharedWith) {
+	let i = 0;
+	while (i < group.sharedWith.length) {
+		const e = group.sharedWith[i];
 		if (sharedWithUsers.indexOf(e) === -1) {
-			const u = await User.findById(e);
-			group.sharedWith.splice(group.sharedWith.indexOf(u._id), 1);
-			u.sharedTodos.splice(u.sharedTodos.indexOf(group), 1);
-			await u.save();
-		}
+			group.sharedWith.splice(group.sharedWith.indexOf(e), 1);
+			e.sharedTodos.splice(e.sharedTodos.indexOf(group), 1);
+			await e.save();
+		} else i += 1;
 	}
+
 	// Add new users
 	for (const e of sharedWithUsers) {
 		if (group.sharedWith.indexOf(e) === -1) {
-			const u = await User.findById(e);
+			// const u = await User.findById(e);
 			group.sharedWith.push(e);
-			u.sharedTodos.push(group);
-			await u.save();
+			e.sharedTodos.push(group);
+			await e.save();
 		}
 	}
 
@@ -301,7 +302,7 @@ const updateTodoGroup = async (req, res) => {
 
 	try {
 		const savedTodoGroup = await group.save();
-		return res.json(_todoGroupsToJSON([savedTodoGroup]));
+		return res.json(_todoGroupToJSON(savedTodoGroup));
 	} catch (err) {
 		return res.status(400).send(err);
 	}

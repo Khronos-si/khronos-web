@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const verifyToken = require("../middleware/verifyToken");
 
+const { prepareUser } = require("../middleware/userMiddlewares");
+
 const {
-	prepareUser,
 	prepareGroupById,
 	prepareSharedGroups,
 	prepareGroups,
