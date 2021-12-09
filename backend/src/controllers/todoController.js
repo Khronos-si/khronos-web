@@ -89,14 +89,25 @@ const addTodoGroup = async (req, res) => {
 
 	// Check emails
 	const sharedWithUsers = [];
+	const notFound = [];
 	for (const e of shareWith) {
 		if (e === user.email)
 			return res
 				.status(400)
 				.send("You cant share a todo to yourself. Find some friends");
 		const u = await await User.findOne({ email: e });
-		if (!u) return res.status(400).send(`Email ${e} not found!`);
-		sharedWithUsers.push(u);
+		if (!u) {
+			notFound.push(e);
+		} else {
+			sharedWithUsers.push(u);
+		}
+	}
+
+	if (notFound.length > 0) {
+		return res.status(400).json({
+			message: "Users not found",
+			users: notFound,
+		});
 	}
 
 	const group = new TodoGroup({
@@ -265,14 +276,25 @@ const updateTodoGroup = async (req, res) => {
 
 	// Check emails
 	const sharedWithUsers = [];
+	const notFound = [];
 	for (const e of shareWith) {
 		if (e === user.email)
 			return res
 				.status(400)
 				.send("You cant share a todo to yourself. Find some friends");
 		const u = await await User.findOne({ email: e });
-		if (!u) return res.status(400).send(`Email ${e} not found!`);
-		sharedWithUsers.push(u);
+		if (!u) {
+			notFound.push(e);
+		} else {
+			sharedWithUsers.push(u);
+		}
+	}
+
+	if (notFound.length > 0) {
+		return res.status(400).json({
+			message: "Users not found",
+			users: notFound,
+		});
 	}
 
 	// Remove users
