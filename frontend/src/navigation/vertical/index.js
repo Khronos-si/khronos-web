@@ -14,5 +14,11 @@ export default [
     route: 'todos',
     icon: 'FileIcon'
     // required_permission: ['superuser', 'user']
+  },
+  {
+    title: 'general.calendar',
+    route: 'calendar',
+    icon: 'CalendarIcon'
+    // required_permission: ['superuser', 'user']
   }
 ]

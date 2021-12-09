@@ -49,6 +49,21 @@ const router = new VueRouter({
       }
     },
     {
+      path: '/calendar',
+      name: 'calendar',
+      component: () => import('@/views/Calendar.vue'),
+      meta: {
+        pageTitle: i18n.t('general.calendar'),
+        breadcrumb: [
+          {
+            text: 'Calendar',
+            active: true
+          }
+        ],
+        requiresAuth: true
+      }
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/Login.vue'),

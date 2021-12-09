@@ -2992,6 +2992,11 @@ core-js@3.8.1:
   resolved "https://registry.npmjs.org/core-js/-/core-js-3.8.1.tgz"
   integrity sha512-9Id2xHY1W7m8hCl8NkhQn5CufmF/WuR30BTRewvCXc1aZd3kMECwNZ69ndLbekKfakw9Rf2Xyc+QR6E7Gg+obg==
 
+core-js@^3.15.2:
+  version "3.19.3"
+  resolved "https://registry.yarnpkg.com/core-js/-/core-js-3.19.3.tgz#6df8142a996337503019ff3235a7022d7cdf4559"
+  integrity sha512-LeLBMgEGSsG7giquSzvgBrTS7V5UL6ks3eQlUSbN8dJStlLFiRzUm5iqsRyzUB8carhfKjkJ2vzKqE6z1Vga9g==
+
 core-js@^3.4.4, core-js@^3.6.5:
   version "3.10.1"
   resolved "https://registry.npmjs.org/core-js/-/core-js-3.10.1.tgz"
@@ -3249,7 +3254,12 @@ dashdash@^1.12.0:
   dependencies:
     assert-plus "^1.0.0"
 
-date-fns@^2.0.0-beta.4:
+date-fns-tz@^1.1.4:
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/date-fns-tz/-/date-fns-tz-1.1.6.tgz#93cbf354e2aeb2cd312ffa32e462c1943cf20a8e"
+  integrity sha512-nyy+URfFI3KUY7udEJozcoftju+KduaqkVfwyTIE0traBiVye09QnyWKLZK7drRr5h9B7sPJITmQnS3U6YOdQg==
+
+date-fns@^2.0.0-beta.4, date-fns@^2.22.1:
   version "2.27.0"
   resolved "https://registry.npmjs.org/date-fns/-/date-fns-2.27.0.tgz"
   integrity sha512-sj+J0Mo2p2X1e306MHq282WS4/A8Pz/95GIFcsPNMPMZVI3EUrAdSv90al1k+p74WGLCruMXk23bfEDZa71X9Q==
@@ -9040,6 +9050,16 @@ uuid@^3.3.2, uuid@^3.4.0:
   resolved "https://registry.npmjs.org/uuid/-/uuid-3.4.0.tgz"
   integrity sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==
 
+v-calendar@^2.3.4:
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/v-calendar/-/v-calendar-2.3.4.tgz#3615602adf07764cb9b8e5cfb7f780015751c839"
+  integrity sha512-jH9cCuryt7++LWkHE4zvkqORQYUmmfLwhYxaDzndTrd3hWyLtm3WGyfanc++PEqchTkPP31VewFTXqlSf3Gk7Q==
+  dependencies:
+    core-js "^3.15.2"
+    date-fns "^2.22.1"
+    date-fns-tz "^1.1.4"
+    lodash "^4.17.21"
+
 v8-compile-cache@^2.0.3:
   version "2.3.0"
   resolved "https://registry.npmjs.org/v8-compile-cache/-/v8-compile-cache-2.3.0.tgz"
@@ -9266,7 +9286,7 @@ vue-router@3.4.9:
   resolved "https://registry.npmjs.org/vue-router/-/vue-router-3.4.9.tgz"
   integrity sha512-CGAKWN44RqXW06oC+u4mPgHLQQi2t6vLD/JbGRDAXm0YpMv0bgpKuU5bBd7AvMgfTz9kXVRIWKHqRwGEb8xFkA==
 
-vue-select@^3.11.2:
+vue-select@^3.16.0:
   version "3.16.0"
   resolved "https://registry.yarnpkg.com/vue-select/-/vue-select-3.16.0.tgz#db2ee2ddf80bd8876ce57738107b8a1a741862f4"
   integrity sha512-F0x7HXTUc5eq7YSjR0uX77RGA+Yk2+I8aMW+NePyPqRX9OPSiDtKpezFIFhnhxqrOvMh4uVR0jHkXIDmzs6nYQ==

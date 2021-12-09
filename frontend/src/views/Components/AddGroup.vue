@@ -126,14 +126,8 @@
         },
         methods: {
             checkIfEmailExist(email) {
-                console.log(this.emailThatDoesntExist)
                 if (this.emailThatDoesntExist && this.emailThatDoesntExist.length > 0) {
-                    console.log('tuki sm')
                     for (const item of this.emailThatDoesntExist) {
-                        console.log('PRIMERJAM:')
-                        console.log(item)
-                        console.log(email)
-                        console.log('')
                         if (item === email) return false
                     }
                 }
