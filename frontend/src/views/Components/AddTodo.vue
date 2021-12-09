@@ -37,7 +37,7 @@
                 ></b-form-input>
             </b-form-group>
 
-            <b-form-group
+            <!-- <b-form-group
                 label="Status"
                 label-for="stat-input"
             >
@@ -46,21 +46,20 @@
                     v-model="status"
                     required
                 ></b-form-checkbox>
-            </b-form-group>
+            </b-form-group> -->
         </form>
     </b-modal>
 </template>
 
 <script>
-    import { BModal, BFormInput, BFormGroup, BFormCheckbox  } from 'bootstrap-vue'
+    import { BModal, BFormInput, BFormGroup  } from 'bootstrap-vue'
 
 
     export default {
         components: {
             BModal,
             BFormInput,
-            BFormGroup,
-            BFormCheckbox
+            BFormGroup
         },
         computed: {
             selectedGroup() {
@@ -71,7 +70,6 @@
             return {
                 name: '',
                 description: '',
-                status: '',
                 nameState: null,
                 descState: null
             }
@@ -87,7 +85,6 @@
                 this.name = ''
                 this.nameState = null
                 this.description = ''
-                this.status = ''
                 this.descState = null
             },
             handleOk(bvModalEvt) {
@@ -114,7 +111,7 @@
                     'todoGroupId': todo,
                     'name': this.name,
                     'description': this.description,
-                    'status': this.status
+                    'status': false
                 }
 
                 const data = await this.$http.post('/api/todo', payload)

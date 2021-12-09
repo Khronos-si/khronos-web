@@ -75,7 +75,13 @@
                     taggable
                     push-tags
                     placeholder="Add Options"
-                />
+                >
+                    <template #selected-option="option">
+                        <div style="display: flex; align-items: baseline;" :class="checkIfEmailExist(option.label)? '':'emailDoesntExist'">
+                            {{option.label}}
+                        </div>
+                    </template>
+                </v-select>
             </b-form-group>
         </form>
     </b-modal>
@@ -114,10 +120,25 @@
                 sharedWith: [],
                 nameState: null,
                 permState: null,
-                colorState: null
+                colorState: null,
+                emailThatDoesntExist: []
             }
         },
         methods: {
+            checkIfEmailExist(email) {
+                console.log(this.emailThatDoesntExist)
+                if (this.emailThatDoesntExist && this.emailThatDoesntExist.length > 0) {
+                    console.log('tuki sm')
+                    for (const item of this.emailThatDoesntExist) {
+                        console.log('PRIMERJAM:')
+                        console.log(item)
+                        console.log(email)
+                        console.log('')
+                        if (item === email) return false
+                    }
+                }
+                return true
+            },
             checkFormValidity() {
                 let valid = this.$refs.form.checkValidity()
                 
@@ -175,7 +196,7 @@
                     'shareWith': this.sharedWith,
                     'color': this.color
                 }
-
+                
                 try {
                     const data = await this.$http.post('/api/todo/group', payload)
                 
@@ -185,6 +206,9 @@
 
                     this.$bvModal.hide('modal-add-group')
                 } catch (err) {
+                    if (err.response.data) {
+                        this.emailThatDoesntExist = err.response.data.users
+                    }
                     console.log(err)
                 }
                
@@ -198,8 +222,12 @@
 <style lang="scss">
     @import '~@core/scss/vue/libs/vue-select.scss';
 
+    .emailDoesntExist{
+        color: #fe5c36 !important;
+    }
+
     button.vs__deselect{
-        fill: rgb(32, 31, 31) !important;
+    fill: rgb(32, 31, 31) !important;
     }
 </style>
 

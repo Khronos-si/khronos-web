@@ -61,6 +61,15 @@
                     </b-button>
                 </template>
 
+                <b-dropdown-item link-class="d-flex align-items-center">
+                    <feather-icon
+                        size="16"
+                        icon="UserIcon"
+                        class="mr-50"
+                    />
+                    <span>Change color theme</span>
+                </b-dropdown-item>
+
             </b-dropdown>
         </b-col>
     </b-row>
@@ -68,7 +77,7 @@
 
 <script>
     import {
-        BBreadcrumb, BBreadcrumbItem, BRow, BCol, BDropdown, BButton
+        BBreadcrumb, BBreadcrumbItem, BRow, BCol, BDropdown, BButton, BDropdownItem
     } from 'bootstrap-vue'
     import Ripple from 'vue-ripple-directive'
 
@@ -82,7 +91,8 @@
             BRow,
             BCol,
             BDropdown,
-            BButton
+            BButton,
+            BDropdownItem
         }
     }
 </script>

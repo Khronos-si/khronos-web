@@ -4,7 +4,7 @@
         id="modal-edit-todo"
         ref="modal"
         :title="modalTitle"
-        @hidden="resetModal"
+        @hidden="setModalValues"
         @ok="handleOk"
     >
         <div>
@@ -151,7 +151,6 @@
                 return valid
             },
             setModalValues() {
-                console.log(this.todo.name)
                 if (this.groupPermissions === 0) this.modalTitle = this.todo.name
                 else this.modalTitle = 'Edit todo'
 
@@ -159,13 +158,6 @@
                 this.nameState = null
                 this.description = this.todo.description
                 this.status = this.todo.status
-                this.descState = null
-            },
-            resetModal() {
-                this.name = ''
-                this.nameState = null
-                this.description = ''
-                this.status = ''
                 this.descState = null
             },
             handleOk(bvModalEvt) {
@@ -186,9 +178,6 @@
             async editTodo() {
                 const group = this.selectedGroup
                 const todoId = this.todo._id
-
-
-                console.log('KOKOKOKOKOKOKOK')
 
                 const payload = {
                     'id': todoId,

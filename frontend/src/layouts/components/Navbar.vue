@@ -17,8 +17,8 @@
         </ul>
 
         <!-- Left Col -->
-        <div class="bookmark-wrapper align-items-center flex-grow-1 d-none d-lg-flex">
-            <dark-Toggler class="d-none d-lg-block" />
+        <div class="bookmark-wrapper align-items-center flex-grow-1 d-flex">
+            <dark-Toggler class="d-block" />
         </div>
 
         <b-navbar-nav class="nav align-items-center ml-auto">
@@ -30,9 +30,9 @@
                 <template #button-content>
                     <div class="d-sm-flex d-none user-nav">
                         <p class="user-name font-weight-bolder mb-0">
-                            John Doe
+                            {{userData.userData.user}}
                         </p>
-                        <span class="user-status">Admin</span>
+                        <span class="user-status">{{userData.email}}</span>
                     </div>
                     <b-avatar
                         size="40"
@@ -53,32 +53,32 @@
                     <span>Profile</span>
                 </b-dropdown-item>
 
-                <b-dropdown-item link-class="d-flex align-items-center">
+                <!-- <b-dropdown-item link-class="d-flex align-items-center">
                     <feather-icon
                         size="16"
                         icon="MailIcon"
                         class="mr-50"
                     />
                     <span>Inbox</span>
-                </b-dropdown-item>
+                </b-dropdown-item> -->
 
-                <b-dropdown-item link-class="d-flex align-items-center">
+                <!-- <b-dropdown-item link-class="d-flex align-items-center">
                     <feather-icon
                         size="16"
                         icon="CheckSquareIcon"
                         class="mr-50"
                     />
                     <span>Task</span>
-                </b-dropdown-item>
+                </b-dropdown-item> -->
 
-                <b-dropdown-item link-class="d-flex align-items-center">
+                <!-- <b-dropdown-item link-class="d-flex align-items-center">
                     <feather-icon
                         size="16"
                         icon="MessageSquareIcon"
                         class="mr-50"
                     />
                     <span>Chat</span>
-                </b-dropdown-item>
+                </b-dropdown-item> -->
 
                 <b-dropdown-divider />
 
