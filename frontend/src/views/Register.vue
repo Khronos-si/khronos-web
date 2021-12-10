@@ -6,7 +6,8 @@
             <b-link class="brand-logo">
                 <!-- <vuexy-logo /> -->
                 <h2 class="brand-text text-primary ml-1">
-                    <b-img :src="appLogoImage" style="width: 180px !important;"></b-img>
+                    <b-img :src="appLogoImage" style="width: 180px !important;" v-if="skin == 'dark'"></b-img>
+                    <b-img :src="appLogoImageLightTheme" style="width: 180px !important;" v-if="skin != 'dark'"></b-img>
                 </h2>
             </b-link>
             <!-- /Brand logo-->
@@ -170,6 +171,7 @@
     import { togglePasswordVisibility } from '@core/mixins/ui/forms'
     import store from '@/store/index'
     import { $themeConfig } from '@themeConfig'
+    import useAppConfig from '@core/app-config/useAppConfig'
 
 
     export default {
@@ -257,10 +259,14 @@
 
         },
         setup() {
-            const { appName, appLogoImage } = $themeConfig.app
+            const { appName, appLogoImage, appLogoImageLightTheme } = $themeConfig.app
+            const { skin } = useAppConfig()
+
             return {
+                appLogoImageLightTheme,
                 appName,
-                appLogoImage
+                appLogoImage,
+                skin
             }
         }
     }

@@ -1,32 +1,54 @@
 <template>
-    <div class="text-center section">
-        <calendar
-            class="max-w-full p-1 custom-calendar" :class="isDark? 'theme-default-dark ' : 'theme-default-white '"
-            :masks="masks"
-            :attributes="attributes"
-            disable-page-swipe
-            is-expanded
-        >
-            <template v-slot:day-content="{ day, attributes }">
-                <div class="overflow-hidden py-0.5 px-md-1" :class="isDark? 'card-dark': 'card-white'" style="padding-top: 5px;">
-                    <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 5px;" :class="sameDate(day.date, new Date())? 'bg-circle':''">
-                        <div class="p-0" >{{ day.day }} </div>
-                    </div>
-                    <div class="flex-grow overflow-y-auto overflow-x-auto">
-                        <div
-                            v-for="attr in attributes"
-                            :key="attr.key"
-                            class="text-xs rounded text-center"
-                            style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px;"
-                            :class="attr.customData.class"
-                        >
-                            {{ attr.customData.title }}
-                        </div>
-                    </div>
-                    
+    <div class="d-inline text-center section">
+        <div class="m-0 p-0" style="float: left" >
+            <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; border-right: 1px solid rgba(110,110,110,0.3);">
+                <!-- v-if="groupPermissions == null || groupPermissions > 0" -->
+                <div class="px-2 pb-1 d-flex justify-content-center" >
+                    <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-event >Add Event</b-button>
                 </div>
-            </template>
-        </calendar>
+                <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
+                    <div>
+                        My Calendars
+                    </div>
+                    <div v-on:click="addEvent()" style="cursor: pointer;">
+                        <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;">
+
+            <calendar
+                class="max-w-full p-1 custom-calendar" :class="isDark? 'theme-default-dark ' : 'theme-default-white '"
+                :masks="masks"
+                :attributes="attributes"
+                disable-page-swipe
+                is-expanded
+            >
+                <template v-slot:day-content="{ day, attributes }">
+                    <div class="overflow-scroll py-0.5 px-md-1" :class="isDark? 'card-dark': 'card-white'" style="padding-top: 5px;">
+                        <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 5px;" :class="sameDate(day.date, new Date())? 'bg-circle':''">
+                            <div class="p-0" >{{ day.day }} </div>
+                        </div>
+                        <div class="">
+                            <div
+                                v-for="attr in attributes"
+                                :key="attr.key"
+                                class="text-xs rounded text-center"
+                                style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px;"
+                                :class="attr.customData.class"
+                            >
+                                {{ attr.customData.title }}
+                            </div>
+                        </div>
+                    
+                    </div>
+                </template>
+            </calendar>
+
+        </div>
+
+        <add-event></add-event>
     </div>
 </template>
 
@@ -34,10 +56,17 @@
     import { Calendar } from 'v-calendar'
     import useAppConfig from '@core/app-config/useAppConfig'
     import { computed } from '@vue/composition-api'
+    import AddEvent from './Components/Calendar/AddEvent.vue'
+    import { PlusIcon } from 'vue-feather-icons'
+    import { BButton } from 'bootstrap-vue'
+
 
     export default {
         components:{
-            Calendar
+            Calendar,
+            AddEvent,
+            PlusIcon,
+            BButton
         },
         setup() {
             const { skin } = useAppConfig()
@@ -141,11 +170,31 @@
                             class: 'bg-secondary text-black'
                         },
                         dates: new Date(year, month, 25)
+                    },
+                    {
+                        key: 94,
+                        customData: {
+                            title: 'Visit great grandma.',
+                            class: 'bg-secondary text-black'
+                        },
+                        dates: new Date(year, month, 25)
+                    },
+                    {
+                        key: 95,
+                        customData: {
+                            title: 'Visit great grandma.',
+                            class: 'bg-secondary text-black'
+                        },
+                        dates: new Date(year, month, 25)
                     }
                 ]
             }
         },
         methods:{
+            addEvent() {
+                console.log('DDODODo')
+                this.$bvModal.show('modal-add-event')
+            },
             sameDate(first, second) {
                 return first.getFullYear() === second.getFullYear() &&
                     first.getMonth() === second.getMonth() &&
@@ -160,7 +209,7 @@
 
 .card-dark{
     width: 95%; 
-    height: 90%; 
+    height: 95%; 
     background: #3c4043; 
     border-radius: 10px; 
     box-shadow: 1px 1px 3px #202124;
@@ -208,8 +257,8 @@
         color: white !important;
     }
      .custom-calendar.vc-container {
-        --day-width: 10vw;
-        --day-height: 12vh;
+        --day-width: 20%;
+        --day-height: 20vh;
         border-radius: 0;
         width: 100%;
         & .vc-day {

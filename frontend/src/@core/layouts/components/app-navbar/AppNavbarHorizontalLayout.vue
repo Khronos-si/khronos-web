@@ -15,7 +15,6 @@
                 </b-link>
             </li>
         </ul>
-
         <!-- Left Col -->
         <div class="bookmark-wrapper align-items-center flex-grow-1 d-none d-lg-flex">
             <bookmarks />

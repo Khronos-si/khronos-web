@@ -64,7 +64,7 @@
         </b-dropdown-item>
         <b-dropdown-item
             link-class="d-flex align-items-center"
-            @click="logout"
+            v-on:click="logout()"
         >
             <feather-icon
                 size="16"
@@ -97,7 +97,11 @@
             }
         },
         methods: {
+            test() {
+                console.log('KAJ SEDOGAJA????')
+            },
             logout() {
+                console.log('TUKI SM')
                 // Remove userData from localStorage
                 // ? You just removed token from localStorage. If you like, you can also make API call to backend to blacklist used token
                 localStorage.removeItem(useJwt.jwtConfig.storageTokenKeyName)

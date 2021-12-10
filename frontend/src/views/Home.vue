@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-card title="Kick start your project">
+        <b-card title="Kick start your project" class="w-100">
             <b-card-text>All the best for your new project. Test</b-card-text>
             <b-card-text
             >Please make sure to read our
@@ -26,17 +26,22 @@
             >Please read our JWT Documentation to get more out of JWT
                 authentication.</b-card-text>
         </b-card>
+        <b-card>
+            <clock-with-task class=""></clock-with-task>
+        </b-card>
     </div>
 </template>
 
 <script>
     import { BCard, BCardText, BLink } from 'bootstrap-vue'
+    import ClockWithTask from './Components/ClockWithTask.vue'
 
     export default {
         components: {
             BCard,
             BCardText,
-            BLink
+            BLink,
+            ClockWithTask
         }
     }
 </script>

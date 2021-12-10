@@ -23,13 +23,19 @@
                         <b-link
                             class="navbar-brand"
                             to="/"
-                        >
-                                    
+                        >   
                             <span v-show="(isMouseHovered && isVerticalMenuCollapsed) || !isVerticalMenuCollapsed">
                                 <b-img
                                     :src="appLogoImage"
                                     alt="logo"
                                     style="width: 180px !important;"
+                                    v-if="skin == 'dark'"
+                                />
+                                <b-img
+                                    :src="appLogoImageLightTheme"
+                                    alt="logo"
+                                    style="width: 180px !important;"
+                                    v-if="skin != 'dark'"
                                 />
                             </span>
                             <span v-show="(!isMouseHovered && isVerticalMenuCollapsed)" style="padding-left: 4px;">
@@ -140,9 +146,10 @@
             const collapseTogglerIconFeather = computed(() => (collapseTogglerIcon.value === 'unpinned' ? 'CircleIcon' : 'DiscIcon'))
 
             // App Name
-            const { appName, appLogoImage, appLogoNoText } = $themeConfig.app
+            const { appName, appLogoImage, appLogoImageLightTheme, appLogoNoText } = $themeConfig.app
 
             return {
+                appLogoImageLightTheme,
                 appLogoNoText,
                 navMenuItems,
                 perfectScrollbarSettings,
