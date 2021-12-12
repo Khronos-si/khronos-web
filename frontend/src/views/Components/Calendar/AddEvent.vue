@@ -48,7 +48,6 @@
 
                 </v-select>
             </b-form-group>
-            {{dateStart}}
             <b-form-group
                 label="Start Date"
                 label-for="date-start-input"

@@ -118,14 +118,9 @@ export default {
                 }
             }
 
-            console.log('IZTOP')
-            console.log(state.todos)
-
             return null
         },
         EDIT_TODO(state, payload) {
-            console.log('Start')
-            console.log(state.todos)
             if (state.sharedTodos && payload.idGroup) {
                 const group = state.sharedTodos.find(element => element._id === payload.idGroup)
 
@@ -153,8 +148,6 @@ export default {
                 }
             }
             
-            console.log('konc')
-            console.log(state.todos)
         },
 
 
@@ -179,6 +172,11 @@ export default {
             state.todos = payload.todos
         },
         ADD_TODO_ITEM(state, payload) {
+
+            if (payload.todo_item) {
+                payload.todo_item.checbox = payload.todo_item.status
+            }
+
             if (state.todos) {
                 const group = state.todos.find(element => element._id === payload.todo_group)
 

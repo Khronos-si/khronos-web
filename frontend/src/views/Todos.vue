@@ -269,7 +269,7 @@
                     if (data.data.length === 0) {
                         return
                     }
-                    console.log(data)
+
                     this.$store.dispatch('todo/set_shared_group', { 'todos': data.data})
                 } catch (err) {
                     console.log(err)
