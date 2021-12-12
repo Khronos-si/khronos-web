@@ -1,5 +1,5 @@
 import Vue from 'vue'
-
+// people.filter(person => id_filter.includes(person.id))
 export default {
     namespaced: true,
     state: {

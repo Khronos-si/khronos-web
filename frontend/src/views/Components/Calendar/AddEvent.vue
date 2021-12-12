@@ -48,14 +48,14 @@
 
                 </v-select>
             </b-form-group>
-
+            {{dateStart}}
             <b-form-group
                 label="Start Date"
                 label-for="date-start-input"
                 invalid-feedback="Start date is required"
                 :state="permState"
             >
-                <date-picker v-model="date" mode="dateTime" class="datePicker w-100 p-0" >  
+                <date-picker v-model="dateStart" mode="dateTime" class="datePicker w-100 p-0" :minute-increment="5" :model-config="modelConfig" v-if="!allDay" is24hr>  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
                             class="calendarInput border px-2 py-1 rounded"
@@ -65,6 +65,56 @@
                         />
                     </template>
                 </date-picker>
+
+                <date-picker v-model="dateStart" mode="date" class="datePicker w-100 p-0" v-if="allDay">  
+                    <template v-slot="{ inputValue, inputEvents }">
+                        <input
+                            class="calendarInput border px-2 py-1 rounded"
+                            :value="inputValue"
+                            placeholder="Enter start date"
+                            v-on="inputEvents"
+                        />
+                    </template>
+                </date-picker>
+            </b-form-group>
+
+
+            <b-form-group
+                label="End Date"
+                label-for="date-end-input"
+                invalid-feedback="End date is required"
+                :state="permState"
+            >
+                <date-picker :min-date="dateStart" v-model="dateEnd" mode="dateTime" class="datePicker w-100 p-0" v-if="!allDay" :minute-increment="5" is24hr>  
+                    <template v-slot="{ inputValue, inputEvents }">
+                        <input
+                            class="calendarInput border px-2 py-1 rounded"
+                            :value="inputValue"
+                            placeholder="Enter start date"
+                            v-on="inputEvents"
+                        />
+                    </template>
+                </date-picker>
+
+                <date-picker :min-date="dateStart" v-model="dateEnd" mode="date" class="datePicker w-100 p-0" v-if="allDay">  
+                    <template v-slot="{ inputValue, inputEvents }">
+                        <input
+                            class="calendarInput border px-2 py-1 rounded"
+                            :value="inputValue"
+                            placeholder="Enter start date"
+                            v-on="inputEvents"
+                        />
+                    </template>
+                </date-picker>
+            </b-form-group>
+
+            <!-- CHECKBOX -->
+            <b-form-group
+                label="All Day"
+                label-for="all-day-checkbox"
+            >
+                <b-form-checkbox id="checkbox-1" class="test"
+                                 v-model="allDay"></b-form-checkbox>
             </b-form-group>
 
             <b-form-group
@@ -107,7 +157,7 @@
 
 <script>
     import { DatePicker } from 'v-calendar'
-    import { BModal, BFormInput, BFormGroup   } from 'bootstrap-vue'
+    import { BModal, BFormInput, BFormGroup, BFormCheckbox   } from 'bootstrap-vue'
     import vSelect from 'vue-select'
     // import 'vue-select/dist/vue-select.css'
     // import 'vue-select/src/scss/vue-select.scss'
@@ -120,7 +170,8 @@
             BFormInput,
             BFormGroup,
             vSelect,
-            DatePicker
+            DatePicker,
+            BFormCheckbox
         },
         computed: {
             todos() {
@@ -132,7 +183,9 @@
         },
         data() {
             return {
-                date: null,
+                allDay: false,
+                dateStart: null,
+                dateEnd: null,
                 optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
                 optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
                 color: '',
@@ -254,7 +307,7 @@
         border: none !important;
     }
     
-
+   
     .datePicker .vc-popover-content-wrapper{
         border: none !important; 
         .vc-day{
@@ -282,7 +335,23 @@
         .vc-am-pm button{
             color: white !important;
         }
+
+        span.vc-day-content.is-disabled{
+            color: #fe5c36 !important;
+        }   
+        span.vc-day-content.is-disabled:hover{
+            background: transparent !important;
+            cursor: not-allowed;
+            // color: #fe5c36 !important;
+        }
+        span.vc-day-content.is-disabled:focus{
+            background: transparent !important;
+            font-weight: 600;
+            // color: #fe5c36 !important;
+        } 
+        
     }
+   
 
     .calendarInput{
         width: 100% !important;
