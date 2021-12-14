@@ -1,7 +1,8 @@
 <template>
     <div class="d-inline text-center section">
         <div class="m-0 p-0" style="float: left" >
-            <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; border-right: 1px solid rgba(110,110,110,0.3);">
+            <!-- border-right: 1px solid rgba(110,110,110,0.3); -->
+            <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; "> 
                 <!-- v-if="groupPermissions == null || groupPermissions > 0" -->
                 <div class="px-2 pb-1 d-flex justify-content-center" >
                     <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-event >Add Event</b-button>
@@ -56,7 +57,7 @@
         <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;">
 
             <calendar
-                class="max-w-full p-1 custom-calendar" :class="isDark? 'theme-default-dark ' : 'theme-default-white '"
+                class="max-w-full p-1 " :class="isDark? 'theme-default-dark custom-calendar-dark' : 'theme-default-white custom-calendar-light'"
                 :model-config="modelConfig"
                 :masks="masks"
                 :attributes="attributes"
@@ -339,7 +340,47 @@
     .vc-title{
         color: white !important;
     }
-     .custom-calendar.vc-container {
+
+    .custom-calendar-light.vc-container {
+        --day-width: 20%;
+        --day-height: 20vh;
+        border-radius: 0;
+        width: 100%;
+        // #f8f8f8
+        background: white !important;
+        & .vc-pane-container{
+            background: white !important;
+        }
+        & .vc-day {
+            // padding: 0 5px 3px 5px;
+            text-align: left;
+            text-align: left;
+            height: var(--day-height);
+            min-width: var(--day-width);
+            // &.weekday-1,
+            // &.weekday-7 {
+            //     // background-color: #eff8ff;
+            // }
+        }
+        &:not(.on-bottom) {
+            border-bottom: var(--day-border);
+            &.weekday-1 {
+                border-bottom: var(--day-border-highlight);
+            }
+        }       
+        &:not(.on-right) {
+        border-right: var(--day-border);
+        }
+        // & .vc-header {
+        //     background-color: #f1f5f8;
+        //     padding: 10px 0;
+        // }
+        & .vc-weeks {
+            padding: 0;
+        }
+    }
+    
+    .custom-calendar-dark.vc-container {
         --day-width: 20%;
         --day-height: 20vh;
         border-radius: 0;

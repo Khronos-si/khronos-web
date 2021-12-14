@@ -11,11 +11,9 @@ export default {
     mutations: {
         SET_TAGS(state, payload) {
             state.tags = payload.tags[0]
-            console.log(state.tags)
         },
         ADD_TAG(state, payload) {
             state.tags.push(payload.new_tag)
-            console.log(state.tags)
         },
         DELETE_TAG(state, payload) {
             console.log(state)

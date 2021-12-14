@@ -54,10 +54,11 @@
                 invalid-feedback="Start date is required"
                 :state="permState"
             >
-                <date-picker v-model="dateStart" mode="dateTime" class="datePicker w-100 p-0" :minute-increment="5" :model-config="modelConfig" v-if="!allDay" is24hr>  
+                <date-picker v-model="dateStart" mode="dateTime" class="datePicker w-100 p-0" :minute-increment="5" :model-config="modelConfig" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="!allDay" is24hr>  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
-                            class="calendarInput border px-2 py-1 rounded"
+                            class="border px-2 py-1 rounded"
+                            :class="isDark == true ? 'calendarInput-dark': 'calendarInput-light'"
                             :value="inputValue"
                             placeholder="Enter start date"
                             v-on="inputEvents"
@@ -65,10 +66,11 @@
                     </template>
                 </date-picker>
 
-                <date-picker v-model="dateStart" mode="date" class="datePicker w-100 p-0" v-if="allDay">  
+                <date-picker v-model="dateStart" mode="date" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="allDay">  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
-                            class="calendarInput border px-2 py-1 rounded"
+                            class="border px-2 py-1 rounded"
+                            :class="isDark == true ? 'calendarInput-dark': 'calendarInput-light'"
                             :value="inputValue"
                             placeholder="Enter start date"
                             v-on="inputEvents"
@@ -77,17 +79,17 @@
                 </date-picker>
             </b-form-group>
 
-
             <b-form-group
                 label="End Date"
                 label-for="date-end-input"
                 invalid-feedback="End date is required"
                 :state="permState"
             >
-                <date-picker :min-date="dateStart" v-model="dateEnd" mode="dateTime" class="datePicker w-100 p-0" v-if="!allDay" :minute-increment="5" is24hr>  
+                <date-picker :min-date="dateStart" v-model="dateEnd" mode="dateTime" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="!allDay" :minute-increment="5" is24hr>  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
-                            class="calendarInput border px-2 py-1 rounded"
+                            class="border px-2 py-1 rounded"
+                            :class="isDark == true ? 'calendarInput-dark': 'calendarInput-light'"
                             :value="inputValue"
                             placeholder="Enter start date"
                             v-on="inputEvents"
@@ -95,7 +97,7 @@
                     </template>
                 </date-picker>
 
-                <date-picker :min-date="dateStart" v-model="dateEnd" mode="date" class="datePicker w-100 p-0" v-if="allDay">  
+                <date-picker :min-date="dateStart" v-model="dateEnd" mode="date" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="allDay">  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
                             class="calendarInput border px-2 py-1 rounded"
@@ -158,6 +160,9 @@
     import { DatePicker } from 'v-calendar'
     import { BModal, BFormInput, BFormGroup, BFormCheckbox   } from 'bootstrap-vue'
     import vSelect from 'vue-select'
+    import useAppConfig from '@core/app-config/useAppConfig'
+    import { computed } from '@vue/composition-api'
+
     // import 'vue-select/dist/vue-select.css'
     // import 'vue-select/src/scss/vue-select.scss'
     // import 'vue-select/dist/vue-select.css';
@@ -180,6 +185,13 @@
                 return this.$store.getters['todo/getSelectedGroup']
             }
         },
+        setup() {
+            const { skin } = useAppConfig()
+
+            const isDark = computed(() => skin.value === 'dark')
+
+            return { skin, isDark }
+        },
         data() {
             return {
                 allDay: false,
@@ -198,6 +210,7 @@
             }
         },
         methods: {
+           
             checkIfEmailExist(email) {
                 if (this.emailThatDoesntExist && this.emailThatDoesntExist.length > 0) {
                     for (const item of this.emailThatDoesntExist) {
@@ -297,17 +310,66 @@
     fill: rgb(32, 31, 31) !important;
     }
 
-    .vc-pane-container {
+    .datePicker-dark .vc-pane-container {
         border: none !important;
         background: #2E3134 !important;
-
     }
     .datePicker .vc-popover-content{
         border: none !important;
     }
     
    
-    .datePicker .vc-popover-content-wrapper{
+    .datePicker-light .vc-popover-content-wrapper{
+        border: none !important; 
+        .vc-day{
+            color: #53afbe !important;
+        }
+        .vc-month{
+            color: grey !important;
+        }
+        .vc-weekday{
+            color: #feb449 !important;
+        }
+        .vc-year{
+            color: #6ec193 !important;
+        }
+        .vc-title{
+            color: #6ec193 !important;
+        }
+        .vc-select > select{
+            border: none;
+        // border: 1px solid #b4b7bd;
+        background: #f8f8f8 ;
+        color: grey;
+        }
+        .vc-am-pm{
+            color: white !important;
+            background: #f8f8f8;
+        }
+        .vc-am-pm .active{
+            background: #53afbe !important;
+        }
+        .vc-am-pm button{
+            color: white !important;
+        }
+
+        span.vc-day-content.is-disabled{
+            color: #fe5c36 !important;
+        }   
+        span.vc-day-content.is-disabled:hover{
+            background: transparent !important;
+            cursor: not-allowed;
+            // color: #fe5c36 !important;
+        }
+        span.vc-day-content.is-disabled:focus{
+            background: transparent !important;
+            font-weight: 600;
+            // color: #fe5c36 !important;
+        } 
+        
+    }
+
+    .datePicker-dark .vc-popover-content-wrapper{
         border: none !important; 
         .vc-day{
             color: #53afbe !important;
@@ -318,6 +380,7 @@
         .vc-weekday{
             color: #feb449 !important;
         }
+        
         .vc-select > select{
             border: none;
         // border: 1px solid #b4b7bd;
@@ -350,9 +413,14 @@
         } 
         
     }
-   
+    .calendarInput-light{
+        width: 100% !important;
+        background: white !important;
+        color: #b4b7bd !important;
+        padding: 8px !important;
+    }
 
-    .calendarInput{
+    .calendarInput-dark{
         width: 100% !important;
         background: #2E3134 !important;
         color: #b4b7bd !important;

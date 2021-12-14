@@ -47,7 +47,7 @@
                                 {{group.name}}
                             </div>
                             <div  v-if="userEmail != group.owner.email">
-                                <span class="badge badge-pill badge-warning ml-1">{{group.owner.name}}</span>
+                                <span class="badge badge-pill badge-warning ml-1" :style="'background:' + group.color + ' !important;'">{{group.owner.name}}</span>
                             </div>
                         </div>
                     </div>
@@ -84,9 +84,9 @@
                 </div>
                 <div class="d-flex">
                     <div class="d-flex align-items-center">
-                        <div class="mr-1 pr-1 border-right">All</div>
-                        <div  class="mr-1 pr-1 border-right">Not finished</div>
-                        <div  class="mr-1">Done</div>
+                        <div class="mr-1 pr-1 border-right" v-on:click="selectTodos('ALL')" style="cursor: pointer;"  :class="typeSort == 'ALL' ? 'selectedType':'normalType'">All</div>
+                        <div class="mr-1 pr-1 border-right" v-on:click="selectTodos('UNFI')" style="cursor: pointer;" :class="typeSort == 'UNFI' ? 'selectedType':'normalType'" >Not finished</div>
+                        <div class="mr-1" v-on:click="selectTodos('FINI')" style="cursor: pointer;" :class="typeSort == 'FINI' ? 'selectedType':'normalType'">Done</div>
                     </div>
                     <div  v-if="userEmail == ownerOfTheGroup">
                         <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
@@ -174,7 +174,7 @@
                 return this.$store.getters['todo/getAllGroups']
             },
             todos() {
-                return this.$store.getters['todo/getTodos'](this.selectedGroup)
+                return this.$store.getters['todo/getTodos'](this.selectedGroup, this.typeToSort)
             },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
@@ -184,6 +184,7 @@
             const month = new Date().getMonth()
             const year = new Date().getFullYear()
             return {
+                typeSort: 'ALL',
                 colapseMyGroups: false,
                 cardDiv: null,
                 showEditGroup: false,
@@ -269,6 +270,10 @@
             }
         },
         methods: {
+            selectTodos(type) {
+                this.typeSort = type
+                this.$store.dispatch('todo/update_type', { type})
+            },
             colapseMyGruopy() {
                 this.colapseMyGroups = !this.colapseMyGroups
             },
@@ -350,6 +355,20 @@
 
 <style lang="scss">
     @import '~@core/scss/base/bootstrap-extended/include';
+
+
+    .selectedType {
+        padding-bottom: 5px;
+        padding-top: 5px;
+        color: #7367f0;
+    }
+    .normalType {
+        padding-bottom: 5px;
+        padding-top: 5px;
+    }
+     .normalType:hover {
+        color: #7367f0;
+    }
 
     .selectedGroup {
         border-left: 2px solid #7367f0;

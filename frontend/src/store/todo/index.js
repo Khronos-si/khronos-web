@@ -5,7 +5,8 @@ export default {
     state: {
         todos: null,
         sharedTodos: null,
-        selectedGroup: null
+        selectedGroup: null,
+        type: 'ALL'
     },
     getters: {
         getTodoTagsFromGroup: state => (idGroup) => {
@@ -103,7 +104,7 @@ export default {
         getAllSharedGroups: state => {
             return state.sharedTodos
         },
-        getSharedTodos: state => (idGroup) => {
+        getSharedTodos: (state, getters) => (idGroup) => {
             if (!state.sharedTodos || !idGroup) {
                 return []
             }
@@ -111,7 +112,58 @@ export default {
             const group = state.sharedTodos.find(element => element._id === idGroup)
 
             if (!group) return []
-            else return group.todos
+
+            let todos = group.todos
+
+            if (state.type === 'UNFI') { // ONLY UNFINISHED
+                todos = group.todos.filter(ele => ele.status === false)
+            } else if (state.type === 'FINI') { // ONLY FINISHED
+                todos = group.todos.filter(ele => ele.status === true)
+            }
+            
+            const tags = getters.getTodoTagsFromGroup(idGroup)
+
+            const checkForTrueEle = []
+            for (const key in tags) {
+                
+                if (tags[key] && tags[key].status === true) {
+                    checkForTrueEle.push(tags[key]._id)
+                }
+            }
+
+            if (checkForTrueEle.length > 0) {
+                const itemsUsefull = []
+    
+                for (const key in todos) {
+                    const item = todos[key]
+
+                    if (item.tags && item.tags.length > 0) {
+                        
+                        for (const tagKey in item.tags) {
+                            const itemTag = item.tags[tagKey]
+                            if (checkForTrueEle.includes(itemTag._id)) {
+
+                                let alredyIn = false
+
+                                for (const key in itemsUsefull) {
+                                    if (itemsUsefull[key]._id === item._id) alredyIn = true
+                                }
+
+                                if (!alredyIn) itemsUsefull.push(item)
+                                continue
+                            }
+                        }
+
+                    }
+                }
+                return itemsUsefull
+            }
+
+            if (group.todos && group.todos.tags && group.todos.tags.length > 0) {
+                return todos.tags.filter(element => tags.includes(element._id))
+            } else {
+                return todos
+            }
         },
         getSharedGroupById: state => (id) => {
             if (!state.sharedTodos || !id) {
@@ -130,10 +182,20 @@ export default {
             if (!state.todos || !idGroup) {
                 return []
             }
+            let group = null
+            group = state.todos.find(element => element._id === idGroup)
 
-            const group = state.todos.find(element => element._id === idGroup)
+            if (!group) return []
+
+            let todos = group.todos
+
+            if (state.type === 'UNFI') { // ONLY UNFINISHED
+                todos = group.todos.filter(ele => ele.status === false)
+            } else if (state.type === 'FINI') { // ONLY FINISHED
+                todos = group.todos.filter(ele => ele.status === true)
+            }
+
             const tags = getters.getTodoTagsFromGroup(idGroup)
-
 
             const checkForTrueEle = []
             for (const key in tags) {
@@ -146,8 +208,8 @@ export default {
             if (checkForTrueEle.length > 0) {
                 const itemsUsefull = []
     
-                for (const key in group.todos) {
-                    const item = group.todos[key]
+                for (const key in todos) {
+                    const item = todos[key]
 
                     if (item.tags && item.tags.length > 0) {
                         
@@ -173,9 +235,9 @@ export default {
 
             if (!group) return []
             else if (group.todos && group.todos.tags && group.todos.tags.length > 0) {
-                return group.todos.tags.filter(element => tags.includes(element._id))
+                return todos.tags.filter(element => tags.includes(element._id))
             } else {
-                return group.todos
+                return todos
             }
         },
         getSelectedGroup: state => {
@@ -314,6 +376,9 @@ export default {
             Vue.delete(state.todos, index)
             state.todos.splice(index, 0, payload.group_new)
         },
+        UPDATE_TYPE(state, payload) {
+            state.type = payload.type
+        },
         DELETE_GROUP(state, payload) {
             if (!state.todos) {
                 state.todos = []
@@ -367,6 +432,9 @@ export default {
         },
         edit_todo({ commit }, payload) {
             commit('EDIT_TODO', payload)
+        },
+        update_type({ commit }, payload) {
+            commit('UPDATE_TYPE', payload)
         }
     }
 }
