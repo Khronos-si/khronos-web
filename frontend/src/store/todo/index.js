@@ -8,6 +8,62 @@ export default {
         selectedGroup: null
     },
     getters: {
+        getTodoTagsFromGroup: state => (idGroup) => {
+
+            let group = null
+            const tags = []
+
+            if (state.todos) {
+                group = state.todos.find(element => element._id === idGroup)
+            }
+
+           if (state.sharedTodos && !group) {
+                group = state.sharedTodos.find(element => element._id === idGroup)
+           }
+
+            if (group) {
+                if (group.todos) {
+                    for (const item of group.todos) {
+                        if (item.tags) {
+                            for (const tagItem of item.tags) {
+                                let allredyIn = false
+
+                                for (const key in tags) {
+                                    if (tags[key]._id === tagItem._id) allredyIn = true
+                                }
+
+                                if (!allredyIn) {
+                                    tags.push(tagItem)
+                                }
+                            }
+                        }
+                    }
+                
+                return tags
+                }
+           }
+
+           return []
+        },
+
+        getGroupName: state => (idGroup) => {
+            if (state.todos) {
+                const group = state.todos.find(element => element._id === idGroup)
+                
+                if (group) {
+                    return group
+                }
+            }
+
+            if (state.sharedTodos) {
+                const group = state.sharedTodos.find(element => element._id === idGroup)
+                
+                if (group) {
+                    return group
+                }
+            }
+        },
+
         //Both
         getGroupOwner: state => (idGroup) => {
 
@@ -70,15 +126,57 @@ export default {
             return state.todos
         },
        
-        getTodos: state => (idGroup) => {
+        getTodos: (state, getters) => (idGroup) => {
             if (!state.todos || !idGroup) {
                 return []
             }
 
             const group = state.todos.find(element => element._id === idGroup)
+            const tags = getters.getTodoTagsFromGroup(idGroup)
+
+
+            const checkForTrueEle = []
+            for (const key in tags) {
+                
+                if (tags[key] && tags[key].status === true) {
+                    checkForTrueEle.push(tags[key]._id)
+                }
+            }
+
+            if (checkForTrueEle.length > 0) {
+                const itemsUsefull = []
+    
+                for (const key in group.todos) {
+                    const item = group.todos[key]
+
+                    if (item.tags && item.tags.length > 0) {
+                        
+                        for (const tagKey in item.tags) {
+                            const itemTag = item.tags[tagKey]
+                            if (checkForTrueEle.includes(itemTag._id)) {
+
+                                let alredyIn = false
+
+                                for (const key in itemsUsefull) {
+                                    if (itemsUsefull[key]._id === item._id) alredyIn = true
+                                }
+
+                                if (!alredyIn) itemsUsefull.push(item)
+                                continue
+                            }
+                        }
+
+                    }
+                }
+                return itemsUsefull
+            }
 
             if (!group) return []
-            else return group.todos
+            else if (group.todos && group.todos.tags && group.todos.tags.length > 0) {
+                return group.todos.tags.filter(element => tags.includes(element._id))
+            } else {
+                return group.todos
+            }
         },
         getSelectedGroup: state => {
             return state.selectedGroup
@@ -167,7 +265,6 @@ export default {
         },
 
         //Mine
-        
         UPDATE_TODOS(state, payload) {
             state.todos = payload.todos
         },

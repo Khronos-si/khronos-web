@@ -1,8 +1,8 @@
 <template>
 
     <b-modal
-        id="modal-add-group"
-        title="Add group"
+        id="modal-add-tag"
+        title="Add tag"
         transition=""
         @show="resetModal"
         @hidden="resetModal"
@@ -47,41 +47,6 @@
 
                 </v-select>
             </b-form-group>
-
-            <b-form-group
-                label="Permisions"
-                label-for="perm-input"
-                invalid-feedback="Permisions are required"
-                :state="permState"
-                v-if="sharedWith.length > 0"
-            >
-                <v-select
-                    v-model="permissions"
-                    label="title"
-                    :options="optionPermissions"
-                    placeholder="Choose permissions"
-                />
-            </b-form-group>
-
-            <b-form-group
-                label="Shared with"
-                label-for="shared-select"
-            >
-                <v-select
-                    id="shared-select"
-                    v-model="sharedWith"
-                    multiple
-                    taggable
-                    push-tags
-                    placeholder="Add Options"
-                >
-                    <template #selected-option="option">
-                        <div style="display: flex; align-items: baseline;" :class="checkIfEmailExist(option.label)? '':'emailDoesntExist'">
-                            {{option.label}}
-                        </div>
-                    </template>
-                </v-select>
-            </b-form-group>
         </form>
     </b-modal>
 </template>
@@ -89,10 +54,6 @@
 <script>
     import { BModal, BFormInput, BFormGroup   } from 'bootstrap-vue'
     import vSelect from 'vue-select'
-    // import 'vue-select/dist/vue-select.css'
-    // import 'vue-select/src/scss/vue-select.scss'
-    // import 'vue-select/dist/vue-select.css';
-
 
     export default {
         components: {
@@ -101,47 +62,31 @@
             BFormGroup,
             vSelect
         },
-        computed: {
-            todos() {
-                return this.$store.getters['todo/getTodos'](this.selectedGroup)
-            },
-            selectedGroup() {
-                return this.$store.getters['todo/getSelectedGroup']
-            }
-        },
+        // computed: {
+        //     todos() {
+        //         return this.$store.getters['todo/getTodos'](this.selectedGroup)
+        //     },
+        //     selectedGroup() {
+        //         return this.$store.getters['todo/getSelectedGroup']
+        //     }
+        // },
         data() {
             return {
                 optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
-                optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
                 color: '',
                 name: '',
-                permissions: '',
-                sharedWith: [],
                 nameState: null,
-                permState: null,
-                colorState: null,
-                emailThatDoesntExist: []
+                colorState: null
             }
         },
         methods: {
-            checkIfEmailExist(email) {
-                if (this.emailThatDoesntExist && this.emailThatDoesntExist.length > 0) {
-                    for (const item of this.emailThatDoesntExist) {
-                        if (item === email) return false
-                    }
-                }
-                return true
-            },
             checkFormValidity() {
                 let valid = this.$refs.form.checkValidity()
                 
 
                 if ((this.color === '' || !this.color)) valid = false 
 
-                if (this.sharedWith && this.sharedWith.length > 0 && (this.permissions === '' || !this.permissions)) valid = false
-                    
                 this.nameState = valid
-                this.permState = valid
                 this.colorState = valid
 
                 return valid
@@ -150,19 +95,7 @@
                 this.color = ''
                 this.name = ''
                 this.nameState = null
-                this.permissions = ''
-                this.sharedWith = ''
-                this.permState = null
                 this.colorState = null
-            },
-            clicked(bvModalEvt) {
-                console.log(bvModalEvt)
-                console.log('TEST 1')
-            },
-            modalHidden(bvModalEvt) {
-                console.log(bvModalEvt)
-                // console.log('TEST')
-                // bvModalEvt.preventDefault()
             },
             handleOk(bvModalEvt) {
                 // Prevent modal from closing
@@ -176,32 +109,24 @@
                     return
                 }
                 
-                this.addGroup()
+                this.addTag()
             },
-            showModal() {
-                this.$refs['my-modal'].show()
-            },
-            async addGroup() {
+            async addTag() {
 
                 const payload = {
                     'name': this.name,
-                    'permissions': this.permissions.permisson,
-                    'shareWith': this.sharedWith,
                     'color': this.color
                 }
                 
                 try {
-                    const data = await this.$http.post('/api/todo/group', payload)
+                    const data = await this.$http.post('/api/todo/tag', payload)
                 
-                    const newGroup = data.data
+                    const new_tag = data.data
 
-                    this.$store.dispatch('todo/add_group', { 'new_group': newGroup})
+                    this.$store.dispatch('tags/add_tag', { new_tag})
 
-                    this.$bvModal.hide('modal-add-group')
+                    this.$bvModal.hide('modal-add-tag')
                 } catch (err) {
-                    if (err.response.data) {
-                        this.emailThatDoesntExist = err.response.data.users
-                    }
                     console.log(err)
                 }
                

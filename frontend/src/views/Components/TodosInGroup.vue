@@ -14,8 +14,10 @@
                         {{item.name}}
                         <div style="font-size: 0.7rem;">{{item.description.substring(0,30)}}</div>
                     </div>
-                    <div class="d-flex align-items-center">
-                        <span class="badge badge-pill badge-warning mr-2">Important</span>
+                    <div class="d-flex align-items-center justify-content-end ml-1">
+                        <div  class="text-right" v-if="item.tags && item.tags.length > 0">
+                            <span v-for="(tag,idTag) in item.tags" :key="'tag_'+ idTag" class="badge badge-pill mr-1" :style="'background:' + tag.color + '!important; margin-bottom: 5px;'">{{tag.name}}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -36,7 +38,9 @@
                         <div style="font-size: 0.7rem;">{{item.description.substring(0,30)}}</div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="badge badge-pill badge-warning mr-2">Important</span>
+                        <div v-if="item.tags && item.tags > 0">
+                            <span v-for="(tag,idTag) in item.tags" :key="'tag_'+ idTag" class="badge badge-pill badge-warning mr-2">{{tag.name}}</span>
+                        </div>
                     </div>
                 </div>
             </div>

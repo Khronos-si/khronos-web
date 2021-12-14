@@ -17,7 +17,7 @@
                 <div class="mt-1">
                     <!-- :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" -->
                     <!-- v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" -->
-                    <div  class="pl-2 pr-2 d-flex justify-content-between test"  style="cursor: pointer; --color: red;">
+                    <div  class="pl-2 pr-2 d-flex justify-content-between test"  style="cursor: pointer; --color: #feb449;">
                         <div class="d-flex">
                             <!-- group.color -->
                             <!-- <span class="bullet bullet-sm mr-1" :style="'background: green !important;'"></span> -->
@@ -33,7 +33,7 @@
                         <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
                         </div>
                     </div>
-                    <div  class="pl-2 pr-2 d-flex justify-content-between test"  style="cursor: pointer; --color: green;">
+                    <div  class="pl-2 pr-2 d-flex justify-content-between test"  style="cursor: pointer; --color: #6ec193;">
                         <div class="d-flex">
                             <!-- group.color -->
                             <!-- <span class="bullet bullet-sm mr-1" :style="'background: green !important;'"></span> -->

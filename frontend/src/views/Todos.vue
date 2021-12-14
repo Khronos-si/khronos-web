@@ -2,30 +2,32 @@
     <div class="card" style="min-height: 75vh; max-height: 65vh;" ref="card-div">
         <div class="d-inline">
             <div class="m-0 p-0" style="float: left" >
-                <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; border-right: 1px solid rgba(110,110,110,0.3);">
+                
+                <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; overflow-y: auto; border-right: 1px solid rgba(110,110,110,0.3);">
                     <div class="px-2 pb-1 d-flex justify-content-center" v-if="groupPermissions == null || groupPermissions > 0">
                         <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-todo >Add Task</b-button>
                     </div>
                     <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
-                        <div>
-                            My Groups
+                        <div class="d-flex">
+                            <!-- ZBRISI V IF CE ZELIS COLLAPSE -->
+                            <div v-on:click="colapseMyGruopy()" class="" v-if="0 == 1" style="cursor: pointer; margin-right: 5px;">
+                                <chevron-up-icon v-if="!colapseMyGroups" size="1.5x" class="custom-class"></chevron-up-icon>
+                                <chevron-down-icon v-if="colapseMyGroups" size="1.5x" class="custom-class"></chevron-down-icon>
+                            </div>
+                            <div>
+                                My Groups
+                            </div>
                         </div>
                         <div v-on:click="addGroup()" style="cursor: pointer;">
                             <plus-icon size="1.4x" class="custom-class"></plus-icon>
                         </div>
                     </div>
-                    <div v-if="selectedGroup && todoGroups && todoGroups.length > 0">
+                    <div v-if="selectedGroup && todoGroups && todoGroups.length > 0 && !colapseMyGroups">
                         <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
                         
                             <div>
                                 <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
                                 {{group.name}}
-                            </div>
-                            <div  v-if="userEmail != group.owner.email">
-                                <!-- {{group.owner.email}} -->
-                                <span class="badge badge-pill badge-warning ml-1">Shared</span>
-                            <!-- <settings-icon size="1.4x" class="custom-class"  style="color: #434343"></settings-icon> -->
-                            <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
                             </div>
                         </div>
                     </div>
@@ -35,6 +37,8 @@
                             Shared Groups
                         </div>
                     </div>
+
+                    <!-- SHARED GROUPS -->
                     <div v-if="selectedGroup && shareTodoGroups && shareTodoGroups.length > 0">
                         <div v-for="(group,id) in shareTodoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
                         
@@ -43,30 +47,61 @@
                                 {{group.name}}
                             </div>
                             <div  v-if="userEmail != group.owner.email">
-                                <!-- {{group.owner.email}} -->
                                 <span class="badge badge-pill badge-warning ml-1">{{group.owner.name}}</span>
-                            <!-- <settings-icon size="1.4x" class="custom-class"  style="color: #434343"></settings-icon> -->
-                            <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between px-2 mt-1" style="padding-bottom: 5px;">
+                        <div>
+                            Tags
+                        </div>
+                        <div v-on:click="addTag()" style="cursor: pointer;">
+                            <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                        </div>
+                    </div>
+
+                    <div v-if="todoTagsOfGroup">
+                        <div v-for="(tag,id) in todoTagsOfGroup" :key="'button_todo_tag_' + id" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == tag._id)? 'selectedGroup': 'normalGroup'" :style="'cursor: pointer; --color:' + tag.color + ';'">
+                        
+                            <div class="d-flex">
+                                <b-form-checkbox class="test" v-model="tag.status"></b-form-checkbox>
+                                <!-- <span class="bullet bullet-sm mr-1" :style="'background:' + tag.color + '!important;'"></span> -->
+                                {{tag.name}}
                             </div>
                         </div>
                     </div>
                    
                 </div>
             </div>
-            <div class="d-flex justify-content-end mr-1" style="padding-top: 10px; stroke:white !important;">
-                <!-- <trash-2-icon size="1.4x" class="custom-class" style="margin-right: 5px;"></trash-2-icon> -->
-            
-                <div  v-if="userEmail == ownerOfTheGroup">
-                    <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
-                        <template #button-content>
-                            <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
-                        </template>
-                        <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
-                        <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
-                    </b-dropdown>
+
+            <!-- TOP MENU where 3 dots are -->
+            <div class="d-flex justify-content-between mr-1" style="padding-top: 10px; stroke:white !important;" v-if="selectedGroupName">
+                <div class="d-flex align-items-center ml-1">
+                    <!-- <span class="bullet bullet-sm mr-1" :style="'background:' + selectedGroupName.color + '!important;'"></span> -->
+                    <div style="font-size: 1.5rem;">
+                        {{selectedGroupName.name}}
+                    </div>
                 </div>
+                <div class="d-flex">
+                    <div class="d-flex align-items-center">
+                        <div class="mr-1 pr-1 border-right">All</div>
+                        <div  class="mr-1 pr-1 border-right">Not finished</div>
+                        <div  class="mr-1">Done</div>
+                    </div>
+                    <div  v-if="userEmail == ownerOfTheGroup">
+                        <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
+                            <template #button-content>
+                                <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                            </template>
+                            <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
+                            <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
+                        </b-dropdown>
+                    </div>
+                </div>
+               
                 
             </div>
+
             <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;" v-if="selectedGroup">
                 <todos-in-group :todoGroupId="selectedGroup" />
             </div>
@@ -75,16 +110,18 @@
         <add-todo></add-todo>
         <add-group></add-group>
         <edit-group></edit-group>
+        <add-tag></add-tag>
     </div>
 </template>
 
 <script>
-    import { BButton, BDropdown, BDropdownItemButton } from 'bootstrap-vue'
+    import { BButton, BDropdown, BDropdownItemButton, BFormCheckbox } from 'bootstrap-vue'
     import TodosInGroup from './Components/TodosInGroup.vue'
     import AddTodo from './Components/AddTodo.vue'
     import AddGroup from './Components/AddGroup.vue'
-    import { PlusIcon, MoreVerticalIcon } from 'vue-feather-icons'
+    import { PlusIcon, MoreVerticalIcon, ChevronDownIcon, ChevronUpIcon } from 'vue-feather-icons'
     import EditGroup from './Components/EditGroup.vue'
+    import AddTag from './Components/AddTag.vue'
 
 
     export default {
@@ -92,12 +129,15 @@
             // BCard
             // BCardText,
             // Calendar,
+            BFormCheckbox,
             BButton,
             BDropdown,
             BDropdownItemButton,
             TodosInGroup,
             PlusIcon,
             MoreVerticalIcon,
+            ChevronDownIcon,
+            ChevronUpIcon,
             // SettingsIcon,
             // Trash2Icon,
             // BModal,
@@ -105,10 +145,16 @@
             // BFormGroup,
             AddTodo,
             AddGroup,
-            EditGroup
-            // DatePicker
+            EditGroup,         
+            AddTag   // DatePicker
         },
         computed:{
+            selectedGroupName() {
+                return this.$store.getters['todo/getGroupName'](this.selectedGroup)
+            },
+            todoTagsOfGroup() {
+                return this.$store.getters['todo/getTodoTagsFromGroup'](this.selectedGroup)
+            },
             groupPermissions() {
                 return this.$store.getters['todo/getGroupPremissions'](this.selectedGroup)
             },
@@ -138,6 +184,7 @@
             const month = new Date().getMonth()
             const year = new Date().getFullYear()
             return {
+                colapseMyGroups: false,
                 cardDiv: null,
                 showEditGroup: false,
                 moreOptionsIcon: require('@/assets/svg/more-vertical.svg'),
@@ -222,6 +269,9 @@
             }
         },
         methods: {
+            colapseMyGruopy() {
+                this.colapseMyGroups = !this.colapseMyGroups
+            },
             editGroup() {
                 this.$bvModal.show('modal-edit-group')
             },
@@ -243,6 +293,9 @@
             },
             addGroup() {
                 this.$bvModal.show('modal-add-group')
+            },
+            addTag() {
+                this.$bvModal.show('modal-add-tag')
             },
             setGroup(selected) {
                 this.$store.dispatch('todo/set_selected_group', { 'selectedGroup': selected})
@@ -271,6 +324,15 @@
                     }
 
                     this.$store.dispatch('todo/set_shared_group', { 'todos': data.data})
+                } catch (err) {
+                    console.log(err)
+                }
+
+                try {
+
+                    const data = await this.$http.get('/api/todo/tag')
+
+                    this.$store.dispatch('tags/set_tags', { 'tags': data.data})
                 } catch (err) {
                     console.log(err)
                 }
@@ -386,5 +448,25 @@
         border: 1px solid;
         border-color: $blue !important;
         background-color: $blue !important;
+    }
+</style>
+
+<style lang="scss">
+    .test{
+        padding-top: 3px;
+    }
+    .test.custom-checkbox .custom-control-input:checked ~ .custom-control-label::before {
+        background-color: var(--color) !important;
+        border-radius: 50%;
+        padding: 2px !important;
+        // border: 2px solid red !important;
+    }
+    .test.custom-checkbox .custom-control-input ~ .custom-control-label::before {
+        // background-color: green!important;
+        // width: 15px !important;
+        // height: 15px !important;
+        border-radius: 50%;
+        border: 2px solid var(--color) !important;
+        // border-radius: 50%;
     }
 </style>

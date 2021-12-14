@@ -37,37 +37,71 @@
                 ></b-form-input>
             </b-form-group>
 
-            <!-- <b-form-group
-                label="Status"
-                label-for="stat-input"
+            <b-form-group
+                label="Tags"
+                label-for="tags"
             >
-                <b-form-checkbox
-                    id="stat-input"
-                    v-model="status"
-                    required
-                ></b-form-checkbox>
-            </b-form-group> -->
+                <!-- <v-select
+                    id="shared-select"
+                    v-model="selectedTags"
+                    multiple
+                    taggable
+                    push-tags
+                    placeholder="Add tags"
+                >
+                    <template #selected-option="">
+                        <div style="display: flex; align-items: baseline;">
+                            {{option.name}}
+                        </div>
+                    </template>
+                </v-select> -->
+                <v-select
+                    v-model="selectedTags"
+                    label="name"
+                    multiple
+                    taggable
+                    placeholder="Choose tags"
+                    :selectable="() => selectedTags.length < 5"
+                    :options="tags"
+                > 
+                    <template #selected-option="{ name, color }">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span> {{name}}
+
+                    </template>
+                    <template #option="{ name, color }">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span>
+                        <span> {{ name }}</span>
+                    </template>
+                </v-select>
+            </b-form-group>
         </form>
     </b-modal>
 </template>
 
 <script>
     import { BModal, BFormInput, BFormGroup  } from 'bootstrap-vue'
+    import vSelect from 'vue-select'
 
 
     export default {
         components: {
             BModal,
             BFormInput,
-            BFormGroup
+            BFormGroup,
+            vSelect
         },
         computed: {
+            tags() {
+                return this.$store.getters['tags/getAllTags']
+            },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
             }
         },
         data() {
             return {
+                option: [{name: 'test'}, {name: 'test1'}, {name: 'test2'}],
+                selectedTags: [],
                 name: '',
                 description: '',
                 nameState: null,
@@ -82,6 +116,7 @@
                 return valid
             },
             resetModal() {
+                this.selectedTags = []
                 this.name = ''
                 this.nameState = null
                 this.description = ''
@@ -105,13 +140,22 @@
                 this.$refs['my-modal'].show()
             },
             async addTodo() {
+
+                const finalTags = []
+                if (this.selectedTags && this.selectedTags.length > 0) {
+                    for (const item of this.selectedTags) {
+                        finalTags.push(item._id)
+                    }
+                }
+
                 const todo = this.selectedGroup
 
                 const payload = {
                     'todoGroupId': todo,
                     'name': this.name,
                     'description': this.description,
-                    'status': false
+                    'status': false,
+                    'tags': finalTags
                 }
 
                 const data = await this.$http.post('/api/todo', payload)
