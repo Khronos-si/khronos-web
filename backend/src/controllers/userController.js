@@ -49,7 +49,8 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-	const { email, password } = req.body;
+	const email = req.body.email.toLowerCase();
+	const { password } = req.body;
 	const { error } = loginValidation(req.body);
 	if (error) return res.status(400).send(error.details[0].message);
 
@@ -60,7 +61,11 @@ const login = async (req, res) => {
 	if (!validPassword) return res.status(400).send("invalid password");
 
 	const validUntil = new Date(Date.now() + 4 * 60 * 60 * 1000);
-	const token = jwt.sign({ _id: user._id, validUntil }, process.env.JWT_SECRET);
+	const token = jwt.sign(
+		{ _id: user._id, validUntil },
+		process.env.JWT_SECRET,
+		{ expiresIn: "3h" }
+	);
 
 	res.header("auth-token", token);
 	return res.json({

@@ -3,6 +3,13 @@ const Todo = require("../model/Todo");
 const User = require("../model/User");
 const TodoTag = require("../model/TodoTag");
 
+const _userToJSON = (user, getId, getEmail, getName, getAvatar) => ({
+	...(getId && { _id: user._id }),
+	...(getName && { name: user.name }),
+	...(getEmail && { email: user.email }),
+	...(getAvatar && { avatar: user.avatar.toString("base64") }),
+});
+
 const _todoTagToJSON = (tag) => ({
 	_id: tag._id,
 	name: tag.name,
@@ -21,18 +28,11 @@ const _todoGroupToJSON = (todoGroup) => ({
 	_id: todoGroup._id,
 	name: todoGroup.name,
 	permissions: todoGroup.permissions,
-	sharedWith: todoGroup.sharedWith.map((x) => ({
-		_id: x._id,
-		name: x.name,
-		email: x.email,
-	})),
+	sharedWith: todoGroup.sharedWith.map((e) =>
+		_userToJSON(e, false, true, false, false)
+	),
 	color: todoGroup.color,
-	owner: {
-		_id: todoGroup.owner._id,
-		name: todoGroup.owner.name,
-		email: todoGroup.owner.email,
-		avatar: todoGroup.owner.avatar.toString("base64"),
-	},
+	owner: _userToJSON(todoGroup.owner, true, false, false, false),
 	todos: todoGroup.todos.map(_todoToJSON),
 });
 
@@ -76,7 +76,7 @@ const getTodoById = async (req, res) => {
 const getTodoTags = async (req, res) => {
 	const { user } = req;
 	const tags = await TodoTag.find({ owner: user });
-	return res.json([tags.map(_todoTagToJSON)]);
+	return res.json(tags.map(_todoTagToJSON));
 };
 
 // ******************************
@@ -318,9 +318,9 @@ const updateTodoGroup = async (req, res) => {
 		}
 	}
 
-	group.permissions = permissions !== null ? permissions : group.permissions;
-	group.name = name !== null ? name : group.name;
-	group.color = color !== null ? color : group.color;
+	group.permissions = permissions || group.permissions;
+	group.name = name || group.name;
+	group.color = color || group.color;
 
 	try {
 		const savedTodoGroup = await group.save();
@@ -334,23 +334,25 @@ const updateTodo = async (req, res) => {
 	const { description, name, status, tags } = req.body;
 	const { todo } = req;
 
-	todo.name = name !== null ? name : todo.name;
-	todo.description = description !== null ? description : todo.description;
-	todo.status = status !== null ? status : todo.status;
+	todo.name = name || todo.name;
+	todo.description = description || todo.description;
+	todo.status = status || todo.status;
 
-	const newTags = await TodoTag.find({ _id: { $in: tags } });
+	if (tags) {
+		const newTags = await TodoTag.find({ _id: { $in: tags } });
 
-	for (const e of todo.tags) {
-		e.appliedTo.splice(e.appliedTo.indexOf(todo), 1);
-		await e.save();
+		for (const e of todo.tags) {
+			e.appliedTo.splice(e.appliedTo.indexOf(todo), 1);
+			await e.save();
+		}
+
+		for (const e of newTags) {
+			e.appliedTo.push(todo);
+			await e.save();
+		}
+
+		todo.tags = newTags;
 	}
-
-	for (const e of newTags) {
-		e.appliedTo.push(todo);
-		await e.save();
-	}
-
-	todo.tags = newTags;
 
 	try {
 		const savedTodo = await todo.save();
@@ -364,8 +366,8 @@ const updateTodoTag = async (req, res) => {
 	const { tag } = req;
 	const { color, name } = req.body;
 
-	tag.color = color !== null ? color : tag.color;
-	tag.name = name !== null ? name : tag.name;
+	tag.color = color || tag.color;
+	tag.name = name || tag.name;
 
 	try {
 		const savedTag = await tag.save();

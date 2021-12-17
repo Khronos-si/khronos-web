@@ -2,30 +2,33 @@ const User = require("../model/User");
 const Event = require("../model/Event");
 const EventTag = require("../model/EventTag");
 
-const _userToJSON = (user) => ({
-	_id: user._id,
-	name: user.name,
-	email: user.email,
-	avatar: user.avatar.toString("base64"),
+const _userToJSON = (user, getId, getEmail, getName, getAvatar) => ({
+	...(getId && { _id: user._id }),
+	...(getName && { name: user.name }),
+	...(getEmail && { email: user.email }),
+	...(getAvatar && { avatar: user.avatar.toString("base64") }),
+});
+
+const _eventToJSON = (event) => ({
+	_id: event._id,
+	name: event.name,
+	owner: _userToJSON(event.owner, true, false, false, false),
+	description: event.description,
+	start: event.start,
+	end: event.end,
+	repeatType: event.repeatType,
+	repeatFor: event.repeatFor,
+	tag: { _id: event.tag._id, name: event.tag.name, color: event.tag.color },
+	sharedWith: event.sharedWith.map((e) =>
+		_userToJSON(e, false, true, false, false)
+	),
 });
 
 const _eventTagToJSON = (tag) => ({
 	_id: tag._id,
 	name: tag.name,
 	color: tag.color,
-});
-
-const _eventToJSON = (event) => ({
-	_id: event._id,
-	name: event.name,
-	owner: _userToJSON(event.owner),
-	description: event.description,
-	start: event.start,
-	end: event.end,
-	repeatType: event.repeatType,
-	repeatFor: event.repeatFor,
-	tag: _eventTagToJSON(event.tag),
-	sharedWith: event.sharedWith.map(_userToJSON),
+	events: tag.appliedTo.map(_eventToJSON),
 });
 
 const addEventTag = async (req, res) => {
@@ -180,8 +183,8 @@ const updateEventTag = async (req, res) => {
 
 	if (isDefault) return res.status(400).send("You can't edit the default tag");
 
-	tag.name = name !== null ? name : tag.name;
-	tag.color = color !== null ? color : tag.color;
+	tag.name = name || tag.name;
+	tag.color = color || tag.color;
 
 	try {
 		const savedTag = await tag.save();
@@ -227,12 +230,12 @@ const updateEvent = async (req, res) => {
 		}
 	}
 
-	event.name = name !== null ? name : event.name;
-	event.description = description !== null ? description : event.description;
-	event.start = start !== null ? start : event.start;
-	event.end = end !== null ? end : event.end;
-	event.repeatType = repeatType !== null ? repeatType : event.repeatType;
-	event.repeatFor = repeatFor !== null ? repeatFor : event.repeatFor;
+	event.name = name || event.name;
+	event.description = description || event.description;
+	event.start = start || event.start;
+	event.end = end || event.end;
+	event.repeatType = repeatType || event.repeatType;
+	event.repeatFor = repeatFor || event.repeatFor;
 
 	if (!event.tag._id.equals(tag._id)) {
 		const oldTag = await EventTag.findById(event.tag);
