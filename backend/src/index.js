@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const redis = require("redis");
 const dotenv = require("dotenv");
 
 const PORT = 3000;

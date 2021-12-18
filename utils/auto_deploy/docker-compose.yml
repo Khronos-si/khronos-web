@@ -1,5 +1,16 @@
 version: "3"
 services:
+  reverse-proxy:
+    container_name: reverse_proxy
+    image: nginx:1.17.10
+    depends_on:
+      - db
+      - frontend
+      - backend
+    volumes:
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
   db:
     container_name: mongodb
     image: mongo
@@ -14,6 +25,18 @@ services:
       MONGO_INITDB_DATABASE: TPO
       MONGO_USERNAME: user
       MONGO_PASSWORD: eUA8X2^1
+    
+    depends_on:
+      - reverse_proxy
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes: [./utils/redis/redis.conf:/usr/local/etc/redis/redis.conf]
+    depends_on:
+      - reverse_proxy
 
   backend:
     container_name: tpo_backend
@@ -23,6 +46,8 @@ services:
       - "3000:3000"
     depends_on:
       - db
+      - reverse_proxy
+      - redis
 
   frontend:
     container_name: tpo_frontend
@@ -34,15 +59,7 @@ services:
     depends_on:
       - db
       - backend
+      - reverse_proxy
+      - redis
 
-  reverse-proxy:
-    container_name: reverse_proxy
-    image: nginx:1.17.10
-    depends_on:
-      - db
-      - frontend
-      - backend
-    volumes:
-      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
+

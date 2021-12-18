@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const verifyToken = require("../middleware/verifyToken");
+const { verifyToken } = require("../middleware/verifyToken");
 const { prepareUser } = require("../middleware/userMiddlewares");
 const {
 	prepareTagById,

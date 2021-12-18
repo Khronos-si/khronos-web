@@ -18,6 +18,15 @@ services:
       driver: none
         
 
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    command: redis-server /usr/local/etc/redis/redis.conf
+    volumes: [./utils/redis/redis.conf:/usr/local/etc/redis/redis.conf]
+
+
   backend:
     container_name: tpo_backend
     image: "nikp00/tpo_backend"
@@ -28,6 +37,7 @@ services:
       - "3000:3000"
     depends_on:
       - db
+      - redis
 
   frontend:
     container_name: tpo_frontend

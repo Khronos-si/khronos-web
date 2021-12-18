@@ -48,7 +48,7 @@ const addEventTag = async (req, res) => {
 		await user.save();
 		return res.json(_eventTagToJSON(savedTag));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -60,11 +60,11 @@ const addEvent = async (req, res) => {
 	const sharedWithUsers = [];
 	for (const e of shareWith) {
 		if (e === user.email)
-			return res
-				.status(400)
-				.send("You cant share a todo to yourself. Find some friends");
+			return res.status(400).json({
+				message: "You cant share a todo to yourself. Find some friends",
+			});
 		const u = await await User.findOne({ email: e });
-		if (!u) return res.status(400).send(`Email ${e} not found!`);
+		if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
 		sharedWithUsers.push(u);
 	}
 
@@ -97,7 +97,7 @@ const addEvent = async (req, res) => {
 		}
 		return res.json(_eventToJSON(savedEvent));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -129,10 +129,13 @@ const getEventById = async (req, res) => {
 const deleteEventTag = async (req, res) => {
 	const { tag, user, isOwner, isDefault } = req;
 
-	if (!isOwner) return res.status(400).send("You dont own this event tag!");
+	if (!isOwner)
+		return res.status(400).json({ message: "You dont own this event tag!" });
 
 	if (isDefault)
-		return res.status(400).send("You can't delete the default tag");
+		return res
+			.status(400)
+			.json({ message: "You can't delete the default tag" });
 
 	const defaultTag = await EventTag.findOne({ owner: user, default: true });
 
@@ -145,16 +148,17 @@ const deleteEventTag = async (req, res) => {
 		await EventTag.findByIdAndDelete(tag);
 		await user.save();
 
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
 const deleteEvent = async (req, res) => {
 	const { event, user, isOwner } = req;
 
-	if (!isOwner) return res.status(400).send("You dont own this event!");
+	if (!isOwner)
+		return res.status(400).json({ message: "You dont own this event!" });
 
 	const sharedWith = await User.find({ _id: { $in: event.sharedWith } });
 	const tag = await EventTag.findById(event.tag);
@@ -169,9 +173,9 @@ const deleteEvent = async (req, res) => {
 		await tag.save();
 		await user.save();
 		await Event.findByIdAndDelete(event);
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -179,9 +183,11 @@ const updateEventTag = async (req, res) => {
 	const { tag, isOwner, isDefault } = req;
 	const { name, color } = req.body;
 
-	if (!isOwner) return res.status(400).send("You dont own this event!");
+	if (!isOwner)
+		return res.status(400).json({ message: "You dont own this event!" });
 
-	if (isDefault) return res.status(400).send("You can't edit the default tag");
+	if (isDefault)
+		return res.status(400).json({ message: "You can't edit the default tag" });
 
 	tag.name = name || tag.name;
 	tag.color = color || tag.color;
@@ -190,7 +196,7 @@ const updateEventTag = async (req, res) => {
 		const savedTag = await tag.save();
 		return res.json(_eventTagToJSON(savedTag));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -202,11 +208,11 @@ const updateEvent = async (req, res) => {
 	const sharedWithUsers = [];
 	for (const e of shareWith) {
 		if (e === user.email)
-			return res
-				.status(400)
-				.send("You cant share a todo to yourself. Find some friends");
+			return res.status(400).json({
+				message: "You cant share a todo to yourself. Find some friends",
+			});
 		const u = await await User.findOne({ email: e }).populate("sharedEvents");
-		if (!u) return res.status(400).send(`Email ${e} not found!`);
+		if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
 		sharedWithUsers.push(u);
 	}
 
@@ -251,7 +257,7 @@ const updateEvent = async (req, res) => {
 		const savedEvent = await event.save();
 		return res.json(_eventToJSON(savedEvent));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 

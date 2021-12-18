@@ -92,9 +92,9 @@ const addTodoGroup = async (req, res) => {
 	const notFound = [];
 	for (const e of shareWith) {
 		if (e === user.email)
-			return res
-				.status(400)
-				.send("You cant share a todo to yourself. Find some friends");
+			return res.status(400).json({
+				message: "You cant share a todo to yourself. Find some friends",
+			});
 		const u = await await User.findOne({ email: e });
 		if (!u) {
 			notFound.push(e);
@@ -132,7 +132,7 @@ const addTodoGroup = async (req, res) => {
 
 		return res.json(_todoGroupToJSON(savedGroup));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -153,7 +153,7 @@ const addTodoTag = async (req, res) => {
 		await user.save();
 		return res.json(_todoTagToJSON(savedTodoTag));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -162,9 +162,9 @@ const addTodo = async (req, res) => {
 	const { group, tags, canEdit } = req;
 
 	if (!canEdit)
-		return res
-			.status(400)
-			.send("You dont have the required permissions to edit this!");
+		return res.status(400).json({
+			message: "You dont have the required permissions to edit this!",
+		});
 
 	const todo = new Todo({
 		todoGroup: group,
@@ -186,7 +186,7 @@ const addTodo = async (req, res) => {
 
 		return res.json(_todoToJSON(savedTodo));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -197,9 +197,9 @@ const addTodo = async (req, res) => {
 const deleteTodoGroup = async (req, res) => {
 	const { user, isOwner, group } = req;
 	if (!isOwner)
-		return res
-			.status(400)
-			.send("You dont have the required permissions to edit this!");
+		return res.status(400).json({
+			message: "You dont have the required permissions to edit this!",
+		});
 
 	const sharedWith = await User.find({
 		_id: { $in: group.sharedWith },
@@ -224,9 +224,9 @@ const deleteTodoGroup = async (req, res) => {
 		await user.save();
 		// // 	// Delete the todo group
 		await TodoGroup.findByIdAndRemove(group);
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -234,15 +234,15 @@ const deleteTodo = async (req, res) => {
 	const { todo, group, canDelete } = req;
 
 	if (!canDelete)
-		return res
-			.status(400)
-			.send("You dont have the required permissions to edit this!");
+		return res.status(400).json({
+			message: "You dont have the required permissions to edit this!",
+		});
 
 	try {
 		_deleteTodo(todo, group);
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -255,9 +255,9 @@ const deleteTodoTag = async (req, res) => {
 		}
 
 		await TodoTag.findByIdAndDelete(tag);
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -270,18 +270,18 @@ const updateTodoGroup = async (req, res) => {
 	const { user, group, isOwner } = req;
 
 	if (!isOwner)
-		return res
-			.status(400)
-			.send("You dont have the required permissions to edit this!");
+		return res.status(400).json({
+			message: "You dont have the required permissions to edit this!",
+		});
 
 	// Check emails
 	const sharedWithUsers = [];
 	const notFound = [];
 	for (const e of shareWith) {
 		if (e === user.email)
-			return res
-				.status(400)
-				.send("You cant share a todo to yourself. Find some friends");
+			return res.status(400).json({
+				message: "You cant share a todo to yourself. Find some friends",
+			});
 		const u = await await User.findOne({ email: e });
 		if (!u) {
 			notFound.push(e);
@@ -326,7 +326,7 @@ const updateTodoGroup = async (req, res) => {
 		const savedTodoGroup = await group.save();
 		return res.json(_todoGroupToJSON(savedTodoGroup));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -358,7 +358,7 @@ const updateTodo = async (req, res) => {
 		const savedTodo = await todo.save();
 		return res.json(_todoToJSON(savedTodo));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -373,7 +373,7 @@ const updateTodoTag = async (req, res) => {
 		const savedTag = await tag.save();
 		return res.json(_todoTagToJSON(savedTag));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
