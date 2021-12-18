@@ -24,11 +24,11 @@ const _eventToJSON = (event) => ({
 	),
 });
 
-const _eventTagToJSON = (tag) => ({
+const _eventTagToJSON = (tag, getEvents = true) => ({
 	_id: tag._id,
 	name: tag.name,
 	color: tag.color,
-	events: tag.appliedTo.map(_eventToJSON),
+	...(getEvents && { events: tag.appliedTo.map(_eventToJSON) }),
 });
 
 const addEventTag = async (req, res) => {
@@ -102,13 +102,13 @@ const addEvent = async (req, res) => {
 };
 
 const getAllEvents = async (req, res) => {
-	const { events } = req;
-	return res.json(events.map(_eventToJSON));
+	const { tags } = req;
+	return res.json(tags.map((e) => _eventTagToJSON(e)));
 };
 
 const getAllTags = async (req, res) => {
 	const { tags } = req;
-	return res.json(tags.map(_eventTagToJSON));
+	return res.json(tags.map((e) => _eventTagToJSON(e, false)));
 };
 
 const getAllSharedEvents = async (req, res) => {

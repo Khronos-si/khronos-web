@@ -22,7 +22,7 @@ const {
 	updateEvent,
 } = require("../controllers/eventController");
 
-router.get("/", verifyToken, prepareUser, prepareAllEvents, getAllEvents);
+router.get("/", verifyToken, prepareUser, prepareAllTags, getAllEvents);
 
 router.get("/tag", verifyToken, prepareUser, prepareAllTags, getAllTags);
 
