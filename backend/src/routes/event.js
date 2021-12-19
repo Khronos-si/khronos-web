@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const verifyToken = require("../middleware/verifyToken");
+const { verifyToken } = require("../middleware/verifyToken");
 const { prepareUser } = require("../middleware/userMiddlewares");
 const {
 	prepareTagById,
@@ -22,7 +22,7 @@ const {
 	updateEvent,
 } = require("../controllers/eventController");
 
-router.get("/", verifyToken, prepareUser, prepareAllEvents, getAllEvents);
+router.get("/", verifyToken, prepareUser, prepareAllTags, getAllEvents);
 
 router.get("/tag", verifyToken, prepareUser, prepareAllTags, getAllTags);
 

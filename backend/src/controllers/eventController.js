@@ -2,30 +2,33 @@ const User = require("../model/User");
 const Event = require("../model/Event");
 const EventTag = require("../model/EventTag");
 
-const _userToJSON = (user) => ({
-	_id: user._id,
-	name: user.name,
-	email: user.email,
-	avatar: user.avatar.toString("base64"),
-});
-
-const _eventTagToJSON = (tag) => ({
-	_id: tag._id,
-	name: tag.name,
-	color: tag.color,
+const _userToJSON = (user, getId, getEmail, getName, getAvatar) => ({
+	...(getId && { _id: user._id }),
+	...(getName && { name: user.name }),
+	...(getEmail && { email: user.email }),
+	...(getAvatar && { avatar: user.avatar.toString("base64") }),
 });
 
 const _eventToJSON = (event) => ({
 	_id: event._id,
 	name: event.name,
-	owner: _userToJSON(event.owner),
+	owner: _userToJSON(event.owner, true, false, false, false),
 	description: event.description,
 	start: event.start,
 	end: event.end,
 	repeatType: event.repeatType,
 	repeatFor: event.repeatFor,
-	tag: _eventTagToJSON(event.tag),
-	sharedWith: event.sharedWith.map(_userToJSON),
+	tag: { _id: event.tag._id, name: event.tag.name, color: event.tag.color },
+	sharedWith: event.sharedWith.map((e) =>
+		_userToJSON(e, false, true, false, false)
+	),
+});
+
+const _eventTagToJSON = (tag, getEvents = true) => ({
+	_id: tag._id,
+	name: tag.name,
+	color: tag.color,
+	...(getEvents && { events: tag.appliedTo.map(_eventToJSON) }),
 });
 
 const addEventTag = async (req, res) => {
@@ -45,7 +48,7 @@ const addEventTag = async (req, res) => {
 		await user.save();
 		return res.json(_eventTagToJSON(savedTag));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -57,11 +60,11 @@ const addEvent = async (req, res) => {
 	const sharedWithUsers = [];
 	for (const e of shareWith) {
 		if (e === user.email)
-			return res
-				.status(400)
-				.send("You cant share a todo to yourself. Find some friends");
+			return res.status(400).json({
+				message: "You cant share a todo to yourself. Find some friends",
+			});
 		const u = await await User.findOne({ email: e });
-		if (!u) return res.status(400).send(`Email ${e} not found!`);
+		if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
 		sharedWithUsers.push(u);
 	}
 
@@ -94,18 +97,18 @@ const addEvent = async (req, res) => {
 		}
 		return res.json(_eventToJSON(savedEvent));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
 const getAllEvents = async (req, res) => {
-	const { events } = req;
-	return res.json(events.map(_eventToJSON));
+	const { tags } = req;
+	return res.json(tags.map((e) => _eventTagToJSON(e)));
 };
 
 const getAllTags = async (req, res) => {
 	const { tags } = req;
-	return res.json(tags.map(_eventTagToJSON));
+	return res.json(tags.map((e) => _eventTagToJSON(e, false)));
 };
 
 const getAllSharedEvents = async (req, res) => {
@@ -126,10 +129,13 @@ const getEventById = async (req, res) => {
 const deleteEventTag = async (req, res) => {
 	const { tag, user, isOwner, isDefault } = req;
 
-	if (!isOwner) return res.status(400).send("You dont own this event tag!");
+	if (!isOwner)
+		return res.status(400).json({ message: "You dont own this event tag!" });
 
 	if (isDefault)
-		return res.status(400).send("You can't delete the default tag");
+		return res
+			.status(400)
+			.json({ message: "You can't delete the default tag" });
 
 	const defaultTag = await EventTag.findOne({ owner: user, default: true });
 
@@ -142,16 +148,17 @@ const deleteEventTag = async (req, res) => {
 		await EventTag.findByIdAndDelete(tag);
 		await user.save();
 
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
 const deleteEvent = async (req, res) => {
 	const { event, user, isOwner } = req;
 
-	if (!isOwner) return res.status(400).send("You dont own this event!");
+	if (!isOwner)
+		return res.status(400).json({ message: "You dont own this event!" });
 
 	const sharedWith = await User.find({ _id: { $in: event.sharedWith } });
 	const tag = await EventTag.findById(event.tag);
@@ -166,9 +173,9 @@ const deleteEvent = async (req, res) => {
 		await tag.save();
 		await user.save();
 		await Event.findByIdAndDelete(event);
-		return res.send();
+		return res.json({ message: "success" });
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -176,18 +183,20 @@ const updateEventTag = async (req, res) => {
 	const { tag, isOwner, isDefault } = req;
 	const { name, color } = req.body;
 
-	if (!isOwner) return res.status(400).send("You dont own this event!");
+	if (!isOwner)
+		return res.status(400).json({ message: "You dont own this event!" });
 
-	if (isDefault) return res.status(400).send("You can't edit the default tag");
+	if (isDefault)
+		return res.status(400).json({ message: "You can't edit the default tag" });
 
-	tag.name = name !== null ? name : tag.name;
-	tag.color = color !== null ? color : tag.color;
+	tag.name = name || tag.name;
+	tag.color = color || tag.color;
 
 	try {
 		const savedTag = await tag.save();
 		return res.json(_eventTagToJSON(savedTag));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 
@@ -199,11 +208,11 @@ const updateEvent = async (req, res) => {
 	const sharedWithUsers = [];
 	for (const e of shareWith) {
 		if (e === user.email)
-			return res
-				.status(400)
-				.send("You cant share a todo to yourself. Find some friends");
+			return res.status(400).json({
+				message: "You cant share a todo to yourself. Find some friends",
+			});
 		const u = await await User.findOne({ email: e }).populate("sharedEvents");
-		if (!u) return res.status(400).send(`Email ${e} not found!`);
+		if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
 		sharedWithUsers.push(u);
 	}
 
@@ -227,12 +236,12 @@ const updateEvent = async (req, res) => {
 		}
 	}
 
-	event.name = name !== null ? name : event.name;
-	event.description = description !== null ? description : event.description;
-	event.start = start !== null ? start : event.start;
-	event.end = end !== null ? end : event.end;
-	event.repeatType = repeatType !== null ? repeatType : event.repeatType;
-	event.repeatFor = repeatFor !== null ? repeatFor : event.repeatFor;
+	event.name = name || event.name;
+	event.description = description || event.description;
+	event.start = start || event.start;
+	event.end = end || event.end;
+	event.repeatType = repeatType || event.repeatType;
+	event.repeatFor = repeatFor || event.repeatFor;
 
 	if (!event.tag._id.equals(tag._id)) {
 		const oldTag = await EventTag.findById(event.tag);
@@ -248,7 +257,7 @@ const updateEvent = async (req, res) => {
 		const savedEvent = await event.save();
 		return res.json(_eventToJSON(savedEvent));
 	} catch (err) {
-		return res.status(400).send(err);
+		return res.status(400).json({ message: err });
 	}
 };
 

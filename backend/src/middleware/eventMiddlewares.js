@@ -9,7 +9,7 @@ const prepareTagById = async (req, res, next) => {
 		"appliedTo"
 	);
 
-	if (!tag) return res.status(400).send("Event tag not found!");
+	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
 
 	req.tag = tag;
 	req.isDefault = tag.default;
@@ -28,7 +28,7 @@ const prepareEventById = async (req, res, next) => {
 		.populate("owner")
 		.populate("sharedWith");
 
-	if (!event) return res.status(400).send("Event not found!");
+	if (!event) return res.status(400).json({ message: "Event not found!" });
 
 	req.event = event;
 	req.isOwner = event.owner._id.equals(user._id);
