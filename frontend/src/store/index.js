@@ -8,6 +8,7 @@ import verticalMenu from './vertical-menu'
 import user from './user'
 import todo from './todo'
 import tags from './tags'
+import calendar from './calendar'
 
 
 Vue.use(Vuex)
@@ -19,7 +20,8 @@ export default new Vuex.Store({
     verticalMenu,
     user,
     todo,
-    tags
+    tags,
+    calendar
   },
   strict: process.env.DEV
 })

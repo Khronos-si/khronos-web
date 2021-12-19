@@ -1,5 +1,5 @@
 <template>
-    <div >
+    <div>
         <!-- MY TODOS -->
         <div v-if="todos && todos.length > 0"> 
             <div class="row py-1 item" :class="id===0? 'row-first': 'row-todos'" v-for="(item, id) in todos" :key="'Todos_' + id"  >

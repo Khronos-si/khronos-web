@@ -15,32 +15,15 @@
                         <plus-icon size="1.4x" class="custom-class"></plus-icon>
                     </div>
                 </div>
-                <div class="mt-1">
+                <div class="mt-1" v-if="eventGroups && eventGroups.length > 0">
                     <!-- :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" -->
                     <!-- v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" -->
-                    <div  class="pl-2 pr-2 d-flex justify-content-between test"  style="cursor: pointer; --color: #feb449;">
+                    <div v-for="(event, id) in eventGroups" :key="'Calendar_event_' + id" class="pl-2 pr-2 d-flex justify-content-between test"  :style="'cursor: pointer; --color:' + event.color + ';'">
                         <div class="d-flex">
                             <!-- group.color -->
                             <!-- <span class="bullet bullet-sm mr-1" :style="'background: green !important;'"></span> -->
-                            <b-form-checkbox class="test"></b-form-checkbox>
-                            <!-- {{group.name}} -->
-                            test 123
-                        </div>
-                        <!-- v-if="userEmail != group.owner.email" -->
-                        <div  >
-                            <!-- {{group.owner.email}} -->
-                            <!-- <span class="badge badge-pill badge-warning ml-1">Shared</span> -->
-                        <!-- <settings-icon size="1.4x" class="custom-class"  style="color: #434343"></settings-icon> -->
-                        <!-- <more-vertical-icon size="1.4x" class="custom-class" style="color: #434343"></more-vertical-icon> -->
-                        </div>
-                    </div>
-                    <div  class="pl-2 pr-2 d-flex justify-content-between test"  style="cursor: pointer; --color: #6ec193;">
-                        <div class="d-flex">
-                            <!-- group.color -->
-                            <!-- <span class="bullet bullet-sm mr-1" :style="'background: green !important;'"></span> -->
-                            <b-form-checkbox class="test"></b-form-checkbox>
-                            <!-- {{group.name}} -->
-                            test 1234
+                            <b-form-checkbox v-model="event.selected" class="test" selected></b-form-checkbox>
+                            {{event.name}}
                         </div>
                         <!-- v-if="userEmail != group.owner.email" -->
                         <div  >
@@ -55,39 +38,40 @@
             
         </div>
         <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;">
-
-            <calendar
-                class="max-w-full p-1 " :class="isDark? 'theme-default-dark custom-calendar-dark' : 'theme-default-white custom-calendar-light'"
-                :model-config="modelConfig"
-                :masks="masks"
-                :attributes="attributes"
-                disable-page-swipe
-                is-expanded
-            >
-                <template v-slot:day-content="{ day, attributes }">
-                    <div class="overflow-scroll py-0.5 px-md-1" :class="isDark? 'card-dark': 'card-white'" style="padding-top: 5px;" @click="addCalendarOnDay(day.date)">
-                        <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 5px;" :class="sameDate(day.date, new Date())? 'bg-circle':''">
-                            <div class="p-0" >{{ day.day }} </div>
-                        </div>
-                        <div class="">
-                            <div
-                                v-for="attr in attributes"
-                                :key="attr.key"
-                                class="text-xs rounded text-center"
-                                style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px;"
-                                :class="attr.customData.class"
-                            >
-                                {{ attr.customData.title }}
+            
+            <div v-if="modelConfig">
+                <calendar
+                    class="max-w-full p-1 " :class="isDark? 'theme-default-dark custom-calendar-dark' : 'theme-default-white custom-calendar-light'"
+                    :masks="masks"
+                    :attributes="events"
+                    disable-page-swipe
+                    is-expanded
+                >
+                    <template v-slot:day-content="{ day, attributes }">
+                        <div class="overflow-scroll py-0.5 px-md-1" :class="isDark? 'card-dark': 'card-white'" style="padding-top: 5px;" @click="addCalendarOnDay(day.date)">
+                            <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 5px;" :class="sameDate(day.date, new Date())? 'bg-circle':''">
+                                <div class="p-0" >{{ day.day }} </div>
                             </div>
-                        </div>
+                            <div class="">
+                                <div
+                                    v-for="attr in attributes"
+                                    :key="attr.customData._id"
+                                    class="text-xs rounded text-center text-black bg-custom"
+                                    style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px;"
+                                    :style="'--color:' + attr.customData.color + ';'"
+                                >
+                                    {{ attr.customData.name.substring(0,12) }}...
+                                </div>
+                            </div>
                     
-                    </div>
-                </template>
-            </calendar>
-
+                        </div>
+                    </template>
+                </calendar>
+            </div>
+            
         </div>
 
-        <add-event></add-event>
+        <add-event :calendarDate="inputCalendarDay"></add-event>
         <add-tag></add-tag>
     </div>
 </template>
@@ -118,10 +102,18 @@
 
             return { skin, isDark }
         },
+        computed: {
+            events() {
+                return this.$store.getters['calendar/getEvents'](this.selectedGroup)
+            },
+            eventGroups() {
+                return this.$store.getters['calendar/getAllGroups']
+            }
+        },
         data() {
-            const month = new Date().getMonth()
-            const year = new Date().getFullYear()
             return {
+                inputCalendarDay: null,
+                selectedGroup: null,
                 modelConfig: {
                     start: {
                         timeAdjust: '00:00:00'
@@ -132,118 +124,16 @@
                 },
                 masks: {
                     weekdays: 'WWW'
-                },
-                attributes: [
-                    {
-                        key: 1,
-                        customData: {
-                            title: 'Lunch with mom.',
-                            class: 'bg-secondary text-black'
-                        },
-                        dates: new Date(year, month, 1)
-                    },
-                    {
-                        key: 2,
-                        customData: {
-                            title: 'Take Noah',
-                            class: 'bg-primary text-black'
-                        },
-                        dates: new Date(year, month, 2)
-                    },
-                    {
-                        key: 3,
-                        customData: {
-                            title: 'Noah\'s basketball game.',
-                            class: 'bg-primary text-black'
-                        },
-                        dates: new Date(year, month, 5)
-                    },
-                    {
-                        key: 4,
-                        customData: {
-                            title: 'Take car to the shop',
-                            class: 'bg-info text-black'
-                        },
-                        dates: new Date(year, month, 5)
-                    },
-                    {
-                        key: 5,
-                        customData: {
-                            title: 'Meeting with new client.',
-                            class: 'bg-warning text-black'
-                        },
-                        dates: new Date(year, month, 7)
-                    },
-                    {
-                        key: 6,
-                        customData: {
-                            title: 'Mia\'s gymnastics practice.',
-                            class: 'bg-success text-black'
-                        },
-                        dates: new Date(year, month, 11)
-                    },
-                    {
-                        key: 7,
-                        customData: {
-                            title: 'Cookout with friends.',
-                            class: 'bg-success text-black'
-                        },
-                        dates: { months: 5, ordinalWeekdays: { 2: 1 } }
-                    },
-                    {
-                        key: 8,
-                        customData: {
-                            title: 'Mia\'s gymnastics recital.',
-                            class: 'bg-success text-black'
-                        },
-                        dates: new Date(year, month, 22)
-                    },
-                    {
-                        key: 9,
-                        customData: {
-                            title: 'Visit great grandma.',
-                            class: 'bg-secondary text-black'
-                        },
-                        dates: new Date(year, month, 25)
-                    },
-                    {
-                        key: 92,
-                        customData: {
-                            title: 'Visit great grandma.',
-                            class: 'bg-secondary text-black'
-                        },
-                        dates: new Date(year, month, 25)
-                    },
-                    {
-                        key: 93,
-                        customData: {
-                            title: 'Visit great grandma.',
-                            class: 'bg-secondary text-black'
-                        },
-                        dates: new Date(year, month, 25)
-                    },
-                    {
-                        key: 94,
-                        customData: {
-                            title: 'Visit great grandma.',
-                            class: 'bg-secondary text-black'
-                        },
-                        dates: new Date(year, month, 25)
-                    },
-                    {
-                        key: 95,
-                        customData: {
-                            title: 'Visit great grandma.',
-                            class: 'bg-secondary text-black'
-                        },
-                        dates: new Date(year, month, 25)
-                    }
-                ]
+                }
+            
             }
         },
         methods:{
+            changeSelectedGroups(id) {
+                console.log(id)
+            },
             addCalendarOnDay(date) {
-                console.log(`EVENT ON DAY: ${  date}`)
+                this.inputCalendarDay = date
                 this.$bvModal.show('modal-add-event')
             },
             addTag() {
@@ -256,8 +146,46 @@
                 return first.getFullYear() === second.getFullYear() &&
                     first.getMonth() === second.getMonth() &&
                     first.getDate() === second.getDate()
+            },
+            async getTodoGroups() {
+
+                try {
+
+                    const data = await this.$http.get('/api/event')
+
+                    if (data.data.length === 0) {
+                        return
+                    }
+
+                    for (const event of data.data) {
+                        event.selected = true
+                    }
+
+                    this.$store.dispatch('calendar/update_events', { 'events': data.data})
+                    this.$store.dispatch('calendar/set_selected_group', { 'set': true, 'selectedGroup': data.data[0]['_id']})
+                } catch (err) {
+                    console.log(err)
+                    this.$printError('Prislo je do napake pri pridobivanju podatkov!')
+                }
+
+                // try {
+
+                //     const data = await this.$http.get('/api/event/tag')
+
+
+                //     if (data.data.length === 0) {
+                //         return
+                //     }
+
+                //     this.$store.dispatch('tags/set_tags', { 'events': data.data})
+                // } catch (err) {
+                //     console.log(err)
+                // }
             }
            
+        },
+        mounted() {
+            this.getTodoGroups()
         }
     }
 </script>
@@ -319,6 +247,10 @@
   display: none;
 }
 
+.bg-custom{
+    background: var(--color);
+}
+
 </style>
 
 <style lang="scss">
@@ -334,7 +266,7 @@
         // width: 15px !important;
         // height: 15px !important;
         border: 2px solid var(--color) !important;
-        // border-radius: 50%;
+        border-radius: 50%;
     }
  
     .vc-title{

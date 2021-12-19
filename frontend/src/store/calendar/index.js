@@ -13,17 +13,51 @@ export default {
             return state.calendar
         },
        
-        getTodos: state => (idGroup) => {
-            if (!state.calendar || !idGroup) {
+        getEvents: state => (idGroup) => {
+            console.log(idGroup)
+            if (!state.calendar) {
                 return []
             }
 
-            const group = state.calendar.find(element => element.tag._id === idGroup)
+            const selectedEvents = []
+            
+            for (const group of state.calendar) {
+                
+                if (group.selected) {
+                    if (group.events && group.events.length > 0) {
+                        for (const event of group.events) {
 
-            if (!group) return []
-            else return group.calendar
+                            const tmpEvent = {}
+
+                            tmpEvent.customData = event
+                            tmpEvent.customData.color = group.color
+                            
+                            if (event.start === event.end) {
+                                tmpEvent.dates = event.start
+                            } else {
+                                tmpEvent.dates = event.start
+                            }
+                            selectedEvents.push(tmpEvent)
+                        }
+
+                    }
+                }
+            }
+
+            console.log(selectedEvents)
+
+            return selectedEvents
         },
         getSelectedGroup: state => {
+
+            const selectedGroups = []
+
+            for (const event of state.calendar) {
+                if (event.selected) {
+                    selectedGroups.push(event._id)
+                }
+            }
+
             return state.selectedCalendarGroup
         },
         getGroupById: state => (id) => {
@@ -31,7 +65,7 @@ export default {
                 return null
             }
 
-            return state.calendar.find(element => element.tag._id === id)
+            return state.calendar.find(element => element._id === id)
         }
     },
     mutations: {
@@ -61,14 +95,11 @@ export default {
                 }
             }
 
-            console.log('IZTOP')
             console.log(state.todos)
 
             return null
         },
         EDIT_TODO(state, payload) {
-            console.log('Start')
-            console.log(state.todos)
             if (state.sharedTodos && payload.idGroup) {
                 const group = state.sharedTodos.find(element => element._id === payload.idGroup)
 
@@ -96,8 +127,6 @@ export default {
                 }
             }
             
-            console.log('konc')
-            console.log(state.todos)
         },
 
 
@@ -118,8 +147,13 @@ export default {
 
         //Mine
         
-        UPDATE_TODOS(state, payload) {
-            state.todos = payload.todos
+        UPDATE_EVENTS(state, payload) {
+            state.calendar = payload.events
+
+            // for (const event of state.calendar) {
+            //     console.log(event)
+            //     event.selected = true
+            // }
         },
         ADD_TODO_ITEM(state, payload) {
             if (state.todos) {
@@ -141,16 +175,12 @@ export default {
             
             
         },
-        ADD_GROUP(state, payload) {
-            if (!state.todos) {
-                state.todos = new Array()
+        ADD_TAG(state, payload) {
+            if (!state.calendar) {
+                state.calendar = new Array()
             }
 
-            if (state.todos.length === 0) {
-                state.selectedGroup = payload.new_group._id
-            }
-            
-            state.todos.push(payload.new_group)
+            state.calendar.push(payload.new_tag)
         },
         EDIT_GROUP(state, payload) {
             if (!state.todos) {
@@ -183,8 +213,8 @@ export default {
         }
     },
     actions: {
-        update_todos({ commit }, payload) {
-            commit('UPDATE_TODOS', payload)
+        update_events({ commit }, payload) {
+            commit('UPDATE_EVENTS', payload)
         },
         add_todo_item({ commit }, payload) {
             commit('ADD_TODO_ITEM', payload)
@@ -192,8 +222,8 @@ export default {
         set_selected_group({ commit }, payload) {
             commit('SET_SELECTED_GROUP', payload)
         },
-        add_group({ commit }, payload) {
-            commit('ADD_GROUP', payload)
+        add_tag({ commit }, payload) {
+            commit('ADD_TAG', payload)
         },
         delete_group({ commit }, payload) {
             commit('DELETE_GROUP', payload)

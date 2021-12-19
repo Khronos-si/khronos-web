@@ -21,6 +21,9 @@ export default {
     getUserEmail: state => {
       return state.userData.email
     },
+    getUserId: state => {
+      return state.userData.userData._id
+    },
     getUserData: state => {
       return state.userData
     },

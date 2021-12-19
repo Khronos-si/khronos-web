@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-lg-3 col-1">
                 <b-card class="w-100 h-100 mojCard">
-                    <div class="mb-2" style="font-size: 1.5rem;">Upcoming taski</div>
+                    <div class="mb-2" style="font-size: 1.5rem;">Upcoming eventi</div>
                     <div class="text-left d-flex justify-content-between w-100" >
                         <div>
                             Grupa 1234
@@ -120,6 +120,7 @@
             <div class="col-lg-4 col-4 h-100">
                 <calendar trim-weeks class="w-100" :class="isDark? 'dark-theme': ''"> </calendar>
                 <b-card class="w-100 mt-2">
+                    <div style="font-size: 1.5rem;">Upcoming taski</div>
                     <div class="row py-1 item" >
                         <div class="col-2 d-flex justify-content-center align-items-center">
                             <b-form-checkbox

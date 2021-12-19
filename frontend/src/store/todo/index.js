@@ -77,14 +77,14 @@ export default {
                         const groupShared = state.sharedTodos.find(element => element._id === idGroup)
                         
                         if (groupShared) {
-                            return groupShared.owner.email
+                            return groupShared.owner._id
                         }
                     }
 
                     return null
                     }
             
-                return group.owner.email
+                return group.owner._id
 
             }
                 

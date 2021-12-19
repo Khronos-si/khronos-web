@@ -192,17 +192,20 @@
                 }
                 
                 try {
-                    const data = await this.$http.post('/api/todo/group', payload)
+                    const data = await this.$http.post('/api/event/tag', payload)
                 
-                    const newGroup = data.data
+                    const newTag = data.data
 
-                    this.$store.dispatch('todo/add_group', { 'new_group': newGroup})
+                    console.log(newTag)
 
-                    this.$bvModal.hide('modal-add-group')
+                    newTag.selected = true
+
+                    this.$store.dispatch('calendar/add_tag', { 'new_tag': newTag})
+
+                    this.$bvModal.hide('modal-add-calendar')
+
+                    this.$printSuccess('Calendar was sucesfully added')
                 } catch (err) {
-                    if (err.response.data) {
-                        this.emailThatDoesntExist = err.response.data.users
-                    }
                     console.log(err)
                 }
                

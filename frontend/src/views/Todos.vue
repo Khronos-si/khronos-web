@@ -1,5 +1,5 @@
 <template>
-    <div class="card" style="min-height: 75vh; max-height: 65vh;" ref="card-div">
+    <div class="card" style="height: 75vh !important;" ref="card-div">
         <div class="d-inline">
             <div class="m-0 p-0" style="float: left" >
                 
@@ -7,7 +7,7 @@
                     <div class="px-2 pb-1 d-flex justify-content-center" v-if="groupPermissions == null || groupPermissions > 0">
                         <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-todo >Add Task</b-button>
                     </div>
-                    <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
+                    <div class="d-flex justify-content-between pr-1 pl-2" style="padding-bottom: 5px;">
                         <div class="d-flex">
                             <!-- ZBRISI V IF CE ZELIS COLLAPSE -->
                             <div v-on:click="colapseMyGruopy()" class="" v-if="0 == 1" style="cursor: pointer; margin-right: 5px;">
@@ -18,9 +18,22 @@
                                 My Groups
                             </div>
                         </div>
-                        <div v-on:click="addGroup()" style="cursor: pointer;">
-                            <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                        <div class="d-flex">
+                            <div v-on:click="addGroup()" style="cursor: pointer;" >
+                                <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                            
+                            </div>
+                            <div  v-if="userId == ownerOfTheGroup">
+                                <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
+                                    <template #button-content>
+                                        <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                                    </template>
+                                    <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
+                                    <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
+                                </b-dropdown>
+                            </div>
                         </div>
+                        
                     </div>
                     <div v-if="selectedGroup && todoGroups && todoGroups.length > 0 && !colapseMyGroups">
                         <div v-for="(group,id) in todoGroups" :key="'button_todo_group_' + id" v-on:click="setGroup(group._id)" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == group._id)? 'selectedGroup': 'normalGroup'" style="cursor: pointer;">
@@ -46,7 +59,7 @@
                                 <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
                                 {{group.name}}
                             </div>
-                            <div  v-if="userEmail != group.owner.email">
+                            <div  v-if="userId != group.owner._id">
                                 <span class="badge badge-pill badge-warning ml-1" :style="'background:' + group.color + ' !important;'">{{group.owner.name}}</span>
                             </div>
                         </div>
@@ -55,11 +68,22 @@
                         <div>
                             Tags
                         </div>
-                        <div v-on:click="addTag()" style="cursor: pointer;">
-                            <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                        <div class="d-flex">
+                            <div v-on:click="addTag()" style="cursor: pointer;">
+                                <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                            </div>
+                            <div  v-if="userId == ownerOfTheGroup">
+                                <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
+                                    <template #button-content>
+                                        <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                                    </template>
+                                    <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
+                                    <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
+                                </b-dropdown>
+                            </div>
                         </div>
+                        
                     </div>
-
                     <div v-if="todoTagsOfGroup">
                         <div v-for="(tag,id) in todoTagsOfGroup" :key="'button_todo_tag_' + id" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == tag._id)? 'selectedGroup': 'normalGroup'" :style="'cursor: pointer; --color:' + tag.color + ';'">
                         
@@ -74,8 +98,9 @@
                 </div>
             </div>
 
+
             <!-- TOP MENU where 3 dots are -->
-            <div class="d-flex justify-content-between mr-1" style="padding-top: 10px; stroke:white !important;" v-if="selectedGroupName">
+            <div class="d-flex justify-content-between mr-1" style="padding-top: 10px; stroke:white !important; height: 7vh !important;" v-if="selectedGroupName">
                 <div class="d-flex align-items-center ml-1">
                     <!-- <span class="bullet bullet-sm mr-1" :style="'background:' + selectedGroupName.color + '!important;'"></span> -->
                     <div style="font-size: 1.5rem;">
@@ -88,23 +113,15 @@
                         <div class="mr-1 pr-1 border-right" v-on:click="selectTodos('UNFI')" style="cursor: pointer;" :class="typeSort == 'UNFI' ? 'selectedType':'normalType'" >Not finished</div>
                         <div class="mr-1" v-on:click="selectTodos('FINI')" style="cursor: pointer;" :class="typeSort == 'FINI' ? 'selectedType':'normalType'">Done</div>
                     </div>
-                    <div  v-if="userEmail == ownerOfTheGroup">
-                        <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-1 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
-                            <template #button-content>
-                                <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
-                            </template>
-                            <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
-                            <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
-                        </b-dropdown>
-                    </div>
                 </div>
                
                 
             </div>
 
-            <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; max-height: 75vh;" v-if="selectedGroup">
+            <div class="m-0 p-0" style="overflow-y: auto; overflow-x: hidden; height: 68vh;" v-if="selectedGroup">
                 <todos-in-group :todoGroupId="selectedGroup" />
             </div>
+
         </div>
        
         <add-todo></add-todo>
@@ -167,8 +184,8 @@
             sharedTodos() {
                 return this.$store.getters['todo/getSharedTodos'](this.selectedGroup)
             },
-            userEmail() {
-                return this.$store.getters['user/getUserEmail']
+            userId() {
+                return this.$store.getters['user/getUserId']
             },
             todoGroups() {
                 return this.$store.getters['todo/getAllGroups']
@@ -181,92 +198,13 @@
             }
         },
         data() {
-            const month = new Date().getMonth()
-            const year = new Date().getFullYear()
             return {
                 typeSort: 'ALL',
                 colapseMyGroups: false,
                 cardDiv: null,
                 showEditGroup: false,
                 moreOptionsIcon: require('@/assets/svg/more-vertical.svg'),
-                deleteIcon: require('@/assets/svg/trash.svg'),
-                masks: {
-                    weekdays: 'WWW'
-                },
-                attributes: [
-                    {
-                        key: 1,
-                        customData: {
-                            title: 'Lunch with mom.',
-                            class: 'bg-red-600 text-white'
-                        },
-                        dates: new Date(year, month, 1)
-                    },
-                    {
-                        key: 2,
-                        customData: {
-                            title: 'Take Noah to basketball practice',
-                            class: 'bg-blue-500 text-white'
-                        },
-                        dates: new Date(year, month, 2)
-                    },
-                    {
-                        key: 3,
-                        customData: {
-                            title: 'Noah\'s basketball game.',
-                            class: 'bg-blue-500 text-white'
-                        },
-                        dates: new Date(year, month, 5)
-                    },
-                    {
-                        key: 4,
-                        customData: {
-                            title: 'Take car to the shop',
-                            class: 'bg-indigo-500 text-white'
-                        },
-                        dates: new Date(year, month, 5)
-                    },
-                    {
-                        key: 4,
-                        customData: {
-                            title: 'Meeting with new client.',
-                            class: 'bg-teal-500 text-white'
-                        },
-                        dates: new Date(year, month, 7)
-                    },
-                    {
-                        key: 5,
-                        customData: {
-                            title: 'Mia\'s gymnastics practice.',
-                            class: 'bg-pink-500 text-white'
-                        },
-                        dates: new Date(year, month, 11)
-                    },
-                    {
-                        key: 6,
-                        customData: {
-                            title: 'Cookout with friends.',
-                            class: 'bg-orange-500 text-white'
-                        },
-                        dates: { months: 5, ordinalWeekdays: { 2: 1 } }
-                    },
-                    {
-                        key: 7,
-                        customData: {
-                            title: 'Mia\'s gymnastics recital.',
-                            class: 'bg-pink-500 text-white'
-                        },
-                        dates: new Date(year, month, 22)
-                    },
-                    {
-                        key: 8,
-                        customData: {
-                            title: 'Visit great grandma.',
-                            class: 'bg-red-600 text-white'
-                        },
-                        dates: new Date(year, month, 25)
-                    }
-                ]
+                deleteIcon: require('@/assets/svg/trash.svg')
             }
         },
         methods: {

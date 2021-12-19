@@ -27,14 +27,14 @@ const authService = {
 
     return decoded
   },
-
   isAuthenticated() {
     const jwt = localStorage.getItem(jwtToken)
     const decoded = jsonwebtoken.decode(jwt)
+    const timeNow = Math.floor(new Date().getTime() / 1000)
 
     return (
       jwt
-      && new Date(Date.now()) < new Date(decoded.validUntil)
+      && timeNow < decoded.exp
       && localStorage.getItem(loggedIn) === 'true'
     )
   }

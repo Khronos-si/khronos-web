@@ -10,6 +10,31 @@
         @ok="handleOk"
     >   
         <form ref="form" @submit.stop.prevent="handleSubmit">
+
+            <b-form-group
+                label="Group"
+                label-for="group-input"
+                invalid-feedback="Group is required"
+                :state="groupState"
+            >
+                <v-select
+                    v-model="groupInput"
+                    label="name"
+                    :options="todoGroups"
+                    placeholder="Choose group"
+                    style="max-height: 100px;"
+                >
+                    <template #selected-option="group">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span> {{group.name}}
+                    </template>
+                    
+                    <template #option="group">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
+                    </template>
+
+                </v-select>
+            </b-form-group>
+
             <b-form-group
                 label="Name"
                 label-for="name-input"
@@ -47,6 +72,7 @@
 
                 </v-select>
             </b-form-group>
+           
 
             <b-form-group
                 label="Permisions"
@@ -101,16 +127,30 @@
             BFormGroup,
             vSelect
         },
+        watch:{
+            group() {
+                this.resetModal()
+            }
+        },
         computed: {
             group() {
-                return this.$store.getters['todo/getGroupById'](this.selectedGroup)
+                let selected = null
+                if (!this.groupInput) selected = this.$store.getters['todo/getGroupById'](this.selectedGroup)
+                else selected = this.$store.getters['todo/getGroupById'](this.groupInput._id)
+
+                return selected
             },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
+            },
+            todoGroups() {
+                return this.$store.getters['todo/getAllGroups']
             }
         },
         data() {
             return {
+                groupState: null,
+                groupInput: null,
                 optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
                 optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
                 color: '',
@@ -143,36 +183,32 @@
                 this.nameState = valid
                 this.permState = valid
                 this.colorState = valid
+                this.groupState = valid
 
                 return valid
             },
             resetModal() {
-
                 const sharedEmails = []
 
-                if (this.group.sharedWith) {
+                if (this.group && this.group.sharedWith) {
                     for (const item of this.group.sharedWith) {
                         sharedEmails.push(item.email)
                     }
                 }
                
+                if (this.group) {
+                    this.permissions = this.optionPermissions[this.group.permissions]
+                    this.color = this.group.color
+                    this.name = this.group.name
+                }
                 
-                this.permissions = this.optionPermissions[this.group.permissions]
-                this.color = this.group.color
-                this.name = this.group.name
                 this.sharedWith = sharedEmails
                 this.nameState = null
                 this.permState = null
                 this.colorState = null
-            },
-            clicked(bvModalEvt) {
-                console.log(bvModalEvt)
-                console.log('TEST 1')
-            },
-            modalHidden(bvModalEvt) {
-                console.log(bvModalEvt)
-                // console.log('TEST')
-                // bvModalEvt.preventDefault()
+                this.groupState = null
+                this.groupInput = this.group
+
             },
             handleOk(bvModalEvt) {
                 // Prevent modal from closing
@@ -195,8 +231,10 @@
 
                 if (this.sharedWith && this.sharedWith.length !== 0) this.permissionsUsers = this.permissions.permisson
 
+                if (!this.groupInput) return
+
                 const payload = {
-                    'id': this.selectedGroup,
+                    'id': this.groupInput._id,
                     'name': this.name,
                     'permissions': this.permissionsUsers,
                     'shareWith': this.sharedWith,
@@ -204,13 +242,13 @@
                 }
 
                 try {
-                    const todo = this.selectedGroup
+                    const todo = this.groupInput._id
                     const data = await this.$http.put(`/api/todo/group/${todo}`, payload)
 
                     if (data.status === 200) {
                         const newGroup = data.data
                         
-                        this.$store.dispatch('todo/edit_group', { 'group_new': newGroup, 'group_id': this.selectedGroup})
+                        this.$store.dispatch('todo/edit_group', { 'group_new': newGroup, 'group_id': todo})
                     }
 
                     this.$bvModal.hide('modal-edit-group')

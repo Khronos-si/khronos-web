@@ -3,7 +3,7 @@
     <b-modal
         id="modal-add-todo"
         ref="modal"
-        title="Add todo"
+        title="Add task"
         @show="resetModal"
         @hidden="resetModal"
         @ok="handleOk"
@@ -16,6 +16,7 @@
                 :state="nameState"
             >
                 <b-form-input
+                    placeholder="Input name"
                     id="name-input"
                     v-model="name"
                     :state="nameState"
@@ -23,6 +24,7 @@
                 ></b-form-input>
             </b-form-group>
 
+            <!-- DESCRIPTION -->
             <b-form-group
                 label="Description"
                 label-for="desc-input"
@@ -30,6 +32,7 @@
                 :state="descState"
             >
                 <b-form-input
+                    placeholder="Input description"
                     id="desc-input"
                     v-model="description"
                     :state="descState"
@@ -37,6 +40,34 @@
                 ></b-form-input>
             </b-form-group>
 
+            <!-- TODO GROUP -->
+            <b-form-group
+                label="Group"
+                label-for="group-input"
+                invalid-feedback="Group is required"
+                :state="groupState"
+            >
+                <v-select
+                    v-model="groupInput"
+                    label="name"
+                    :options="todoGroups"
+                    placeholder="Choose group"
+                    style="max-height: 100px;"
+                    :reduce="ele => ele._id"
+                >
+                    <template #selected-option="group">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
+                    </template>
+                    
+                    <template #option="group">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
+                    </template>
+
+                </v-select>
+            </b-form-group>
+
+
+            <!-- TAGS -->
             <b-form-group
                 label="Tags"
                 label-for="tags"
@@ -66,7 +97,6 @@
                 > 
                     <template #selected-option="{ name, color }">
                         <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span> {{name}}
-
                     </template>
                     <template #option="{ name, color }">
                         <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span>
@@ -96,10 +126,18 @@
             },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
+            },
+            todoGroups() {
+                return this.$store.getters['todo/getAllGroups']
+            },
+            selectedGroupData() {
+                return this.$store.getters['todo/getGroupById'](this.selectedGroup)
             }
         },
         data() {
             return {
+                groupState: null,
+                groupInput: null,
                 option: [{name: 'test'}, {name: 'test1'}, {name: 'test2'}],
                 selectedTags: [],
                 name: '',
@@ -113,9 +151,12 @@
                 const valid = this.$refs.form.checkValidity()
                 this.nameState = valid
                 this.descState = valid
+                this.groupState = valid
                 return valid
             },
             resetModal() {
+                this.groupInput = this.selectedGroupData
+                this.groupState = null
                 this.selectedTags = []
                 this.name = ''
                 this.nameState = null
@@ -151,7 +192,7 @@
                 const todo = this.selectedGroup
 
                 const payload = {
-                    'todoGroupId': todo,
+                    'todoGroupId': this.groupInput,
                     'name': this.name,
                     'description': this.description,
                     'status': false,

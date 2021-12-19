@@ -5,11 +5,13 @@
         ref="modal-add-event"
         title="Add event"
         transition=""
-        @show="resetModal"
+        @show="enterModal"
         @hidden="resetModal"
         @ok="handleOk"
     >   
         <form ref="form" @submit.stop.prevent="handleSubmit">
+
+            <!-- NAME -->
             <b-form-group
                 label="Name"
                 label-for="name-input"
@@ -23,38 +25,30 @@
                     required
                 ></b-form-input>
             </b-form-group>
-            
+
+            <!-- DESCRIPTION -->
             <b-form-group
-                label="Color"
-                label-for="color-input"
-                invalid-feedback="Color is required"
-                :state="colorState"
+                label="Description"
+                label-for="desc-input"
+                :state="descState"
+                invalid-feedback="Description is required"
             >
-                <v-select
-                    v-model="color"
-                    label="color"
-                    :options="optionColor"
-                    placeholder="Choose color"
-                    style="max-height: 100px;"
-                >
-                    <template #selected-option="item">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + item.color + '!important;'"></span> {{item.color}}
-
-                    </template>
-                    
-                    <template #option="item">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + item.color + '!important;'"></span> {{item.color}}
-                    </template>
-
-                </v-select>
+                <b-form-input
+                    id="desc-input"
+                    v-model="description"
+                    required
+                ></b-form-input>
             </b-form-group>
+
+            <!-- START DATE -->
             <b-form-group
                 label="Start Date"
                 label-for="date-start-input"
                 invalid-feedback="Start date is required"
                 :state="permState"
             >
-                <date-picker v-model="dateStart" mode="dateTime" class="datePicker w-100 p-0" :minute-increment="5" :model-config="modelConfig" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="!allDay" is24hr>  
+                <!-- START DATE WITH TIME PICKER -->
+                <date-picker v-model="dateStart" mode="dateTime" class="datePicker w-100 p-0" :minute-increment="5" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="!allDay" is24hr>  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
                             class="border px-2 py-1 rounded"
@@ -66,6 +60,7 @@
                     </template>
                 </date-picker>
 
+                <!-- START DATE ONLY -->
                 <date-picker v-model="dateStart" mode="date" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="allDay">  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
@@ -79,12 +74,14 @@
                 </date-picker>
             </b-form-group>
 
+            <!-- END DATE -->
             <b-form-group
                 label="End Date"
                 label-for="date-end-input"
                 invalid-feedback="End date is required"
                 :state="permState"
             >
+                <!-- END DATE WITH TIME PICKER -->
                 <date-picker :min-date="dateStart" v-model="dateEnd" mode="dateTime" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="!allDay" :minute-increment="5" is24hr>  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
@@ -97,10 +94,12 @@
                     </template>
                 </date-picker>
 
+                <!-- END DATE ONLY -->
                 <date-picker :min-date="dateStart" v-model="dateEnd" mode="date" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="allDay">  
                     <template v-slot="{ inputValue, inputEvents }">
                         <input
-                            class="calendarInput border px-2 py-1 rounded"
+                            class="border px-2 py-1 rounded"
+                            :class="isDark == true ? 'calendarInput-dark': 'calendarInput-light'"
                             :value="inputValue"
                             placeholder="Enter start date"
                             v-on="inputEvents"
@@ -118,6 +117,34 @@
                                  v-model="allDay"></b-form-checkbox>
             </b-form-group>
 
+            <!-- CALENDAR GROUP -->
+            <b-form-group
+                label="Calendar"
+                label-for="cal-select"
+                invalid-feedback="Calendar is required"
+                :state="calState"
+            >
+                <v-select
+                    v-model="calendarInput"
+                    :options="calendarGroups"
+                    placeholder="Choose calendar"
+                    :reduce="ele => ele._id"
+                    label="name"
+                >
+                    <template #selected-option="option">
+                        <div style="display: flex; align-items: baseline;">
+                            <span class="bullet bullet-sm mr-1" :style="'background:' + option.color + '!important;'"></span>{{option.name}}
+                        </div>
+                    </template>
+
+                    <template #option="option">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + option.color + '!important;'"></span> {{option.name}}
+                    </template>
+
+                </v-select>
+            </b-form-group>
+
+            <!-- PERMISSIONS -->
             <b-form-group
                 label="Permisions"
                 label-for="perm-input"
@@ -133,6 +160,7 @@
                 />
             </b-form-group>
 
+            <!-- SHARED WITH -->
             <b-form-group
                 label="Shared with"
                 label-for="shared-select"
@@ -177,7 +205,15 @@
             DatePicker,
             BFormCheckbox
         },
+        props:{
+            calendarDate:{
+                type: Date
+            }
+        },
         computed: {
+            calendarGroups() {
+                return this.$store.getters['calendar/getAllGroups']
+            },
             todos() {
                 return this.$store.getters['todo/getTodos'](this.selectedGroup)
             },
@@ -194,6 +230,10 @@
         },
         data() {
             return {
+                descState: null,
+                description: '',
+                calState: null,
+                calendarInput: null,
                 allDay: false,
                 dateStart: null,
                 dateEnd: null,
@@ -209,6 +249,12 @@
                 emailThatDoesntExist: []
             }
         },
+        watch:{
+            calendarDate(val) {
+                this.dateStart = val
+                this.dateEnd = val
+            }
+        },
         methods: {
            
             checkIfEmailExist(email) {
@@ -222,16 +268,20 @@
             checkFormValidity() {
                 let valid = this.$refs.form.checkValidity()
                 
-
-                if ((this.color === '' || !this.color)) valid = false 
+                // if ((this.color === '' || !this.color)) valid = false 
 
                 if (this.sharedWith && this.sharedWith.length > 0 && (this.permissions === '' || !this.permissions)) valid = false
                     
                 this.nameState = valid
                 this.permState = valid
                 this.colorState = valid
+                this.calState = valid
+                this.descState = valid
 
                 return valid
+            },
+            enterModal() {
+                this.resetModal()
             },
             resetModal() {
                 this.color = ''
@@ -272,24 +322,29 @@
 
                 const payload = {
                     'name': this.name,
-                    'permissions': this.permissions.permisson,
-                    'shareWith': this.sharedWith,
-                    'color': this.color
+                    'description': this.description,
+                    // 'color': this.color,
+                    'repeatType': -1,
+                    'repeatFor': -1,
+                    'shareWith': [],
+                    'start': this.dateStart,
+                    'end': this.dateEnd,
+                    'eventTagId': this.calendarInput
+
                 }
+
                 
                 try {
-                    const data = await this.$http.post('/api/todo/group', payload)
+                    const data = await this.$http.post('/api/event', payload)
                 
+                    console.log(data)
                     const newGroup = data.data
 
-                    this.$store.dispatch('todo/add_group', { 'new_group': newGroup})
+                    this.$store.dispatch('calendar/add_event', { 'new_group': newGroup})
 
-                    this.$bvModal.hide('modal-add-group')
+                    this.$bvModal.hide('modal-add-event')
                 } catch (err) {
-                    if (err.response.data) {
-                        this.emailThatDoesntExist = err.response.data.users
-                    }
-                    console.log(err)
+                    console.log(err.data)
                 }
                
 
