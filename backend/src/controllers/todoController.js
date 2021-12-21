@@ -318,7 +318,8 @@ const updateTodoGroup = async (req, res) => {
 		}
 	}
 
-	group.permissions = permissions || group.permissions;
+	group.permissions =
+		permissions === undefined ? group.permissions : permissions;
 	group.name = name || group.name;
 	group.color = color || group.color;
 
@@ -336,7 +337,7 @@ const updateTodo = async (req, res) => {
 
 	todo.name = name || todo.name;
 	todo.description = description || todo.description;
-	todo.status = status || todo.status;
+	todo.status = status === undefined ? todo.status : status;
 
 	if (tags) {
 		const newTags = await TodoTag.find({ _id: { $in: tags } });
