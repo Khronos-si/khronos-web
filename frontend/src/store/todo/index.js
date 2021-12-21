@@ -6,13 +6,23 @@ export default {
         todos: null,
         sharedTodos: null,
         selectedGroup: null,
-        type: 'ALL'
+        type: 'ALL',
+        tags: null
+
     },
     getters: {
+
+        //Tags
+        getAllTags: state => {
+            return state.tags
+        },
+
         getTodoTagsFromGroup: state => (idGroup) => {
 
             let group = null
             const tags = []
+
+            if (!state.tags) return []
 
             if (state.todos) {
                 group = state.todos.find(element => element._id === idGroup)
@@ -34,7 +44,14 @@ export default {
                                 }
 
                                 if (!allredyIn) {
-                                    tags.push(tagItem)
+                                    const itemToPush = state.tags.find(element => element._id === tagItem._id)
+                                    
+                                    if (itemToPush) {
+                                        tags.push(itemToPush)
+                                    } else {
+                                        tags.push(tagItem)
+                                        console.log('ERRORRRRRRRRRRRRRRRRRRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! V TAGIH')
+                                    }
                                 }
                             }
                         }
@@ -252,6 +269,16 @@ export default {
         }
     },
     mutations: {
+        //Tags
+        SET_TAGS(state, payload) {
+            state.tags = payload.tags
+        },
+        ADD_TAG(state, payload) {
+            if (state.tags) state.tags.push(payload.new_tag)
+
+            console.log(state.tags)
+        },
+
         //Both
         SET_SELECTED_GROUP(state, payload) {
             state.selectedGroup = payload.selectedGroup
@@ -435,6 +462,18 @@ export default {
         },
         update_type({ commit }, payload) {
             commit('UPDATE_TYPE', payload)
+        },
+        set_tags({ commit }, payload) {
+            commit('SET_TAGS', payload)
+        },
+        add_tag({ commit }, payload) {
+            commit('ADD_TAG', payload)
+        },
+        delete_tag({ commit }, payload) {
+            commit('DELETE_TAG', payload)
+        },
+        edit_tag({ commit }, payload) {
+            commit('EDIT_TAG', payload)
         }
     }
 }

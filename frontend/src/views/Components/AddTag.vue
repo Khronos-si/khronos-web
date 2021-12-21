@@ -123,7 +123,7 @@
                 
                     const new_tag = data.data
 
-                    this.$store.dispatch('tags/add_tag', { new_tag})
+                    this.$store.dispatch('todo/add_tag', { new_tag})
 
                     this.$bvModal.hide('modal-add-tag')
                 } catch (err) {

@@ -122,7 +122,7 @@
         },
         computed: {
             tags() {
-                return this.$store.getters['tags/getAllTags']
+                return this.$store.getters['todo/getAllTags']
             },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']

@@ -1,3 +1,5 @@
+import Vue from 'vue'
+
 export default {
     namespaced: true,
     state: {
@@ -18,12 +20,14 @@ export default {
             console.log(state.tags)
         },
         DELETE_TAG(state, payload) {
-            console.log(state)
-            console.log(payload)
+            const index = state.tags.findIndex(element => element._id === payload.tag_id)
+            Vue.delete(state.tags, index)
         },
         EDIT_TAG(state, payload) {
-            console.log(state)
-            console.log(payload)
+            const index = state.tags.findIndex(element => element._id === payload.tag_id)
+
+            Vue.delete(state.tags, index)
+            state.tags.splice(index, 0, payload.tag_new)
         }
     },
     actions: {

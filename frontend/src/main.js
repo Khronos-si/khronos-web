@@ -83,6 +83,13 @@ Vue.prototype.$printError = function(error) {
   })
 }
 
+Vue.filter('stripHTML', function(value) {
+  const div = document.createElement('div')
+  div.innerHTML = value
+  const text = div.textContent || div.innerText || ''
+  return text
+})
+
 Vue.prototype.$printWarning = function(message) {
   this.$toast({
     component: ToastificationContent,

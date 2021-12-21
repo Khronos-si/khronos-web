@@ -8,7 +8,7 @@
         @ok="handleOk"
     >
         <div>
-            <form ref="form" @submit.stop.prevent="handleSubmit" v-if="groupPermissions == null || groupPermissions > 0">
+            <form ref="form" @submit.stop.prevent="handleSubmit" v-if="groupPermissions == null | groupPermissions > 0">
                 <b-form-group
                     label="Name"
                     label-for="name-input"
@@ -23,7 +23,7 @@
                     ></b-form-input>
                 </b-form-group>
 
-                <b-form-group
+                <!-- <b-form-group
                     label="Description"
                     label-for="desc-input"
                     invalid-feedback="Description is required"
@@ -35,8 +35,22 @@
                         :state="descState"
                         required
                     ></b-form-input>
-                </b-form-group>
+                </b-form-group> -->
 
+                <b-form-group
+                    label="Description"
+                    label-for="desc-input"
+                    invalid-feedback="Description is required or it is to short"
+                    :state="descState"
+                >
+                    <quill-editor
+                        v-model="description"
+                        :options="editorOption"
+                        :class="isDark? 'darkEditor': ''"
+                        :state="descState"
+                        required
+                    />
+                </b-form-group>
                 <b-form-group
                     label="Status"
                     label-for="stat-input"
@@ -44,7 +58,6 @@
                     <b-form-checkbox
                         id="stat-input"
                         v-model="status"
-                        required
                     ></b-form-checkbox>
                 </b-form-group>
             </form>
@@ -57,7 +70,12 @@
             </div> -->
 
             <div class="my-2">
-                {{todo.description}}
+                <quill-editor
+                    v-model="description"
+                    :class="isDark? 'darkEditor topBorder': ''"
+                    :options="bubbleEditor"
+                    :disabled='true'
+                />
             </div>
         </div>
 
@@ -88,17 +106,37 @@
 
 <script>
     import { BModal, BFormInput, BFormGroup, BFormCheckbox, BButton  } from 'bootstrap-vue'
+    import { quillEditor } from 'vue-quill-editor'
+    import useAppConfig from '@core/app-config/useAppConfig'
+    import { computed } from '@vue/composition-api'
+    
+    // eslint-disable-next-line
+    import 'quill/dist/quill.core.css'
+    // eslint-disable-next-line
+    import 'quill/dist/quill.snow.css'
+    // eslint-disable-next-line
+    import 'quill/dist/quill.bubble.css'
 
     export default {
+        setup() {
+            const { skin } = useAppConfig()
+
+            const isDark = computed(() => skin.value === 'dark')
+
+            return { skin, isDark }
+        },
         components: {
             BModal,
             BFormInput,
             BFormGroup,
             BButton,
-            BFormCheckbox
+            BFormCheckbox,
+            quillEditor
         },
         computed: {
             groupPermissions() {
+                console.log(this.selectedGroup)
+                console.log(this.$store.getters['todo/getGroupPremissions'](this.selectedGroup))
                 return this.$store.getters['todo/getGroupPremissions'](this.selectedGroup)
             },
             selectedGroup() {
@@ -112,6 +150,24 @@
         },
         data() {
             return {
+                bubbleEditor:{
+                    theme: 'bubble',
+                    readOnly: true
+                },
+                editorOption: {
+                    modules: {
+                        toolbar: [
+                            ['bold', 'italic', 'underline', 'strike'],
+                            [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                            [{ 'indent': '-1'}, { 'indent': '+1' }],
+                            [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+                            [{ 'color': [] }, { 'background': [] }]
+                        ]
+                    },
+                    placeholder: 'Enter description...',
+                    readOnly: true,
+                    theme: 'snow'
+                },
                 modalTitle: '',
                 name: '',
                 description: '',
@@ -145,9 +201,16 @@
 
             },
             checkFormValidity() {
-                const valid = this.$refs.form.checkValidity()
+                let valid = this.$refs.form.checkValidity()
                 this.nameState = valid
                 this.descState = valid
+
+                if (!this.description || this.description.length <= 20) {
+                    this.descState = false
+                    valid = false
+                } 
+                
+
                 return valid
             },
             setModalValues() {
@@ -179,17 +242,15 @@
                 const group = this.selectedGroup
                 const todoId = this.todo._id
 
+                console.log(this.status)
+
                 const payload = {
-                    'id': todoId,
                     'name': this.name,
                     'description': this.description,
                     'status': this.status
                 }
                 try {
                     const data = await this.$http.put(`/api/todo/${todoId}`, payload)
-
-                    console.log('MO KLE ')
-                    console.log(data.data)
 
                     this.$store.dispatch('todo/edit_todo', { 'idGroup': group, 'idTodo': todoId, 'todo_new': data.data})
 
@@ -205,6 +266,39 @@
     }
 </script>
 
-<style>
-    
+<style lang="scss">
+    .darkEditor .ql-toolbar.ql-snow{
+        border: 1px solid #3b4253 !important;
+    }
+    .darkEditor .ql-container{
+        border: none !important;
+    }
+    .ql-editor {
+        height: 35vh;
+        overflow-y: scroll;
+    }
+    .darkEditor .ql-editor {
+        border-left: 1px solid #3b4253 !important;
+        border-right: 1px solid #3b4253 !important;
+        border-bottom: 1px solid #3b4253 !important;
+    }
+
+    .topBorder .ql-editor {
+        border-top: 1px solid #3b4253 !important;
+        
+    }
+
+    .darkEditor .ql-toolbar .ql-stroke {
+        fill: none;
+        stroke: #fff;
+    }
+
+    .darkEditor .ql-toolbar .ql-fill {
+        fill: #fff;
+        stroke: none;
+    }
+
+    .darkEditor .ql-toolbar .ql-picker {
+        color: #fff;
+    }
 </style>

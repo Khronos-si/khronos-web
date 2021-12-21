@@ -77,8 +77,8 @@
                                     <template #button-content>
                                         <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
                                     </template>
-                                    <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
-                                    <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
+                                    <b-dropdown-item-button @click="editTags()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
+                                    <b-dropdown-item-button @click="deleteTag()">Delete</b-dropdown-item-button>
                                 </b-dropdown>
                             </div>
                         </div>
@@ -128,6 +128,7 @@
         <add-group></add-group>
         <edit-group></edit-group>
         <add-tag></add-tag>
+        <edit-todo-tag></edit-todo-tag>
     </div>
 </template>
 
@@ -139,6 +140,7 @@
     import { PlusIcon, MoreVerticalIcon, ChevronDownIcon, ChevronUpIcon } from 'vue-feather-icons'
     import EditGroup from './Components/EditGroup.vue'
     import AddTag from './Components/AddTag.vue'
+    import EditTodoTag from './Components/EditTodoTag.vue'
 
 
     export default {
@@ -163,7 +165,8 @@
             AddTodo,
             AddGroup,
             EditGroup,         
-            AddTag   // DatePicker
+            AddTag,
+            EditTodoTag   // DatePicker
         },
         computed:{
             selectedGroupName() {
@@ -218,7 +221,9 @@
             editGroup() {
                 this.$bvModal.show('modal-edit-group')
             },
-            
+            editTags() {
+                this.$bvModal.show('modal-edit-todo-tag')
+            },
             async deleteGroup() {
                 // /api/todo/group/
                 const todoGroup = this.selectedGroup
@@ -275,7 +280,7 @@
 
                     const data = await this.$http.get('/api/todo/tag')
 
-                    this.$store.dispatch('tags/set_tags', { 'tags': data.data})
+                    this.$store.dispatch('todo/set_tags', { 'tags': data.data})
                 } catch (err) {
                     console.log(err)
                 }

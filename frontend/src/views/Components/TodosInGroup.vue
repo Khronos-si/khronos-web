@@ -12,7 +12,7 @@
                 <div class="col-10 text-left d-flex justify-content-between"  @click="editTodo(item)" v-if="item" style="cursor: pointer;">
                     <div>
                         {{item.name}}
-                        <div style="font-size: 0.7rem;">{{item.description.substring(0,30)}}</div>
+                        <div class="text" style="font-size: 0.7rem;">{{item.description | stripHTML}}</div>
                     </div>
                     <div class="d-flex align-items-center justify-content-end ml-1">
                         <div  class="text-right" v-if="item.tags && item.tags.length > 0">
@@ -105,7 +105,6 @@
                         'status': this.sharedTodos[id].status
                     }
                 }
-                
 
                 try {
                     const data = await this.$http.put(`/api/todo/${todoId}`, payload)
@@ -131,6 +130,13 @@
 <style lang="scss" scoped>
     @import '~@core/scss/base/bootstrap-extended/include';
 
+    .text {
+        display: block;
+        width: 20vw;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
     .row-first{
         border-top:    none !important;
         border-right:  1px solid rgba(110,110,110,0.3);
