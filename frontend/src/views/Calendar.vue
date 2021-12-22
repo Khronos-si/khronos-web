@@ -11,8 +11,19 @@
                     <div>
                         My Calendars
                     </div>
-                    <div v-on:click="addTag()" style="cursor: pointer;">
-                        <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                    <div class="d-flex" style="cursor: pointer;">
+                        <div  v-on:click="addTag()">
+                            <plus-icon size="1.4x" class="custom-class"></plus-icon>
+                        </div>
+                        <div>
+                            <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
+                                <template #button-content>
+                                    <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                                </template>
+                                <b-dropdown-item-button @click="editCalendar()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
+                                <b-dropdown-item-button @click="deleteCalendar()">Delete</b-dropdown-item-button>
+                            </b-dropdown>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-1" v-if="eventGroups && eventGroups.length > 0">
@@ -73,6 +84,7 @@
 
         <add-event :calendarDate="inputCalendarDay"></add-event>
         <add-tag></add-tag>
+        <delete-calendar-tag></delete-calendar-tag>
     </div>
 </template>
 
@@ -81,9 +93,10 @@
     import useAppConfig from '@core/app-config/useAppConfig'
     import { computed } from '@vue/composition-api'
     import AddEvent from './Components/Calendar/AddEvent.vue'
-    import { PlusIcon } from 'vue-feather-icons'
-    import { BButton, BFormCheckbox } from 'bootstrap-vue'
+    import { PlusIcon, MoreVerticalIcon } from 'vue-feather-icons'
+    import { BButton, BFormCheckbox, BDropdown, BDropdownItemButton } from 'bootstrap-vue'
     import AddTag from './Components/Calendar/AddTag.vue'
+    import DeleteCalendarTag from './Components/Calendar/DeleteCalendarTag.vue'
 
 
     export default {
@@ -93,7 +106,11 @@
             PlusIcon,
             BButton,
             BFormCheckbox,
-            AddTag
+            AddTag,
+            MoreVerticalIcon,
+            BDropdown,
+            BDropdownItemButton,
+            DeleteCalendarTag
         },
         setup() {
             const { skin } = useAppConfig()
@@ -114,6 +131,7 @@
             return {
                 inputCalendarDay: null,
                 selectedGroup: null,
+                cardDiv: null,
                 modelConfig: {
                     start: {
                         timeAdjust: '00:00:00'
@@ -146,6 +164,9 @@
                 return first.getFullYear() === second.getFullYear() &&
                     first.getMonth() === second.getMonth() &&
                     first.getDate() === second.getDate()
+            },
+            deleteCalendar() {
+                this.$bvModal.show('modal-delete-calendar-tag')
             },
             async getTodoGroups() {
 
@@ -186,6 +207,8 @@
         },
         mounted() {
             this.getTodoGroups()
+
+            this.cardDiv = this.$refs['card-div']
         }
     }
 </script>

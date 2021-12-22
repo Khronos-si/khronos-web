@@ -35,7 +35,7 @@
                 <div class="col-10 text-left d-flex justify-content-between" @click="editTodo(item)" v-if="item" style="cursor: pointer;">
                     <div>
                         {{item.name}}
-                        <div style="font-size: 0.7rem;">{{item.description.substring(0,30)}}</div>
+                        <div class="text" style="font-size: 0.7rem;">{{item.description | stripHTML}}</div>
                     </div>
                     <div class="d-flex align-items-center">
                         <div v-if="item.tags && item.tags.length > 0">
@@ -132,7 +132,7 @@
 
     .text {
         display: block;
-        width: 20vw;
+        width: 25vw;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;

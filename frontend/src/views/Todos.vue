@@ -21,12 +21,11 @@
                         <div class="d-flex">
                             <div v-on:click="addGroup()" style="cursor: pointer;" >
                                 <plus-icon size="1.4x" class="custom-class"></plus-icon>
-                            
                             </div>
-                            <div  v-if="userId == ownerOfTheGroup">
+                            <div>
                                 <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                                     <template #button-content>
-                                        <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                                        <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
                                     </template>
                                     <b-dropdown-item-button @click="editGroup()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
                                     <b-dropdown-item-button @click="deleteGroup()">Delete</b-dropdown-item-button>
@@ -64,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between px-2 mt-1" style="padding-bottom: 5px;">
+                    <div class="d-flex justify-content-between px-2 mt-1 pb-1">
                         <div>
                             Tags
                         </div>
@@ -72,10 +71,10 @@
                             <div v-on:click="addTag()" style="cursor: pointer;">
                                 <plus-icon size="1.4x" class="custom-class"></plus-icon>
                             </div>
-                            <div  v-if="userId == ownerOfTheGroup">
+                            <div>
                                 <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                                     <template #button-content>
-                                        <more-vertical-icon size="1.4x" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                                        <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
                                     </template>
                                     <b-dropdown-item-button @click="editTags()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
                                     <b-dropdown-item-button @click="deleteTag()">Delete</b-dropdown-item-button>
@@ -85,13 +84,14 @@
                         
                     </div>
                     <div v-if="todoTagsOfGroup">
-                        <div v-for="(tag,id) in todoTagsOfGroup" :key="'button_todo_tag_' + id" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == tag._id)? 'selectedGroup': 'normalGroup'" :style="'cursor: pointer; --color:' + tag.color + ';'">
-                        
-                            <div class="d-flex">
-                                <b-form-checkbox class="test" v-model="tag.status"></b-form-checkbox>
-                                <!-- <span class="bullet bullet-sm mr-1" :style="'background:' + tag.color + '!important;'"></span> -->
-                                {{tag.name}}
-                            </div>
+                        <div v-for="(tag,id) in todoTagsOfGroup" :key="'button_todo_tag_' + id" class="pl-2 pr-2 d-flex justify-content-between align-items-middle" style="padding-bottom: 5px;">
+                            <b-form-checkbox  v-model="tag.status" class="test d-flex align-items-start py-0" :style="'cursor: pointer; --color:' + tag.color + ';'">
+
+                                <div  class="pt-0" :class="(selectedGroup == tag._id)? 'selectedGroup': 'normalGroup'" :style="'cursor: pointer;'" >
+                                    {{tag.name}}
+                                </div>
+
+                            </b-form-checkbox>
                         </div>
                     </div>
                    
@@ -129,6 +129,8 @@
         <edit-group></edit-group>
         <add-tag></add-tag>
         <edit-todo-tag></edit-todo-tag>
+        <delete-group></delete-group>
+        <delete-todo-tag></delete-todo-tag>
     </div>
 </template>
 
@@ -141,9 +143,20 @@
     import EditGroup from './Components/EditGroup.vue'
     import AddTag from './Components/AddTag.vue'
     import EditTodoTag from './Components/EditTodoTag.vue'
+    import DeleteGroup from './Components/DeleteGroup.vue'
+    import DeleteTodoTag from './Components/DeleteTodoTag.vue'
+    import useAppConfig from '@core/app-config/useAppConfig'
+    import { computed } from '@vue/composition-api'
 
 
     export default {
+        setup() {
+            const { skin } = useAppConfig()
+
+            const isDark = computed(() => skin.value === 'dark')
+
+            return { skin, isDark }
+        },
         components: {
             // BCard
             // BCardText,
@@ -166,7 +179,9 @@
             AddGroup,
             EditGroup,         
             AddTag,
-            EditTodoTag   // DatePicker
+            EditTodoTag,
+            DeleteGroup,
+            DeleteTodoTag   // DatePicker
         },
         computed:{
             selectedGroupName() {
@@ -211,6 +226,11 @@
             }
         },
         methods: {
+            test(tag) {
+                const tagRefs = `tag_checkbox_${tag}`
+                console.log(this.$refs[tagRefs][0].click())
+                
+            },
             selectTodos(type) {
                 this.typeSort = type
                 this.$store.dispatch('todo/update_type', { type})
@@ -224,20 +244,11 @@
             editTags() {
                 this.$bvModal.show('modal-edit-todo-tag')
             },
-            async deleteGroup() {
-                // /api/todo/group/
-                const todoGroup = this.selectedGroup
-                try {
-                    const data = await this.$http.delete(`/api/todo/group/${todoGroup}`)
-
-                    if (data.status === 200) {
-                        this.$store.dispatch('todo/delete_group', { 'group_id': todoGroup})
-                    }
-
-                } catch (err) {
-                    console.log(err)
-                }
-
+            deleteTag() {
+                this.$bvModal.show('modal-delete-todo-tag')
+            },
+            deleteGroup() {
+                this.$bvModal.show('modal-delete-group')
             },
             addGroup() {
                 this.$bvModal.show('modal-add-group')
@@ -299,7 +310,9 @@
 <style lang="scss">
     @import '~@core/scss/base/bootstrap-extended/include';
 
-
+    .iconColorWhite{
+        color: #6e6b7b !important;
+    }
     .selectedType {
         padding-bottom: 5px;
         padding-top: 5px;

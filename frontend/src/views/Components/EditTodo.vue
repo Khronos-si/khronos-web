@@ -60,6 +60,30 @@
                         v-model="status"
                     ></b-form-checkbox>
                 </b-form-group>
+
+                <!-- TAGS -->
+                <b-form-group
+                    label="Tags"
+                    label-for="tags"
+                >
+                    <v-select
+                        v-model="selectedTags"
+                        label="name"
+                        multiple
+                        taggable
+                        placeholder="Choose tags"
+                        :selectable="() => selectedTags.length < 5"
+                        :options="tags"
+                    > 
+                        <template #selected-option="{ name, color }">
+                            <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span> {{name}}
+                        </template>
+                        <template #option="{ name, color }">
+                            <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span>
+                            <span> {{ name }}</span>
+                        </template>
+                    </v-select>
+                </b-form-group>
             </form>
         </div>
         
@@ -109,6 +133,7 @@
     import { quillEditor } from 'vue-quill-editor'
     import useAppConfig from '@core/app-config/useAppConfig'
     import { computed } from '@vue/composition-api'
+    import vSelect from 'vue-select'
     
     // eslint-disable-next-line
     import 'quill/dist/quill.core.css'
@@ -126,6 +151,7 @@
             return { skin, isDark }
         },
         components: {
+            vSelect,
             BModal,
             BFormInput,
             BFormGroup,
@@ -141,6 +167,12 @@
             },
             selectedGroup() {
                 return this.$store.getters['todo/getSelectedGroup']
+            },
+            tags() {
+                return this.$store.getters['todo/getAllTags']
+            },
+            todoGroups() {
+                return this.$store.getters['todo/getAllGroups']
             }
         },
         props: {
@@ -150,6 +182,7 @@
         },
         data() {
             return {
+                selectedTags: [],
                 bubbleEditor:{
                     theme: 'bubble',
                     readOnly: true
@@ -209,19 +242,18 @@
                     this.descState = false
                     valid = false
                 } 
-                
 
                 return valid
             },
             setModalValues() {
                 if (this.groupPermissions === 0) this.modalTitle = this.todo.name
                 else this.modalTitle = 'Edit todo'
-
                 this.name = this.todo.name
                 this.nameState = null
                 this.description = this.todo.description
                 this.status = this.todo.status
                 this.descState = null
+                this.selectedTags = this.todo.tags
             },
             handleOk(bvModalEvt) {
                 // Prevent modal from closing
@@ -247,7 +279,8 @@
                 const payload = {
                     'name': this.name,
                     'description': this.description,
-                    'status': this.status
+                    'status': this.status,
+                    'tags': this.selectedTags
                 }
                 try {
                     const data = await this.$http.put(`/api/todo/${todoId}`, payload)
