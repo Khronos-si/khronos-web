@@ -261,11 +261,10 @@
             },
             async getTodoGroups() {
                 try {
-
                     const data = await this.$http.get('/api/todo/group')
 
-                    if (data.data.length === 0) {
-                        return
+                    if (data.data && data.data.length === 0) {
+                        throw 'Prislo je do napake'
                     }
 
                     this.$store.dispatch('todo/update_todos', { 'todos': data.data})
@@ -278,8 +277,8 @@
 
                     const data = await this.$http.get('/api/todo/shared-with-me')
 
-                    if (data.data.length === 0) {
-                        return
+                    if (data.data && data.data.length === 0) {
+                        throw 'Prislo je do napake'
                     }
 
                     this.$store.dispatch('todo/set_shared_group', { 'todos': data.data})
@@ -288,8 +287,11 @@
                 }
 
                 try {
-
                     const data = await this.$http.get('/api/todo/tag')
+
+                    if (data.data && data.data.length === 0) {
+                        throw 'Prislo je do napake'
+                    }
 
                     this.$store.dispatch('todo/set_tags', { 'tags': data.data})
                 } catch (err) {

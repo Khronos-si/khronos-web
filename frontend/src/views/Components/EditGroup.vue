@@ -237,7 +237,7 @@
                     'id': this.groupInput._id,
                     'name': this.name,
                     'permissions': this.permissionsUsers,
-                    'shareWith': this.sharedWith,
+                    'sharedWith': this.sharedWith,
                     'color': this.color
                 }
 

@@ -109,13 +109,115 @@
             </b-form-group>
 
             <!-- CHECKBOX -->
-            <b-form-group
-                label="All Day"
-                label-for="all-day-checkbox"
-            >
-                <b-form-checkbox id="checkbox-1" class="test"
-                                 v-model="allDay"></b-form-checkbox>
-            </b-form-group>
+            <div class="d-flex">
+
+                <!-- CHECKBOX ALL DAY -->
+                <b-form-group
+                    label="All Day"
+                    label-for="all-day-checkbox"
+                >
+                    <b-form-checkbox id="checkbox-1"
+                                     v-model="allDay"></b-form-checkbox>
+                </b-form-group>
+
+                <!-- CHECKBOX RECURRENCE-->
+                <b-form-group
+                    class="ml-2"
+                    label="Recurrences"
+                    label-for="recurrences-checkbox"
+                >
+                    <b-form-checkbox v-model="recurrences"></b-form-checkbox>
+                </b-form-group>
+            </div>
+
+            <!-- RECURRENCES -->
+            <div class="mb-2" v-if="recurrences">
+                <!-- <div>
+                    RECURRENCES
+                </div> -->
+                <div>
+                    Repeat every
+                    <input type="number" value="1" min="1" step="3" class="ml-2 mr-1 text-center" style="height: 30px; width: 40px; background: transparent; border: 1px solid #404656; border-radius: 5px; color:white;"> 
+                    Month
+                </div>
+                <div class="mt-1">
+                    Repeat On
+                </div>
+                <div class="d-flex mt-1">
+
+                    <!-- MONDAY -->
+                    <div >
+                        <input type="checkbox" id="repeat_mon" v-model="repeatMon">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_mon">M</label>
+                    </div>
+
+                    <!-- TUESDAY -->
+                    <div>
+                        <input type="checkbox" id="repeat_tue" v-model="repeatTue">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_tue">T</label>
+                    </div>
+
+                    <!-- WEDNESDAY -->
+                    <div>
+                        <input type="checkbox" id="repeat_wed" v-model="repeatWed">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_wed">W</label>
+                    </div>
+
+                    <!-- THURSDAY -->
+                    <div>
+                        <input type="checkbox" id="repeat_thu" v-model="repeatThu">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_thu">T</label>
+                    </div>
+
+                    <!-- FRIDAY -->
+                    <div>
+                        <input type="checkbox" id="repeat_fri" v-model="repeatFri">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_fri">F</label>
+                    </div>
+
+                    <!-- SATURDAY -->
+                    <div>
+                        <input type="checkbox" id="repeat_sat" v-model="repeatSat">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_sat">S</label>
+                    </div>
+
+                    <!-- SUNDAY -->
+                    <div>
+                        <input type="checkbox" id="repeat_sun" v-model="repeatSun">
+                        <label class="d-flex justify-content-center align-items-center" for="repeat_sun">S</label>
+                    </div>
+                </div>
+                <div class="mt-1">
+                    Ends
+                </div>
+                <div class="mt-1">
+                    <div> 
+                        <b-form-checkbox v-model="recurrences">Never</b-form-checkbox>
+                    </div>
+                    <div class="mt-1 d-flex align-items-center">
+                        <b-form-checkbox style="margin-right: 35px;" v-model="recurrences">On</b-form-checkbox>
+                        <date-picker :min-date="dateStart" v-model="dateEnd" mode="date" class="datePicker p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'">  
+                            <template v-slot="{ inputValue, inputEvents }">
+                                <input
+                                    style="height: 30px; width: 100px !important;"
+                                    class="border px-2 py-1 rounded text-center"
+                                    :class="isDark == true ? 'calendarInput-dark': 'calendarInput-light'"
+                                    :value="inputValue"
+                                    placeholder="Enter start date"
+                                    v-on="inputEvents"
+                                />
+                            </template>
+                        </date-picker>
+                    </div>
+                    <div class="mt-1 d-flex align-items-center">
+                        <b-form-checkbox v-model="recurrences">After</b-form-checkbox>
+                        <input type="number" value="1" min="1" max="20" class="ml-2 mr-1 text-center" style="height: 30px; width: 40px; background: transparent; border: 1px solid #404656; border-radius: 5px; color:white;"> 
+                        occurrences
+                    </div>
+                </div>
+                
+            </div>
+            
 
             <!-- CALENDAR GROUP -->
             <b-form-group
@@ -230,6 +332,8 @@
         },
         data() {
             return {
+                stop_after: null,
+                recurrences: null,
                 descState: null,
                 description: '',
                 calState: null,
@@ -284,6 +388,7 @@
                 this.resetModal()
             },
             resetModal() {
+                this.recurrences = null
                 this.color = ''
                 this.name = ''
                 this.nameState = null
@@ -326,7 +431,7 @@
                     // 'color': this.color,
                     'repeatType': -1,
                     'repeatFor': -1,
-                    'shareWith': [],
+                    'sharedWith': [],
                     'start': this.dateStart,
                     'end': this.dateEnd,
                     'eventTagId': this.calendarInput
@@ -354,9 +459,36 @@
     }
 </script>
 
+<style scoped>
+    input[type="checkbox"]:not(:checked), 
+    input[type="checkbox"]:checked {
+        position: absolute;
+        left: -9999%;
+    }
+
+    input[type="checkbox"] + label {
+        width: 25px;
+        height: 25px;
+        margin-right: 10px;
+        font-size: 0.8rem;
+        display: inline-block;
+        cursor: pointer;
+        border: 1px solid grey;
+        border-radius: 50%;
+        background-color: #2E3134;
+        color: white;
+        margin-bottom: 10px;
+    }
+
+    input[type="checkbox"]:checked + label {
+        border: none;
+        color: white;
+        background-color: #53afbe;
+    }
+</style>
+
 <style lang="scss">
     @import '~@core/scss/vue/libs/vue-select.scss';
-
     .emailDoesntExist{
         color: #fe5c36 !important;
     }

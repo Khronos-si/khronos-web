@@ -72,6 +72,7 @@
             <b-form-group
                 label="Tags"
                 label-for="tags"
+                v-if="selectedTags"
             >
                 <v-select
                     v-model="selectedTags"

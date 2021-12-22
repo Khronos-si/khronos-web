@@ -109,6 +109,10 @@
                     const todoGroup = this.groupInput._id
                     const data = await this.$http.delete(`/api/todo/group/${todoGroup}`)
 
+                    if (data.data && data.data.length === 0) {
+                        throw 'Prislo je do napake'
+                    }
+
                     if (data.status === 200) {
                         this.$store.dispatch('todo/delete_group', { 'group_id': todoGroup})
                     }

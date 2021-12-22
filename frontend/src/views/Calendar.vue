@@ -174,8 +174,8 @@
 
                     const data = await this.$http.get('/api/event')
 
-                    if (data.data.length === 0) {
-                        return
+                    if (data.data && data.data.length === 0) {
+                        throw 'Prislo je do napake'
                     }
 
                     for (const event of data.data) {
@@ -188,20 +188,6 @@
                     console.log(err)
                     this.$printError('Prislo je do napake pri pridobivanju podatkov!')
                 }
-
-                // try {
-
-                //     const data = await this.$http.get('/api/event/tag')
-
-
-                //     if (data.data.length === 0) {
-                //         return
-                //     }
-
-                //     this.$store.dispatch('tags/set_tags', { 'events': data.data})
-                // } catch (err) {
-                //     console.log(err)
-                // }
             }
            
         },

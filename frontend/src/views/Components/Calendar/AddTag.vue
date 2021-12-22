@@ -187,7 +187,7 @@
                 const payload = {
                     'name': this.name,
                     'permissions': this.permissions.permisson,
-                    'shareWith': this.sharedWith,
+                    'sharedWith': this.sharedWith,
                     'color': this.color
                 }
                 
