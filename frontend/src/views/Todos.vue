@@ -63,7 +63,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-between px-2 mt-1" style="padding-bottom: 5px;">
+                    <div class="d-flex justify-content-between px-2 mt-1 pb-1">
                         <div>
                             Tags
                         </div>
@@ -84,13 +84,14 @@
                         
                     </div>
                     <div v-if="todoTagsOfGroup">
-                        <div v-for="(tag,id) in todoTagsOfGroup" :key="'button_todo_tag_' + id" class="pl-2 pr-2 d-flex justify-content-between" :class="(selectedGroup == tag._id)? 'selectedGroup': 'normalGroup'" :style="'cursor: pointer; --color:' + tag.color + ';'">
-                        
-                            <div class="d-flex">
-                                <b-form-checkbox class="test" v-model="tag.status"></b-form-checkbox>
-                                <!-- <span class="bullet bullet-sm mr-1" :style="'background:' + tag.color + '!important;'"></span> -->
-                                {{tag.name}}
-                            </div>
+                        <div v-for="(tag,id) in todoTagsOfGroup" :key="'button_todo_tag_' + id" class="pl-2 pr-2 d-flex justify-content-between align-items-middle" style="padding-bottom: 5px;">
+                            <b-form-checkbox  v-model="tag.status" class="test d-flex align-items-start py-0" :style="'cursor: pointer; --color:' + tag.color + ';'">
+
+                                <div  class="pt-0" :class="(selectedGroup == tag._id)? 'selectedGroup': 'normalGroup'" :style="'cursor: pointer;'" >
+                                    {{tag.name}}
+                                </div>
+
+                            </b-form-checkbox>
                         </div>
                     </div>
                    
@@ -225,6 +226,11 @@
             }
         },
         methods: {
+            test(tag) {
+                const tagRefs = `tag_checkbox_${tag}`
+                console.log(this.$refs[tagRefs][0].click())
+                
+            },
             selectTodos(type) {
                 this.typeSort = type
                 this.$store.dispatch('todo/update_type', { type})
