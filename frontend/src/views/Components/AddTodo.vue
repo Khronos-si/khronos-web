@@ -9,6 +9,34 @@
         @ok="handleOk"
     >
         <form ref="form" @submit.stop.prevent="handleSubmit">
+
+            <!-- TODO GROUP -->
+            <b-form-group
+                label="Group"
+                label-for="group-input"
+                invalid-feedback="Group is required"
+                :state="groupState"
+            >
+                <v-select
+                    v-model="groupInput"
+                    label="name"
+                    :options="todoGroups"
+                    placeholder="Choose group"
+                    style="max-height: 100px;"
+                    :reduce="ele => ele._id"
+                >
+                    <template #selected-option="group">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
+                    </template>
+                    
+                    <template #option="group">
+                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
+                    </template>
+
+                </v-select>
+            </b-form-group>
+
+            <!-- NAME -->
             <b-form-group
                 label="Name"
                 label-for="name-input"
@@ -40,52 +68,11 @@
                 ></b-form-input>
             </b-form-group>
 
-            <!-- TODO GROUP -->
-            <b-form-group
-                label="Group"
-                label-for="group-input"
-                invalid-feedback="Group is required"
-                :state="groupState"
-            >
-                <v-select
-                    v-model="groupInput"
-                    label="name"
-                    :options="todoGroups"
-                    placeholder="Choose group"
-                    style="max-height: 100px;"
-                    :reduce="ele => ele._id"
-                >
-                    <template #selected-option="group">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
-                    </template>
-                    
-                    <template #option="group">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span> {{group.name}}
-                    </template>
-
-                </v-select>
-            </b-form-group>
-
-
             <!-- TAGS -->
             <b-form-group
                 label="Tags"
                 label-for="tags"
             >
-                <!-- <v-select
-                    id="shared-select"
-                    v-model="selectedTags"
-                    multiple
-                    taggable
-                    push-tags
-                    placeholder="Add tags"
-                >
-                    <template #selected-option="">
-                        <div style="display: flex; align-items: baseline;">
-                            {{option.name}}
-                        </div>
-                    </template>
-                </v-select> -->
                 <v-select
                     v-model="selectedTags"
                     label="name"

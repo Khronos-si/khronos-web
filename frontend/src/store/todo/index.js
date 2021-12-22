@@ -50,7 +50,6 @@ export default {
                                         tags.push(itemToPush)
                                     } else {
                                         tags.push(tagItem)
-                                        console.log('ERRORRRRRRRRRRRRRRRRRRRRRRRRR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! V TAGIH')
                                     }
                                 }
                             }
