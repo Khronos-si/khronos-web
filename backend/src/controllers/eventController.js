@@ -31,6 +31,10 @@ const _eventTagToJSON = (tag, getEvents = true) => ({
 	...(getEvents && { events: tag.appliedTo.map(_eventToJSON) }),
 });
 
+// ******************************
+// 			ADD
+// ******************************
+
 const addEventTag = async (req, res) => {
 	const { name, color } = req.body;
 	const { user } = req;
@@ -53,19 +57,29 @@ const addEventTag = async (req, res) => {
 };
 
 const addEvent = async (req, res) => {
-	const { name, description, start, end, repeatType, repeatFor, shareWith } =
-		req.body;
+	const { name, description, dates, sharedWith } = req.body;
 	const { user, tag } = req;
+	const { start, end } = dates;
 
+	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
+
+	if (start > end)
+		return res
+			.status(400)
+			.json({ message: "Start date is greater than end date!" });
+
+	// Prepare sharedWithUsers array
 	const sharedWithUsers = [];
-	for (const e of shareWith) {
-		if (e === user.email)
-			return res.status(400).json({
-				message: "You cant share a todo to yourself. Find some friends",
-			});
-		const u = await await User.findOne({ email: e });
-		if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
-		sharedWithUsers.push(u);
+	if (sharedWith !== undefined) {
+		for (const e of sharedWith) {
+			if (e === user.email)
+				return res.status(400).json({
+					message: "You cant share a todo to yourself. Find some friends",
+				});
+			const u = await await User.findOne({ email: e });
+			if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
+			sharedWithUsers.push(u);
+		}
 	}
 
 	const event = new Event({
@@ -74,18 +88,18 @@ const addEvent = async (req, res) => {
 		owner: user,
 		tag: tag,
 		sharedWith: sharedWithUsers,
-		start: new Date(start),
-		end: new Date(end),
-		repeatType: repeatType,
-		repeatFor: repeatFor,
+		dates: dates.toString(),
+		start: start,
+		...(end && { end: end }),
 	});
 
+	// Add event to user
 	user.events.push(event);
-
+	// Add event to all the users that the event is shared with
 	sharedWithUsers.forEach((e) => {
 		e.sharedEvents.push(event);
 	});
-
+	// Add event to tag
 	tag.appliedTo.push(event);
 
 	try {
@@ -95,11 +109,16 @@ const addEvent = async (req, res) => {
 		for (const e of sharedWithUsers) {
 			await e.save();
 		}
+
 		return res.json(_eventToJSON(savedEvent));
 	} catch (err) {
 		return res.status(400).json({ message: err });
 	}
 };
+
+// ******************************
+// 			GET
+// ******************************
 
 const getAllEvents = async (req, res) => {
 	const { tags } = req;
@@ -118,16 +137,24 @@ const getAllSharedEvents = async (req, res) => {
 
 const getTagById = async (req, res) => {
 	const { tag } = req;
+	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
 	return res.json(_eventTagToJSON(tag));
 };
 
 const getEventById = async (req, res) => {
 	const { event } = req;
+	if (!event) return res.status(400).json({ message: "Event not found!" });
 	return res.json(_eventToJSON(event));
 };
 
+// ******************************
+// 			DELETE
+// ******************************
+
 const deleteEventTag = async (req, res) => {
 	const { tag, user, isOwner, isDefault } = req;
+
+	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
 
 	if (!isOwner)
 		return res.status(400).json({ message: "You dont own this event tag!" });
@@ -137,13 +164,16 @@ const deleteEventTag = async (req, res) => {
 			.status(400)
 			.json({ message: "You can't delete the default tag" });
 
-	const defaultTag = await EventTag.findOne({ owner: user, default: true });
-
+	// Remove tag from user
 	user.eventTags.splice(user.eventTags.indexOf(tag), 1);
+
+	// Remove events from user
+	const events = tag.appliedTo;
+	events.forEach((e) => user.events.splice(user.events.indexOf(e), 1));
+
 	try {
-		for (const e of tag.appliedTo) {
-			e.tag = defaultTag;
-			await e.save();
+		for (const e of events) {
+			await Event.findByIdAndDelete(e);
 		}
 		await EventTag.findByIdAndDelete(tag);
 		await user.save();
@@ -157,19 +187,29 @@ const deleteEventTag = async (req, res) => {
 const deleteEvent = async (req, res) => {
 	const { event, user, isOwner } = req;
 
+	if (!event) return res.status(400).json({ message: "Event not found!" });
+
 	if (!isOwner)
 		return res.status(400).json({ message: "You dont own this event!" });
 
 	const sharedWith = await User.find({ _id: { $in: event.sharedWith } });
 	const tag = await EventTag.findById(event.tag);
 
+	// Remove event from user
 	user.events.splice(user.events.indexOf(event), 1);
+
+	// Remove event from user that the event is shared with
+	sharedWith.forEach((e) =>
+		e.sharedEvents.splice(e.sharedEvents.indexOf(event), 1)
+	);
+
+	// Remove event from tag
+	tag.appliedTo.splice(tag.appliedTo.indexOf(event));
+
 	try {
 		for (const e of sharedWith) {
-			e.sharedEvents.splice(e.sharedEvents.indexOf(event), 1);
 			await e.save();
 		}
-		tag.appliedTo.splice(tag.appliedTo.indexOf(event));
 		await tag.save();
 		await user.save();
 		await Event.findByIdAndDelete(event);
@@ -179,9 +219,15 @@ const deleteEvent = async (req, res) => {
 	}
 };
 
+// ******************************
+// 			UPDATE
+// ******************************
+
 const updateEventTag = async (req, res) => {
 	const { tag, isOwner, isDefault } = req;
 	const { name, color } = req.body;
+
+	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
 
 	if (!isOwner)
 		return res.status(400).json({ message: "You dont own this event!" });
@@ -201,19 +247,26 @@ const updateEventTag = async (req, res) => {
 };
 
 const updateEvent = async (req, res) => {
-	const { name, description, start, end, repeatType, repeatFor, shareWith } =
-		req.body;
+	const { name, description, sharedWith, dates } = req.body;
 	const { user, event, tag } = req;
+	const { start, end } = dates || {};
 
+	if (!event) return res.status(400).json({ message: "Event not found!" });
+
+	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
+
+	// Prepare sharedWithUsers array
 	const sharedWithUsers = [];
-	for (const e of shareWith) {
-		if (e === user.email)
-			return res.status(400).json({
-				message: "You cant share a todo to yourself. Find some friends",
-			});
-		const u = await await User.findOne({ email: e }).populate("sharedEvents");
-		if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
-		sharedWithUsers.push(u);
+	if (sharedWith !== undefined) {
+		for (const e of sharedWith) {
+			if (e === user.email)
+				return res.status(400).json({
+					message: "You cant share a todo to yourself. Find some friends",
+				});
+			const u = await await User.findOne({ email: e }).populate("sharedEvents");
+			if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
+			sharedWithUsers.push(u);
+		}
 	}
 
 	// Remove users
@@ -240,10 +293,9 @@ const updateEvent = async (req, res) => {
 	event.description = description || event.description;
 	event.start = start || event.start;
 	event.end = end || event.end;
-	event.repeatType = repeatType || event.repeatType;
-	event.repeatFor = repeatFor || event.repeatFor;
 
-	if (!event.tag._id.equals(tag._id)) {
+	// If the tag was specified in the request, update the event
+	if (tag && !event.tag._id.equals(tag._id)) {
 		const oldTag = await EventTag.findById(event.tag);
 		oldTag.appliedTo.splice(oldTag.appliedTo.indexOf(event), 1);
 		await oldTag.save();

@@ -9,12 +9,10 @@ const prepareTagById = async (req, res, next) => {
 		"appliedTo"
 	);
 
-	if (!tag) return res.status(400).json({ message: "Event tag not found!" });
-
 	req.tag = tag;
-	req.isDefault = tag.default;
-	req.canEdit = !tag.default;
-	req.isOwner = tag.owner._id.equals(user._id);
+	req.isDefault = tag && tag.default;
+	req.canEdit = tag && !tag.default;
+	req.isOwner = tag && tag.owner._id.equals(user._id);
 
 	return next();
 };
@@ -28,11 +26,8 @@ const prepareEventById = async (req, res, next) => {
 		.populate("owner")
 		.populate("sharedWith");
 
-	if (!event) return res.status(400).json({ message: "Event not found!" });
-
 	req.event = event;
-	req.isOwner = event.owner._id.equals(user._id);
-	// req.body.eventTagId = event.tag._id.toString();
+	req.isOwner = event && event.owner._id.equals(user._id);
 	return next();
 };
 
@@ -48,7 +43,19 @@ const prepareAllEvents = async (req, res, next) => {
 
 const prepareAllTags = async (req, res, next) => {
 	const { user } = req;
-	const tags = await EventTag.find({ owner: user }).populate("appliedTo");
+	const { from, to } = req.body;
+	const tags = await EventTag.find({ owner: user });
+
+	for (const e of tags) {
+		e.appliedTo = await Event.find({
+			$and: [
+				{ _id: { $in: e.appliedTo } },
+				{ ...(from && { start: { $gte: from } }) },
+				{ ...(to && { end: { $lte: to } }) },
+			],
+		});
+	}
+
 	req.tags = tags;
 	return next();
 };

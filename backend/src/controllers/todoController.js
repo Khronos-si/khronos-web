@@ -16,12 +16,19 @@ const _todoTagToJSON = (tag) => ({
 	color: tag.color,
 });
 
-const _todoToJSON = (todo) => ({
+const _todoToJSON = (todo, getGroup) => ({
 	_id: todo._id,
 	name: todo.name,
 	description: todo.description,
 	status: todo.status,
 	tags: todo.tags.map(_todoTagToJSON),
+	...(getGroup && {
+		group: {
+			_id: todo.todoGroup._id,
+			name: todo.todoGroup.name,
+			color: todo.todoGroup.color,
+		},
+	}),
 });
 
 const _todoGroupToJSON = (todoGroup) => ({
@@ -33,7 +40,7 @@ const _todoGroupToJSON = (todoGroup) => ({
 	),
 	color: todoGroup.color,
 	owner: _userToJSON(todoGroup.owner, true, false, false, false),
-	todos: todoGroup.todos.map(_todoToJSON),
+	todos: todoGroup.todos.map((e) => _todoToJSON(e, false)),
 });
 
 const _deleteTodo = async (todo, group) => {
@@ -60,6 +67,7 @@ const getTodoGroups = async (req, res) => {
 
 const getTodoGroupById = async (req, res) => {
 	const { group } = req;
+	if (!group) return res.status(400).json({ message: "Todo group not found!" });
 	return res.json(_todoGroupToJSON(group));
 };
 
@@ -70,7 +78,18 @@ const getTodoGroupsSharedWithUser = async (req, res) => {
 
 const getTodoById = async (req, res) => {
 	const { todo } = req;
-	return res.json(_todoToJSON(todo));
+	return res.json(_todoToJSON(todo, false));
+};
+
+const getLatestTodos = async (req, res) => {
+	const { number } = req.params;
+	console.log(number);
+	const todos = await Todo.find()
+		.populate("tags")
+		.populate("todoGroup")
+		.sort({ _id: -1 })
+		.limit(parseInt(number, 10));
+	return res.json(todos.map((e) => _todoToJSON(e, true)));
 };
 
 const getTodoTags = async (req, res) => {
@@ -84,30 +103,21 @@ const getTodoTags = async (req, res) => {
 // ******************************
 
 const addTodoGroup = async (req, res) => {
-	const { shareWith, permissions, color } = req.body;
+	const { sharedWith, permissions, color } = req.body;
 	const { user } = req;
 
-	// Check emails
+	// Prepare sharedWithUsers array
 	const sharedWithUsers = [];
-	const notFound = [];
-	for (const e of shareWith) {
-		if (e === user.email)
-			return res.status(400).json({
-				message: "You cant share a todo to yourself. Find some friends",
-			});
-		const u = await await User.findOne({ email: e });
-		if (!u) {
-			notFound.push(e);
-		} else {
+	if (sharedWith !== undefined) {
+		for (const e of sharedWith) {
+			if (e === user.email)
+				return res.status(400).json({
+					message: "You cant share a todo to yourself. Find some friends",
+				});
+			const u = await await User.findOne({ email: e });
+			if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
 			sharedWithUsers.push(u);
 		}
-	}
-
-	if (notFound.length > 0) {
-		return res.status(400).json({
-			message: "Users not found",
-			users: notFound,
-		});
 	}
 
 	const group = new TodoGroup({
@@ -118,7 +128,9 @@ const addTodoGroup = async (req, res) => {
 		color: color,
 	});
 
+	// Add todo group to user
 	user.todoGroups.push(group);
+	// Add todo group to the users that the group is shared with
 	sharedWithUsers.forEach((e) => {
 		e.sharedTodos.push(group);
 	});
@@ -146,6 +158,7 @@ const addTodoTag = async (req, res) => {
 		owner: user,
 	});
 
+	// add todo tag to user
 	user.todoTags.push(todoTag);
 
 	try {
@@ -161,6 +174,8 @@ const addTodo = async (req, res) => {
 	const { name, description } = req.body;
 	const { group, tags, canEdit } = req;
 
+	if (!group) return res.status(400).json({ message: "Todo group not found!" });
+
 	if (!canEdit)
 		return res.status(400).json({
 			message: "You dont have the required permissions to edit this!",
@@ -173,18 +188,20 @@ const addTodo = async (req, res) => {
 		tags: tags,
 	});
 
+	// Add todo to group
 	group.todos.push(todo);
+
+	// Add todo to tags
+	tags.forEach((e) => e.appliedTo.push(todo));
 
 	try {
 		const savedTodo = await todo.save();
 		await group.save();
-
 		for (const e of tags) {
-			e.appliedTo.push(todo);
 			await e.save();
 		}
 
-		return res.json(_todoToJSON(savedTodo));
+		return res.json(_todoToJSON(savedTodo, false));
 	} catch (err) {
 		return res.status(400).json({ message: err });
 	}
@@ -196,6 +213,9 @@ const addTodo = async (req, res) => {
 
 const deleteTodoGroup = async (req, res) => {
 	const { user, isOwner, group } = req;
+
+	if (!group) return res.status(400).json({ message: "Todo group not found!" });
+
 	if (!isOwner)
 		return res.status(400).json({
 			message: "You dont have the required permissions to edit this!",
@@ -219,10 +239,10 @@ const deleteTodoGroup = async (req, res) => {
 			await e.save();
 		}
 
-		// // 	// Delete the reference in the owners User table
+		// Delete the reference in the owners User table
 		user.todoGroups.splice(user.todoGroups.indexOf(group), 1);
 		await user.save();
-		// // 	// Delete the todo group
+		// Delete the todo group
 		await TodoGroup.findByIdAndRemove(group);
 		return res.json({ message: "success" });
 	} catch (err) {
@@ -232,6 +252,11 @@ const deleteTodoGroup = async (req, res) => {
 
 const deleteTodo = async (req, res) => {
 	const { todo, group, canDelete } = req;
+
+	if (!todo)
+		return res.status(400).json({ message: "Requested todo doesn't exist" });
+
+	if (!group) return res.status(400).json({ message: "Todo group not found!" });
 
 	if (!canDelete)
 		return res.status(400).json({
@@ -248,13 +273,21 @@ const deleteTodo = async (req, res) => {
 
 const deleteTodoTag = async (req, res) => {
 	const { tag } = req;
+
+	if (!tag)
+		return res
+			.status(400)
+			.json({ message: "Requested todo tag doesn't exist" });
+
+	// Remove tag from todos
+	tag.appliedTo.forEach((e) => e.tags.splice(e.tags.indexOf(tag), 2));
+
 	try {
 		for (const e of tag.appliedTo) {
-			e.tags.splice(e.tags.indexOf(tag), 2);
 			await e.save();
 		}
-
 		await TodoTag.findByIdAndDelete(tag);
+
 		return res.json({ message: "success" });
 	} catch (err) {
 		return res.status(400).json({ message: err });
@@ -266,35 +299,28 @@ const deleteTodoTag = async (req, res) => {
 // ******************************
 
 const updateTodoGroup = async (req, res) => {
-	const { name, shareWith, permissions, color } = req.body;
+	const { name, sharedWith, permissions, color } = req.body;
 	const { user, group, isOwner } = req;
+
+	if (!group) return res.status(400).json({ message: "Todo group not found!" });
 
 	if (!isOwner)
 		return res.status(400).json({
 			message: "You dont have the required permissions to edit this!",
 		});
 
-	// Check emails
+	// Prepare sharedWithUsers array
 	const sharedWithUsers = [];
-	const notFound = [];
-	for (const e of shareWith) {
-		if (e === user.email)
-			return res.status(400).json({
-				message: "You cant share a todo to yourself. Find some friends",
-			});
-		const u = await await User.findOne({ email: e });
-		if (!u) {
-			notFound.push(e);
-		} else {
+	if (sharedWith !== undefined) {
+		for (const e of sharedWith) {
+			if (e === user.email)
+				return res.status(400).json({
+					message: "You cant share a todo to yourself. Find some friends",
+				});
+			const u = await await User.findOne({ email: e }).populate("sharedEvents");
+			if (!u) return res.status(400).json({ message: `Email ${e} not found!` });
 			sharedWithUsers.push(u);
 		}
-	}
-
-	if (notFound.length > 0) {
-		return res.status(400).json({
-			message: "Users not found",
-			users: notFound,
-		});
 	}
 
 	// Remove users
@@ -311,7 +337,6 @@ const updateTodoGroup = async (req, res) => {
 	// Add new users
 	for (const e of sharedWithUsers) {
 		if (group.sharedWith.indexOf(e) === -1) {
-			// const u = await User.findById(e);
 			group.sharedWith.push(e);
 			e.sharedTodos.push(group);
 			await e.save();
@@ -335,6 +360,9 @@ const updateTodo = async (req, res) => {
 	const { description, name, status, tags } = req.body;
 	const { todo } = req;
 
+	if (!todo)
+		return res.status(400).json({ message: "Requested todo doesn't exist" });
+
 	todo.name = name || todo.name;
 	todo.description = description || todo.description;
 	todo.status = status === undefined ? todo.status : status;
@@ -357,7 +385,7 @@ const updateTodo = async (req, res) => {
 
 	try {
 		const savedTodo = await todo.save();
-		return res.json(_todoToJSON(savedTodo));
+		return res.json(_todoToJSON(savedTodo, false));
 	} catch (err) {
 		return res.status(400).json({ message: err });
 	}
@@ -366,6 +394,11 @@ const updateTodo = async (req, res) => {
 const updateTodoTag = async (req, res) => {
 	const { tag } = req;
 	const { color, name } = req.body;
+
+	if (!tag)
+		return res
+			.status(400)
+			.json({ message: "Requested todo tag doesn't exist" });
 
 	tag.color = color || tag.color;
 	tag.name = name || tag.name;
@@ -384,6 +417,7 @@ module.exports = {
 	getTodoGroupsSharedWithUser,
 	getTodoById,
 	getTodoTags,
+	getLatestTodos,
 	addTodoGroup,
 	addTodoTag,
 	addTodo,

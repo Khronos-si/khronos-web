@@ -19,12 +19,14 @@ const prepareGroupById = async (req, res, next) => {
 		.populate("sharedWith")
 		.populate("owner");
 
-	if (!group) return res.status(400).json({ message: "Todo group not found!" });
-
-	req.isOwner = group.owner._id.equals(user._id);
-	req.canEdit = group.owner._id.equals(user._id) || group.permissions >= 1;
-	req.canDelete = group.owner._id.equals(user._id) || group.permissions >= 2;
 	req.group = group;
+	req.isOwner = group && group.owner._id.equals(user._id);
+	req.canEdit =
+		(group && group.owner._id.equals(user._id)) ||
+		(group && group.permissions >= 1);
+	req.canDelete =
+		(group && group.owner._id.equals(user._id)) ||
+		(group && group.permissions >= 2);
 
 	return next();
 };
@@ -80,10 +82,8 @@ const prepareGroups = async (req, res, next) => {
 const prepareTodoById = async (req, res, next) => {
 	const todoId = req.body.todoId || req.params.id;
 	const todo = await Todo.findById(todoId).populate("tags");
-	if (!todo)
-		return res.status(400).json({ message: "Requested todo doesn't exist" });
 	req.todo = todo;
-	req.body.todoGroupId = todo.todoGroup._id.toString();
+	req.body.todoGroupId = todo && todo.todoGroup._id.toString();
 	return next();
 };
 

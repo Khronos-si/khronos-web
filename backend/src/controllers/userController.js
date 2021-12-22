@@ -70,11 +70,22 @@ const login = async (req, res) => {
 	const validUntil = new Date(
 		Date.now() + parseInt(process.env.JWT_EXP, 10) * 1000
 	);
+
 	const token = jwt.sign(
 		{ _id: user._id, validUntil },
 		process.env.JWT_SECRET,
 		{ expiresIn: parseInt(process.env.JWT_EXP, 10) }
 	);
+
+	const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+	await redisClient.connect();
+
+	await redisClient.set(`RFT_${user._id.toString()}`, ip.toString(), {
+		EX: process.env.JWT_EXP_REFRESH,
+	});
+
+	await redisClient.disconnect();
 
 	res.header("auth-token", token);
 	return res.json({
@@ -110,6 +121,8 @@ const logout = async (req, res) => {
 	await redisClient.set(`BL_${decodedToken._id.toString()}_${index}`, token, {
 		EX: remExp,
 	});
+
+	await redisClient.del(`RFT_${decodedToken._id.toString()}`);
 
 	await redisClient.disconnect();
 
@@ -166,4 +179,55 @@ const updatePassword = async (req, res) => {
 	return res.json({ message: "Success!" });
 };
 
-module.exports = { register, login, getAvatar, logout, updatePassword };
+const refreshToken = async (req, res) => {
+	const oldToken = req.header("auth-token");
+	const decodedToken = jwt.decode(oldToken);
+
+	const user = decodedToken._id;
+
+	console.log(user);
+
+	const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
+
+	await redisClient.connect();
+	const valid = await redisClient.get(`RFT_${user.toString()}`);
+	await redisClient.disconnect();
+
+	if (!valid && valid === ip)
+		return res.status(400).json({ message: "Cant refresh token" });
+
+	const validUntil = new Date(
+		Date.now() + parseInt(process.env.JWT_EXP, 10) * 1000
+	);
+
+	const token = jwt.sign({ _id: user, validUntil }, process.env.JWT_SECRET, {
+		expiresIn: parseInt(process.env.JWT_EXP, 10),
+	});
+
+	res.header("auth-token", token);
+	return res.json({ message: "success" });
+};
+
+const checkEmails = async (req, res) => {
+	const { emails } = req.body;
+	const users = await User.find({ email: { $in: emails } }).select(
+		"email -_id"
+	);
+
+	const userEmails = users.map((e) => e.email);
+	const valid = [];
+	for (const e of emails) {
+		valid.push({ email: e, valid: userEmails.indexOf(e) > -1 });
+	}
+	return res.json(valid);
+};
+
+module.exports = {
+	register,
+	login,
+	getAvatar,
+	logout,
+	updatePassword,
+	checkEmails,
+	refreshToken,
+};

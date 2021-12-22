@@ -10,10 +10,9 @@ const eventSchema = new mongoose.Schema({
 		required: true,
 	},
 	owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+	dates: { type: String, required: true },
 	start: { type: Date, required: true },
-	end: { type: Date, required: true },
-	repeatType: { type: Number, default: -1, required: true },
-	repeatFor: { type: Number, default: 0, required: true },
+	end: { type: Date, default: new Date(8640000000000000) },
 	tag: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "EventTag",
