@@ -18,6 +18,7 @@ const {
 	getTodoGroupsSharedWithUser,
 	getTodoById,
 	getTodoTags,
+	getLatestTodos,
 	addTodoGroup,
 	addTodoTag,
 	addTodo,
@@ -48,6 +49,8 @@ router.get(
 	prepareSharedGroups,
 	getTodoGroupsSharedWithUser
 );
+
+router.get("/latest/:number", verifyToken, prepareUser, getLatestTodos);
 
 router.get("/:id", verifyToken, prepareUser, prepareTodoById, getTodoById);
 
