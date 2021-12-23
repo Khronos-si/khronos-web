@@ -135,85 +135,103 @@
                 <!-- <div>
                     RECURRENCES
                 </div> -->
-                <div>
+                <div class="d-flex align-items-center">
                     Repeat every
-                    <input type="number" value="1" min="1" step="3" class="ml-2 mr-1 text-center" style="height: 30px; width: 40px; background: transparent; border: 1px solid #404656; border-radius: 5px; color:white;"> 
-                    Month
+                    <input v-model="repeatTimeValue" type="number" placeholder="1" min="1" step="3" class="ml-2 mr-1 text-center" style="height: 37px !important; width: 40px; background: transparent; border: 1px solid #404656; border-radius: 5px; color:white;"> 
+                    <v-select
+                        v-model="repeatTime"
+                        placeholder="Month"
+                        :options="optionRepeat"
+                        style="width: 150px;"
+                        class="repeatOn"
+                    >
+                        <template #selected-option="option">
+                            <div>
+                                {{option.label}}
+                            </div>
+                        </template>
+                    </v-select>
                 </div>
-                <div class="mt-1">
-                    Repeat On
+                <div class="d-flex mt-1 align-items-center" style="height: 30px;">
+                    <div class="mr-2 d-flex align-items-center">
+                        Repeat On
+                    </div>
+                    <div class="d-flex" style="height:25px;">
+
+                        <!-- MONDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_mon" v-model="repeatMon">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_mon">M</label>
+                        </div>
+
+                        <!-- TUESDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_tue" v-model="repeatTue">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_tue">T</label>
+                        </div>
+
+                        <!-- WEDNESDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_wed" v-model="repeatWed">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_wed">W</label>
+                        </div>
+
+                        <!-- THURSDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_thu" v-model="repeatThu">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_thu">T</label>
+                        </div>
+
+                        <!-- FRIDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_fri" v-model="repeatFri">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_fri">F</label>
+                        </div>
+
+                        <!-- SATURDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_sat" v-model="repeatSat">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_sat">S</label>
+                        </div>
+
+                        <!-- SUNDAY -->
+                        <div>
+                            <input type="checkbox" id="repeat_sun" v-model="repeatSun">
+                            <label class="d-flex justify-content-center align-items-center" for="repeat_sun">S</label>
+                        </div>
+                    </div>
                 </div>
-                <div class="d-flex mt-1">
-
-                    <!-- MONDAY -->
-                    <div >
-                        <input type="checkbox" id="repeat_mon" v-model="repeatMon">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_mon">M</label>
-                    </div>
-
-                    <!-- TUESDAY -->
-                    <div>
-                        <input type="checkbox" id="repeat_tue" v-model="repeatTue">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_tue">T</label>
-                    </div>
-
-                    <!-- WEDNESDAY -->
-                    <div>
-                        <input type="checkbox" id="repeat_wed" v-model="repeatWed">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_wed">W</label>
-                    </div>
-
-                    <!-- THURSDAY -->
-                    <div>
-                        <input type="checkbox" id="repeat_thu" v-model="repeatThu">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_thu">T</label>
-                    </div>
-
-                    <!-- FRIDAY -->
-                    <div>
-                        <input type="checkbox" id="repeat_fri" v-model="repeatFri">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_fri">F</label>
-                    </div>
-
-                    <!-- SATURDAY -->
-                    <div>
-                        <input type="checkbox" id="repeat_sat" v-model="repeatSat">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_sat">S</label>
-                    </div>
-
-                    <!-- SUNDAY -->
-                    <div>
-                        <input type="checkbox" id="repeat_sun" v-model="repeatSun">
-                        <label class="d-flex justify-content-center align-items-center" for="repeat_sun">S</label>
-                    </div>
-                </div>
+            
                 <div class="mt-1">
                     Ends
                 </div>
                 <div class="mt-1">
-                    <div> 
-                        <b-form-checkbox v-model="recurrences">Never</b-form-checkbox>
-                    </div>
-                    <div class="mt-1 d-flex align-items-center">
-                        <b-form-checkbox style="margin-right: 35px;" v-model="recurrences">On</b-form-checkbox>
-                        <date-picker :min-date="dateStart" v-model="dateEnd" mode="date" class="datePicker p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'">  
-                            <template v-slot="{ inputValue, inputEvents }">
-                                <input
-                                    style="height: 30px; width: 100px !important;"
-                                    class="border px-2 py-1 rounded text-center"
-                                    :class="isDark == true ? 'calendarInput-dark': 'calendarInput-light'"
-                                    :value="inputValue"
-                                    placeholder="Enter start date"
-                                    v-on="inputEvents"
-                                />
-                            </template>
-                        </date-picker>
-                    </div>
-                    <div class="mt-1 d-flex align-items-center">
-                        <b-form-checkbox v-model="recurrences">After</b-form-checkbox>
-                        <input type="number" value="1" min="1" max="20" class="ml-2 mr-1 text-center" style="height: 30px; width: 40px; background: transparent; border: 1px solid #404656; border-radius: 5px; color:white;"> 
-                        occurrences
-                    </div>
+                    <b-form-group>
+                        <div> 
+                            <b-form-radio v-model="endsOnType" name="ends-on-type" value="1">Never</b-form-radio>
+                        </div>
+                        <div class="mt-1 d-flex align-items-center" >
+                            <b-form-radio style="margin-right: 35px;" v-model="endsOnType" name="ends-on-type" value="2">On</b-form-radio>
+                            <date-picker :min-date="new Date()" v-model="endsOnDate" mode="date" class="datePicker p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" disabled>  
+                                <template v-slot="{ inputValue, inputEvents }">
+                                    <input
+                                        style="height: 30px; width: 100px !important;"
+                                        class="border px-2 py-1 rounded text-center"
+                                        :class="{'calendarInput-dark': isDark, 'calendarInput-light': !isDark, 'disabledClass': endsOnType != 2}"
+                                        :value="inputValue"
+                                        placeholder="Enter date"
+                                        v-on="inputEvents"
+                                        :disabled="endsOnType != 2 ? '' : disabled"
+                                    />
+                                </template>
+                            </date-picker>
+                        </div>
+                        <div class="mt-1 d-flex align-items-center" :class="endsOnType != 3? 'disabledClass' :''">
+                            <b-form-radio v-model="endsOnType" name="ends-on-type" value="3">After</b-form-radio>
+                            <input type="number" min="1" max="20" class="ml-2 mr-1 text-center" placeholder="1" style="height: 30px; width: 40px; background: transparent; border: 1px solid #404656; border-radius: 5px; color:white;" :disabled="endsOnType != 3 ? '' : disabled"> 
+                            Occurrences
+                        </div>
+                    </b-form-group>
                 </div>
                 
             </div>
@@ -288,7 +306,7 @@
 
 <script>
     import { DatePicker } from 'v-calendar'
-    import { BModal, BFormInput, BFormGroup, BFormCheckbox   } from 'bootstrap-vue'
+    import { BModal, BFormInput, BFormGroup, BFormCheckbox, BFormRadio   } from 'bootstrap-vue'
     import vSelect from 'vue-select'
     import useAppConfig from '@core/app-config/useAppConfig'
     import { computed } from '@vue/composition-api'
@@ -300,6 +318,7 @@
 
     export default {
         components: {
+            BFormRadio,
             BModal,
             BFormInput,
             BFormGroup,
@@ -332,6 +351,11 @@
         },
         data() {
             return {
+                endsOnDate: new Date(),
+                repeatTimeValue: null,
+                endsOnType: 1,
+                repeatTime: null,
+                optionRepeat: [{'label': 'Day'}, {'label': 'Week'}, {'label': 'Month'}, {'label': 'Year'}],
                 stop_after: null,
                 recurrences: null,
                 descState: null,
@@ -460,6 +484,10 @@
 </script>
 
 <style scoped>
+    .disabledClass{
+        color: gray !important;
+    }
+
     input[type="checkbox"]:not(:checked), 
     input[type="checkbox"]:checked {
         position: absolute;
@@ -489,6 +517,7 @@
 
 <style lang="scss">
     @import '~@core/scss/vue/libs/vue-select.scss';
+
     .emailDoesntExist{
         color: #fe5c36 !important;
     }
