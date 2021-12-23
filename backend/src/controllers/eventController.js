@@ -87,7 +87,7 @@ const addEvent = async (req, res) => {
 		owner: user,
 		tag: tag,
 		sharedWith: sharedWithUsers,
-		dates: dates.toString(),
+		dates: JSON.stringify(dates),
 		start: start,
 		...(end && { end: end }),
 	});
@@ -292,6 +292,7 @@ const updateEvent = async (req, res) => {
 	event.description = description || event.description;
 	event.start = start || event.start;
 	event.end = end || event.end;
+	event.dates = (dates && JSON.stringify(dates)) || event.end;
 
 	// If the tag was specified in the request, update the event
 	if (tag && !event.tag._id.equals(tag._id)) {
