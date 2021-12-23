@@ -16,8 +16,7 @@ const _eventToJSON = (event) => ({
 	description: event.description,
 	start: event.start,
 	end: event.end,
-	repeatType: event.repeatType,
-	repeatFor: event.repeatFor,
+	dates: event.dates,
 	tag: { _id: event.tag._id, name: event.tag.name, color: event.tag.color },
 	sharedWith: event.sharedWith.map((e) =>
 		_userToJSON(e, false, true, false, false)
