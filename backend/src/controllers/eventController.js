@@ -16,8 +16,7 @@ const _eventToJSON = (event) => ({
 	description: event.description,
 	start: event.start,
 	end: event.end,
-	repeatType: event.repeatType,
-	repeatFor: event.repeatFor,
+	dates: event.dates,
 	tag: { _id: event.tag._id, name: event.tag.name, color: event.tag.color },
 	sharedWith: event.sharedWith.map((e) =>
 		_userToJSON(e, false, true, false, false)
@@ -88,7 +87,7 @@ const addEvent = async (req, res) => {
 		owner: user,
 		tag: tag,
 		sharedWith: sharedWithUsers,
-		dates: dates.toString(),
+		dates: dates,
 		start: start,
 		...(end && { end: end }),
 	});
@@ -159,23 +158,31 @@ const deleteEventTag = async (req, res) => {
 	if (!isOwner)
 		return res.status(400).json({ message: "You dont own this event tag!" });
 
-	if (isDefault)
-		return res
-			.status(400)
-			.json({ message: "You can't delete the default tag" });
-
-	// Remove tag from user
-	user.eventTags.splice(user.eventTags.indexOf(tag), 1);
-
 	// Remove events from user
 	const events = tag.appliedTo;
 	events.forEach((e) => user.events.splice(user.events.indexOf(e), 1));
 
+	if (!isDefault)
+		// Remove tag from user
+		user.eventTags.splice(user.eventTags.indexOf(tag), 1);
+	else tag.appliedTo = [];
+
 	try {
+		// Remove events
 		for (const e of events) {
 			await Event.findByIdAndDelete(e);
+			// Remove events from users that the event is shared with
+			for (const id of e.sharedWith) {
+				const u = await User.findById(id);
+				u.sharedEvents.splice(u.sharedEvents.indexOf(e), 1);
+				await u.save();
+			}
 		}
-		await EventTag.findByIdAndDelete(tag);
+
+		// Remove tag
+		if (!isDefault) await EventTag.findByIdAndDelete(tag);
+		else await tag.save();
+
 		await user.save();
 
 		return res.json({ message: "success" });
@@ -293,6 +300,7 @@ const updateEvent = async (req, res) => {
 	event.description = description || event.description;
 	event.start = start || event.start;
 	event.end = end || event.end;
+	event.dates = dates || event.end;
 
 	// If the tag was specified in the request, update the event
 	if (tag && !event.tag._id.equals(tag._id)) {

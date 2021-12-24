@@ -10,7 +10,7 @@ const eventSchema = new mongoose.Schema({
 		required: true,
 	},
 	owner: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-	dates: { type: String, required: true },
+	dates: { type: Object, required: true },
 	start: { type: Date, required: true },
 	end: { type: Date, default: new Date(8640000000000000) },
 	tag: {
