@@ -208,6 +208,25 @@
                 } catch (err) {
                     console.log(err)
                 }
+
+                // try {
+
+                //     const data = await this.$http.get('/api/event')
+
+                //     if (data.data && data.data.length === 0) {
+                //         throw 'Prislo je do napake'
+                //     }
+
+                //     for (const event of data.data) {
+                //         event.selected = true
+                //     }
+
+                //     this.$store.dispatch('calendar/update_events', { 'events': data.data})
+                //     // this.$store.dispatch('calendar/set_selected_group', { 'set': true, 'selectedGroup': data.data[0]['_id']})
+                // } catch (err) {
+                //     console.log(err)
+                //     this.$printError('Prislo je do napake pri pridobivanju podatkov!')
+                // }
                
 
             }

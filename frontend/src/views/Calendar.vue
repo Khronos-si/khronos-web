@@ -67,11 +67,11 @@
                                 <div
                                     v-for="attr in attributes"
                                     :key="attr.customData._id"
-                                    class="text-xs rounded text-center text-black bg-custom"
+                                    class="text-xs rounded text-center text-black bg-custom text"
                                     style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px;"
                                     :style="'--color:' + attr.customData.color + ';'"
                                 >
-                                    {{ attr.customData.name.substring(0,12) }}...
+                                    {{ attr.customData.name}}
                                 </div>
                             </div>
                     
@@ -183,7 +183,7 @@
                     }
 
                     this.$store.dispatch('calendar/update_events', { 'events': data.data})
-                    this.$store.dispatch('calendar/set_selected_group', { 'set': true, 'selectedGroup': data.data[0]['_id']})
+                    // this.$store.dispatch('calendar/set_selected_group', { 'set': true, 'selectedGroup': data.data[0]['_id']})
                 } catch (err) {
                     console.log(err)
                     this.$printError('Prislo je do napake pri pridobivanju podatkov!')
@@ -201,6 +201,15 @@
 
 <style lang="scss" scoped>
     @import '~@core/scss/base/bootstrap-extended/include';
+
+    .text {
+        display: block;
+        // width: 8vw;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
 
     .btn-custom{
         border-color: $blue !important;

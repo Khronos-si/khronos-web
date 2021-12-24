@@ -132,7 +132,7 @@
 
                 this.calendarInput = null
                 await this.refreshData()
-                this.$printSuccess('Tag was sucesfull deleted')
+                this.$printSuccess('Calendar was sucesfull deleted')
             }
         }
     }

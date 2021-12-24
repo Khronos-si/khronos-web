@@ -80,6 +80,7 @@
                 label-for="date-end-input"
                 invalid-feedback="End date is required"
                 :state="permState"
+                v-if="!recurrences"
             >
                 <!-- END DATE WITH TIME PICKER -->
                 <date-picker :min-date="dateStart" v-model="dateEnd" mode="dateTime" class="datePicker w-100 p-0" :class="isDark == true? 'datePicker-dark': 'datePicker-light'" v-if="!allDay" :minute-increment="5" is24hr>  
@@ -156,49 +157,58 @@
                     <div class="mr-2 d-flex align-items-center">
                         Repeat On
                     </div>
-                    <div class="d-flex" style="height:25px;">
+                    {{selectedDayMonday}}
+                    {{selectedDayTuesday}}
 
-                        <!-- MONDAY -->
+                    <div class="d-flex" style="height:25px;">
+                        
+                        <!-- <b-form-checkbox value="orange">Orange</b-form-checkbox>
+                                <b-form-checkbox value="apple">Apple</b-form-checkbox>
+                                <b-form-checkbox value="pineapple">Pineapple</b-form-checkbox>
+                                <b-form-checkbox value="grape">Grape</b-form-checkbox>  -->
+
+                                
+                        <!-- MONDAY-->
                         <div>
-                            <input type="checkbox" id="repeat_mon" v-model="repeatMon">
+                            <input type="checkbox" v-model="selectedDayMonday">
                             <label class="d-flex justify-content-center align-items-center" for="repeat_mon">M</label>
                         </div>
 
                         <!-- TUESDAY -->
                         <div>
-                            <input type="checkbox" id="repeat_tue" v-model="repeatTue">
+                            <input type="checkbox" v-model="selectedDayTuesday">
                             <label class="d-flex justify-content-center align-items-center" for="repeat_tue">T</label>
                         </div>
 
                         <!-- WEDNESDAY -->
-                        <div>
-                            <input type="checkbox" id="repeat_wed" v-model="repeatWed">
-                            <label class="d-flex justify-content-center align-items-center" for="repeat_wed">W</label>
-                        </div>
+                        <!-- <div>
+                                    <input type="checkbox" id="repeat_wed" value="test12">
+                                    <label class="d-flex justify-content-center align-items-center" for="repeat_wed">W</label>
+                                </div> -->
 
                         <!-- THURSDAY -->
-                        <div>
-                            <input type="checkbox" id="repeat_thu" v-model="repeatThu">
-                            <label class="d-flex justify-content-center align-items-center" for="repeat_thu">T</label>
-                        </div>
+                        <!-- <div>
+                                    <input type="checkbox" id="repeat_thu" v-model="repeatThu">
+                                    <label class="d-flex justify-content-center align-items-center" for="repeat_thu">T</label>
+                                </div> -->
 
                         <!-- FRIDAY -->
-                        <div>
-                            <input type="checkbox" id="repeat_fri" v-model="repeatFri">
-                            <label class="d-flex justify-content-center align-items-center" for="repeat_fri">F</label>
-                        </div>
+                        <!-- <div>
+                                    <input type="checkbox" id="repeat_fri" v-model="repeatFri">
+                                    <label class="d-flex justify-content-center align-items-center" for="repeat_fri">F</label>
+                                </div> -->
 
                         <!-- SATURDAY -->
-                        <div>
-                            <input type="checkbox" id="repeat_sat" v-model="repeatSat">
-                            <label class="d-flex justify-content-center align-items-center" for="repeat_sat">S</label>
-                        </div>
+                        <!-- <div>
+                                    <input type="checkbox" id="repeat_sat" v-model="repeatSat">
+                                    <label class="d-flex justify-content-center align-items-center" for="repeat_sat">S</label>
+                                </div> -->
 
                         <!-- SUNDAY -->
-                        <div>
-                            <input type="checkbox" id="repeat_sun" v-model="repeatSun">
-                            <label class="d-flex justify-content-center align-items-center" for="repeat_sun">S</label>
-                        </div>
+                        <!-- <div>
+                                    <input type="checkbox" id="repeat_sun" v-model="repeatSun">
+                                    <label class="d-flex justify-content-center align-items-center" for="repeat_sun">S</label>
+                                </div> -->
                     </div>
                 </div>
             
@@ -306,7 +316,7 @@
 
 <script>
     import { DatePicker } from 'v-calendar'
-    import { BModal, BFormInput, BFormGroup, BFormCheckbox, BFormRadio   } from 'bootstrap-vue'
+    import { BModal, BFormInput, BFormGroup, BFormCheckbox, BFormRadio    } from 'bootstrap-vue'
     import vSelect from 'vue-select'
     import useAppConfig from '@core/app-config/useAppConfig'
     import { computed } from '@vue/composition-api'
@@ -351,6 +361,8 @@
         },
         data() {
             return {
+                selectedDayTuesday: false,
+                selectedDayMonday: false,
                 endsOnDate: new Date(),
                 repeatTimeValue: null,
                 endsOnType: 1,
@@ -449,17 +461,20 @@
             },
             async addGroup() {
 
+                const dates = {
+                    'start': this.dateStart
+                }
+
+                if (!this.recurrences) {
+                    dates.end = this.dateEnd
+                }
+
                 const payload = {
                     'name': this.name,
                     'description': this.description,
-                    // 'color': this.color,
-                    'repeatType': -1,
-                    'repeatFor': -1,
                     'sharedWith': [],
-                    'start': this.dateStart,
-                    'end': this.dateEnd,
+                    dates,
                     'eventTagId': this.calendarInput
-
                 }
 
                 
@@ -467,13 +482,14 @@
                     const data = await this.$http.post('/api/event', payload)
                 
                     console.log(data)
-                    const newGroup = data.data
+                    const newEvent = data.data
 
-                    this.$store.dispatch('calendar/add_event', { 'new_group': newGroup})
+                    this.$store.dispatch('calendar/add_event', { 'tag_id': this.calendarInput, 'event': newEvent})
 
                     this.$bvModal.hide('modal-add-event')
                 } catch (err) {
-                    console.log(err.data)
+                    this.$printError('Error while trying to add calendar')
+                    console.log(err)
                 }
                
 
