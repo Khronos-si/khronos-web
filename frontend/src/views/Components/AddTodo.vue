@@ -69,29 +69,31 @@
             </b-form-group>
 
             <!-- TAGS -->
-            <b-form-group
-                label="Tags"
-                label-for="tags"
-                v-if="selectedTags"
-            >
-                <v-select
-                    v-model="selectedTags"
-                    label="name"
-                    multiple
-                    taggable
-                    placeholder="Choose tags"
-                    :selectable="() => selectedTags.length < 5"
-                    :options="tags"
-                > 
-                    <template #selected-option="{ name, color }">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span> {{name}}
-                    </template>
-                    <template #option="{ name, color }">
-                        <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span>
-                        <span> {{ name }}</span>
-                    </template>
-                </v-select>
-            </b-form-group>
+            <div v-if="tags && tags.length > 0">
+                <b-form-group
+                    label="Tags"
+                    label-for="tags"
+                >
+                    <v-select
+                        v-model="selectedTags"
+                        label="name"
+                        multiple
+                        taggable
+                        placeholder="Choose tags"
+                        :selectable="() => selectedTags.length < 5"
+                        :options="tags"
+                    > 
+                        <template #selected-option="{ name, color }">
+                            <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span> {{name}}
+                        </template>
+                        <template #option="{ name, color }">
+                            <span class="bullet bullet-sm mr-1" :style="'background:' + color + '!important;'"></span>
+                            <span> {{ name }}</span>
+                        </template>
+                    </v-select>
+                </b-form-group>
+            </div>
+            
         </form>
     </b-modal>
 </template>

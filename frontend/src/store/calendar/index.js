@@ -12,7 +12,21 @@ export default {
         getAllGroups: state => {
             return state.calendar
         },
-       
+        getEventById: state => (idEvent) => {
+            if (!state.calendar) {
+                return null
+            }
+
+            for (const group of state.calendar) {
+                if (group.events) {
+                    const event = group.events.filter(ele => ele._id === idEvent)
+
+                    if (event) return event[0]
+                }
+            }
+            
+            return null
+        },
         getEvents: state => (idGroup) => {
             console.log(idGroup)
             if (!state.calendar) {

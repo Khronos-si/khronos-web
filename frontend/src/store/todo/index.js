@@ -270,12 +270,14 @@ export default {
     mutations: {
         //Tags
         SET_TAGS(state, payload) {
+            console.log('Test')
+            console.log(payload.tags)
             state.tags = payload.tags
         },
         ADD_TAG(state, payload) {
-            if (state.tags) state.tags.push(payload.new_tag)
+            if (!state.tags) state.tags = []
 
-            console.log(state.tags)
+            if (state.tags) state.tags.push(payload.new_tag)
         },
 
         //Both

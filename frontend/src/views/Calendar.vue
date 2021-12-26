@@ -18,7 +18,7 @@
                         <div>
                             <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                                 <template #button-content>
-                                    <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
+                                    <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class"></more-vertical-icon>
                                 </template>
                                 <b-dropdown-item-button @click="editCalendar()" class="w-100" style="width: 100% !important;">Edit</b-dropdown-item-button>
                                 <b-dropdown-item-button @click="deleteCalendar()">Delete</b-dropdown-item-button>
@@ -67,9 +67,10 @@
                                 <div
                                     v-for="attr in attributes"
                                     :key="attr.customData._id"
-                                    class="text-xs rounded text-center text-black bg-custom text"
-                                    style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px;"
+                                    class="text-xs rounded text-center text-black bg-custom text preventUserSelection"
+                                    style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px; cursor: pointer;"
                                     :style="'--color:' + attr.customData.color + ';'"
+                                    v-on:click="showEvent($event,attr.customData._id)"
                                 >
                                     {{ attr.customData.name}}
                                 </div>
@@ -85,6 +86,8 @@
         <add-event :calendarDate="inputCalendarDay"></add-event>
         <add-tag></add-tag>
         <delete-calendar-tag></delete-calendar-tag>
+        <edit-calendar></edit-calendar>
+        <event-details :eventId="eventDetailsId"></event-details>
     </div>
 </template>
 
@@ -97,6 +100,8 @@
     import { BButton, BFormCheckbox, BDropdown, BDropdownItemButton } from 'bootstrap-vue'
     import AddTag from './Components/Calendar/AddTag.vue'
     import DeleteCalendarTag from './Components/Calendar/DeleteCalendarTag.vue'
+    import EventDetails from './Components/Calendar/EventDetails.vue'
+    import EditCalendar from './Components/Calendar/EditCalendar.vue'
 
 
     export default {
@@ -110,7 +115,9 @@
             MoreVerticalIcon,
             BDropdown,
             BDropdownItemButton,
-            DeleteCalendarTag
+            DeleteCalendarTag,
+            EventDetails,
+            EditCalendar
         },
         setup() {
             const { skin } = useAppConfig()
@@ -129,6 +136,8 @@
         },
         data() {
             return {
+                eventDetailsId: null,
+                clickedOnEvent: false,
                 inputCalendarDay: null,
                 selectedGroup: null,
                 cardDiv: null,
@@ -147,6 +156,14 @@
             }
         },
         methods:{
+            editCalendar() {
+                this.$bvModal.show('modal-edit-calendar')
+            },
+            showEvent(event, id) {
+                this.eventDetailsId = id
+                event.stopPropagation()
+                this.$bvModal.show('modal-event-details')
+            },
             changeSelectedGroups(id) {
                 console.log(id)
             },
@@ -173,6 +190,8 @@
                 try {
 
                     const data = await this.$http.get('/api/event')
+
+                    console.log(data.data)
 
                     if (data.data && data.data.length === 0) {
                         throw 'Prislo je do napake'
@@ -201,6 +220,13 @@
 
 <style lang="scss" scoped>
     @import '~@core/scss/base/bootstrap-extended/include';
+
+    .preventUserSelection{
+        user-select: none;
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
 
     .text {
         display: block;
@@ -362,5 +388,41 @@
         & .vc-weeks {
             padding: 0;
         }
+    }
+
+    .dropdown-item {
+        width: 100% !important;
+    }
+
+    .dropdown-custom{
+        border: none;
+        background: transparent !important;
+    }
+
+    .dropdown-custom:focus-visible{
+        border: none;
+        background: transparent !important;
+    }
+    .dropdown-custom:hover{
+        box-shadow: none !important;
+        border: none;
+        background: transparent !important;
+    }
+    .dropdown-custom:focus{
+        box-shadow: none !important;
+        border: none;
+        background: transparent !important;
+    }
+    .dropdown-custom:active{
+        border: none;
+        background: transparent !important;
+    }
+    .dropdown-custom:target{
+        border: none;
+        background-color: transparent !important;
+    }
+    .dropdown-custom:visited{
+        border: none;
+        background: transparent !important;
     }
 </style>

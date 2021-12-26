@@ -105,7 +105,7 @@
                     const data = await this.$http.get('/api/todo/group')
 
                     if (data.data.length === 0) {
-                        return
+                        throw 'Prislo je do napake!'
                     }
 
                     this.$store.dispatch('todo/update_todos', { 'todos': data.data})
@@ -120,23 +120,21 @@
                     const data = await this.$http.get('/api/todo/shared-with-me')
 
                     if (data.data.length === 0) {
-                        return
+                        throw 'Prislo je do napake!'
                     }
 
                     this.$store.dispatch('todo/set_shared_group', { 'todos': data.data})
                 } catch (err) {
-                    this.$printError('Error while loading shared Groups')//todo
-                    console.log(err)
+                    if (err !== 'Prislo je do napake!') this.$printError('Error while loading shared Groups')//todo
                 }
 
                 try {
 
                     const data = await this.$http.get('/api/todo/tag')
-
+                 
                     this.$store.dispatch('todo/set_tags', { 'tags': data.data})
                 } catch (err) {
                     this.$printError('Error while loading tags')//todo
-                    console.log(err)
                 }
             },
             async deleteTag() {
@@ -147,12 +145,16 @@
 
                 } catch (err) {
                     this.$printError('Request was not sucesfull!')//todo
-                    console.log(err)
+                    return
                 }
 
                 this.tagInput = null
                 await this.refreshData()
                 this.$printSuccess('Tag was sucesfull deleted')
+
+                if (!this.todoTags || (this.todoTags && this.todoTags.length <= 0)) {
+                    this.$bvModal.hide('modal-delete-todo-tag')
+                }
             }
         }
     }

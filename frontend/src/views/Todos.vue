@@ -4,10 +4,10 @@
             <div class="m-0 p-0" style="float: left" >
                 
                 <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; overflow-y: auto; border-right: 1px solid rgba(110,110,110,0.3);">
-                    <div class="px-2 pb-1 d-flex justify-content-center" v-if="groupPermissions == null || groupPermissions > 0">
+                    <div class="px-2 pb-1 d-flex justify-content-center" v-if="(groupPermissions == null || groupPermissions > 0)  && (selectedGroup && todoGroups && todoGroups.length > 0)">
                         <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-todo >Add Task</b-button>
                     </div>
-                    <div class="d-flex justify-content-between pr-1 pl-2" style="padding-bottom: 5px;">
+                    <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
                         <div class="d-flex">
                             <!-- ZBRISI V IF CE ZELIS COLLAPSE -->
                             <div v-on:click="colapseMyGruopy()" class="" v-if="0 == 1" style="cursor: pointer; margin-right: 5px;">
@@ -22,7 +22,7 @@
                             <div v-on:click="addGroup()" style="cursor: pointer;" >
                                 <plus-icon size="1.4x" class="custom-class"></plus-icon>
                             </div>
-                            <div>
+                            <div v-if="todoGroups && todoGroups.length > 0">
                                 <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                                     <template #button-content>
                                         <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
@@ -71,7 +71,7 @@
                             <div v-on:click="addTag()" style="cursor: pointer;">
                                 <plus-icon size="1.4x" class="custom-class"></plus-icon>
                             </div>
-                            <div>
+                            <div v-if="tags && tags.length > 0">
                                 <b-dropdown id="dropdown-1" text="Dropdown Button" toggle-class="dropdown-custom p-0" class="my-0 p-0 dropdown-custom" :boundary="cardDiv" no-caret>
                                     <template #button-content>
                                         <more-vertical-icon size="1.4x" :class="isDark? '': 'iconColorWhite'" class="p-0 custom-class" v-on:click="showEditGroup = !showEditGroup"></more-vertical-icon>
@@ -184,6 +184,9 @@
             DeleteTodoTag   // DatePicker
         },
         computed:{
+            tags() {
+                return this.$store.getters['todo/getAllTags']
+            },
             selectedGroupName() {
                 return this.$store.getters['todo/getGroupName'](this.selectedGroup)
             },
@@ -297,7 +300,7 @@
                 } catch (err) {
                     console.log(err)
                 }
-                
+               
 
             }
         },
