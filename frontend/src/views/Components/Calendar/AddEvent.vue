@@ -429,12 +429,12 @@
             },
             repeatOnDays(val) {
 
-                if (val[val.length - 1].toLowerCase() === 'last') {
+                if (val && val.length > 0 && val[val.length - 1].toLowerCase() === 'last') {
                     val[val.length - 1] = 'Last day of month' 
                     return
                 }
 
-                if (val[val.length - 1] <= 0 || val[val.length - 1] > 31) val.splice(val.length - 1, 1)
+                if (val && val.length > 0 && (val[val.length - 1] <= 0 || val[val.length - 1] > 31)) val.splice(val.length - 1, 1)
             }
         },
         methods: {
@@ -470,6 +470,11 @@
                 this.resetModal()
             },
             resetModal() {
+                this.repeatTimeValue = null
+                this.endsOnType = 1
+                this.repeatOnDays = []
+                this.maxOccurrences = null
+                this.selectedDays = null
                 this.recurrences = null
                 this.color = ''
                 this.name = ''
@@ -483,8 +488,14 @@
                 this.endsOnDate = new Date()
                 this.repeatTime = null
                 this.emailThatDoesntExist = []
-                this.selectedDayTuesday = false
                 this.selectedDayMonday = false
+                this.selectedDayTuesday = false
+                this.selectedDayWednesday = false
+                this.selectedDayThursday = false
+                this.selectedDayFriday = false
+                this.selectedDaySaturday = false
+                this.selectedDaySunday = false
+                this.repeatTime = null
             },
             clicked(bvModalEvt) {
                 console.log(bvModalEvt)
@@ -525,16 +536,10 @@
                 if (this.selectedDaySunday) this.selectedDays.push(1)
 
                 const dates = {
-                    'start': this.dateStart,
-                    'monthlyInterval': 1,
-                    'days': [1, -1]
+                    'start': this.dateStart
                 }
 
-                console.log(JSON.stringify(dates))
-
                 if (this.selectedDays.length > 0 && this.recurrences) dates.weekdays = this.selectedDays
-
-                console.log(this.repeatTime)
 
                 if (this.repeatTime && this.repeatTime.label === 'Day') {
                     dates.dailyInterval = this.repeatTimeValue
@@ -546,9 +551,6 @@
                     dates.yearlyInterval = this.repeatTimeValue
                 }
 
-                console.log('TEST')
-                console.log(this.endsOnType === '2')
-
                 if (!this.recurrences) {
                     dates.end = this.dateEnd
                 }
@@ -556,6 +558,21 @@
                 if (this.recurrences && this.endsOnType === '2') {
                     console.log('SM KLE')
                     dates.end = this.endsOnDate
+                }
+
+
+                if (this.recurrences && this.repeatTime && this.repeatTime.label === 'Month') {
+                    const correctDays = []
+
+                    for (const key of this.repeatOnDays) {
+                        if (key === 'Last day of month') {
+                            correctDays.push(-1)
+                        } else {
+                            correctDays.push(parseInt(key))
+                        }
+                    }
+
+                    dates.days = correctDays
                 }
 
                 if (this.recurrences && this.repeatTime && this.endsOnType === '3' && this.repeatTime.label === 'Week') {
@@ -585,7 +602,7 @@
                         const numberOfWeeks = parseInt((this.maxOccurrences - elementsHigher) / numberOfEventsInWeek)
                         const numberOfEventsInLastWeek = (this.maxOccurrences - elementsHigher) % this.selectedDays.length
 
-                        let daysToAdd = (numberOfWeeks * 7)
+                        let daysToAdd = (numberOfWeeks * 7) * this.repeatTimeValue
 
                         console.log('DAYS TO BEGG')
                         console.log(daysToAdd)
@@ -625,11 +642,11 @@
                         const newDate = new Date(this.dateStart)
                         newDate.setDate(newDate.getDate() + (daysToAdd + daysToFirstEvent - 1))
                         console.log(newDate)
-                        return
+                        dates.end = newDate
                     }
 
 
-                    dates.end = this.endsOnDate
+                    // dates.end = this.endsOnDate
                 }
 
                 const payload = {
@@ -643,19 +660,19 @@
                 console.log(payload)
 
                 
-                // try {
-                //     const data = await this.$http.post('/api/event', payload)
+                try {
+                    const data = await this.$http.post('/api/event', payload)
                 
-                //     console.log(data)
-                //     const newEvent = data.data
+                    console.log(data)
+                    const newEvent = data.data
 
-                //     this.$store.dispatch('calendar/add_event', { 'tag_id': this.calendarInput, 'event': newEvent})
+                    this.$store.dispatch('calendar/add_event', { 'tag_id': this.calendarInput, 'event': newEvent})
 
-                //     this.$bvModal.hide('modal-add-event')
-                // } catch (err) {
-                //     this.$printError('Error while trying to add calendar')
-                //     console.log(err)
-                // }
+                    this.$bvModal.hide('modal-add-event')
+                } catch (err) {
+                    this.$printError('Error while trying to add calendar')
+                    console.log(err)
+                }
                
 
             }
