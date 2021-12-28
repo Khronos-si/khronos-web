@@ -1,4 +1,7 @@
 // import Vue from 'vue'
+
+import Vue from 'vue'
+
 // people.filter(person => id_filter.includes(person.id))
 export default {
     namespaced: true,
@@ -10,6 +13,12 @@ export default {
     getters: {
         //Mine
         getAllGroups: state => {
+            return state.calendar
+        },
+        getAllGroupsEdit: state => {
+            if (state.calendar) {
+                return state.calendar.filter(ele => ele.name !== 'Default')
+            }
             return state.calendar
         },
         getEventById: state => (idEvent) => {
@@ -144,7 +153,18 @@ export default {
                 state.calendar = new Array()
             } 
             state.calendar.push(payload.new_tag)
-        }   
+        },
+        EDIT_TAG(state, payload) {
+            if (!state.calendar) return
+
+            const group =  state.calendar.findIndex(element => element._id === payload.calendar_id)
+
+            if (group) {
+                Vue.delete(state.calendar, group)
+                state.calendar.splice(group, 0, payload.calendar_new)
+            }
+
+        }  
     },
     actions: {
         update_events({ commit }, payload) {
@@ -155,6 +175,9 @@ export default {
         },
         add_tag({ commit }, payload) {
             commit('ADD_TAG', payload)
+        },
+        edit_tag({ commit }, payload) {
+            commit('EDIT_TAG', payload)
         }
        
     }
