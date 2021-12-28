@@ -44,28 +44,32 @@
             drawTasks() {
                 
                 const arrayTimes = []
-
+                console.log(this.events)
 
                 for (const event of this.events) {
                     const timeStart = this.moment(event.dates.start)
                     const hoursStart = timeStart.hour()
                     const minutesStart = timeStart.minutes()
 
-                    const timeEnd = this.moment(event.dates.customEnd)
+                    let timeEnd = null
+                    if (event.dates.customEnd) timeEnd = this.moment(event.dates.customEnd)
+                    else timeEnd = this.moment(event.dates.end)
+
+
                     const hoursEnd = timeEnd.hour()
                     const minutesEnd = timeEnd.minutes()
 
                     let kotStart = (hoursStart * 30) + ((minutesStart) * 0.5)
 
                     if (hoursStart >= 12) {
-                        kotStart = ((hoursStart - 12) * 30) + ((minutesStart / 60) * 7.5)
+                        kotStart = ((hoursStart - 12) * 30) + ((minutesStart) * 0.5)
 
                     }
 
                     let kotEnd = (hoursEnd * 30) + ((minutesEnd) * 0.5)
 
                     if (hoursEnd >= 12) {
-                        kotEnd = ((hoursEnd - 12) * 30) + ((minutesEnd / 60) * 7.5)
+                        kotEnd = ((hoursEnd - 12) * 30) + ((minutesEnd) * 0.5)
 
                     }
 
@@ -127,10 +131,12 @@
 
                         }
 
+
                         if (arrayTimes.length - 1 < nivo) {
                             const currentNivo = []
                             currentNivo.push({'start': kotStart, 'end': kotEnd})
                             arrayTimes.push(currentNivo)
+                            nivo = arrayTimes.length - 1
                         } else {
                             arrayTimes[nivo].push({'start': kotStart, 'end': kotEnd})
                         }
@@ -141,8 +147,12 @@
                     const currentTime = this.moment()
                     const currentHours = currentTime.hour()
 
+                    console.log(`CURRENT H: ${  currentHours}`)
+                    console.log(`Start H: ${  hoursStart}`)
+                    console.log(`end H: ${  hoursEnd}`)
 
-                    if ((currentHours > 12 && hoursStart < 12) || (currentHours < 12 && hoursStart > 12)) {
+
+                    if ((currentHours > 12 && hoursStart < 12 && currentHours > hoursEnd) || (currentHours < 12 && hoursStart > 12)) {
                         line = 3
                         colorAlpha = 0.15
                     }
@@ -156,6 +166,7 @@
                     this.ctx.arc(this.center, this.center, this.r + 25 + (25 * nivo), this.toRadians(kotStart), this.toRadians(kotEnd))
                     this.ctx.stroke()
                 }
+                console.log(arrayTimes)
                 
             },
             hexToRgb(hex) {
@@ -170,7 +181,7 @@
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
 
                 this.center = this.ctx.canvas.width / 2
-                this.r = (this.ctx.canvas.width / 2) * 0.7
+                this.r = (this.ctx.canvas.width / 2) * 0.6
 
                 //Sama kroznica ura
                 this.ctx.beginPath()
@@ -300,12 +311,12 @@
             this.canvas = document.getElementById('clock')
             this.ctx = this.canvas.getContext('2d')
 
-            let width = window.innerWidth * 0.8
+            let width = window.innerWidth * 0.9
 
-            if (width > 400) width = 500
+            if (width > 400) width = 600
 
             this.ctx.canvas.width  = width
-            this.ctx.canvas.height = width + 100
+            this.ctx.canvas.height = width
 
             this.drawWatch(true)
             // this.ctx.canvas.width  = 500

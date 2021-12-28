@@ -74,41 +74,6 @@
                 </v-select>
             </b-form-group>
            
-
-            <b-form-group
-                label="Permisions"
-                label-for="perm-input"
-                invalid-feedback="Permisions are required"
-                :state="permState"
-                v-if="sharedWith.length > 0"
-            >
-                <v-select
-                    v-model="permissions"
-                    label="title"
-                    :options="optionPermissions"
-                    placeholder="Choose permissions"
-                />
-            </b-form-group>
-
-            <b-form-group
-                label="Shared with"
-                label-for="shared-select"
-            >
-                <v-select
-                    id="shared-select"
-                    v-model="sharedWith"
-                    multiple
-                    taggable
-                    push-tags
-                    placeholder="Add Options"
-                >
-                    <template #selected-option="option">
-                        <div style="display: flex; align-items: baseline;" :class="checkIfEmailExist(option.label)? '':'emailDoesntExist'">
-                            {{option.label}}
-                        </div>
-                    </template>
-                </v-select>
-            </b-form-group>
         </form>
     </b-modal>
 </template>
@@ -127,11 +92,22 @@
         watch:{
             group() {
                 this.resetModal()
+            },
+            singleEvent(val) {
+                if (val) this.resetModal()
             }
         },
         computed: {
             eventGroups() {
-                return this.$store.getters['calendar/getAllGroups']
+                const groups = this.$store.getters['calendar/getAllGroupsEdit']
+               
+                return groups
+            },
+            singleEvent() {
+
+                if (!this.calendarInput) return null
+
+                return this.$store.getters['calendar/getEventById'](this.calendarInput._id)
             }
         },
         data() {
@@ -139,15 +115,10 @@
                 calendarState: null,
                 calendarInput: null,
                 optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
-                optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
                 color: '',
                 name: '',
-                permissions: '',
-                sharedWith: [],
                 nameState: null,
-                permState: null,
-                colorState: null,
-                emailThatDoesntExist: []
+                colorState: null
             }
         },
         methods: {
@@ -165,35 +136,21 @@
 
                 if ((this.color === '' || !this.color)) valid = false 
 
-                if (this.sharedWith && this.sharedWith.length > 0 && (this.permissions === '' || !this.permissions)) valid = false
-                    
                 this.nameState = valid
-                this.permState = valid
                 this.colorState = valid
-                this.groupState = valid
+                this.calendarState = valid
 
                 return valid
             },
             resetModal() {
-                const sharedEmails = []
-
-                if (this.group && this.group.sharedWith) {
-                    for (const item of this.group.sharedWith) {
-                        sharedEmails.push(item.email)
-                    }
-                }
-               
-                this.sharedWith = sharedEmails
                 this.nameState = null
-                this.permState = null
                 this.colorState = null
-                this.groupState = null
-                this.groupInput = this.group
+                this.calendarState = null
 
                 if (this.eventGroups && this.eventGroups.length > 0) {
-                    this.calendarInput = this.eventGroups[1]
+                    this.calendarInput = this.eventGroups[0]
                 } else {
-                    this.calendarInput = null
+                    this.calendarInput = this.singleEvent
                 }
 
                 console.log(this.calendarInput)
@@ -222,35 +179,28 @@
             async editGroup() {
 
 
-                this.permissionsUsers = null
-
-                if (this.sharedWith && this.sharedWith.length !== 0) this.permissionsUsers = this.permissions.permisson
-
-                if (!this.groupInput) return
+                if (!this.calendarInput) return
 
                 const payload = {
-                    'id': this.groupInput._id,
+                    'id': this.calendarInput._id,
                     'name': this.name,
-                    'permissions': this.permissionsUsers,
-                    'sharedWith': this.sharedWith,
                     'color': this.color
                 }
-
+                console.log(payload)
                 try {
-                    const todo = this.groupInput._id
-                    const data = await this.$http.put(`/api/todo/group/${todo}`, payload)
+                    const calendarID = this.calendarInput._id
+                    const data = await this.$http.put(`/api/event/tag/${calendarID}`, payload)
 
                     if (data.status === 200) {
-                        const newGroup = data.data
+                        const newCalendar = data.data
+                        newCalendar.selected = true
                         
-                        this.$store.dispatch('todo/edit_group', { 'group_new': newGroup, 'group_id': todo})
+                        this.$store.dispatch('calendar/edit_tag', { 'calendar_new': newCalendar, 'calendar_id': calendarID})
                     }
 
-                    this.$bvModal.hide('modal-edit-group')
+                    this.$bvModal.hide('modal-edit-calendar')
+                    this.$printSuccess('Calendar was succesfully updated!')
                 } catch (err) {
-                    if (err.response.data) {
-                        this.emailThatDoesntExist = err.response.data.users
-                    }
                     console.log(err)
                 }
                

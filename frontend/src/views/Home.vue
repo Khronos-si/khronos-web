@@ -74,7 +74,9 @@
             <div class="col-lg-5 col-7">
                 <b-card class="w-100 h-100">
                     <div class="text-center" style="font-size: 1.5rem;">Pregled dnevnih opravil</div>
-                    <clock-with-task :events="eventsToday"></clock-with-task>
+                    <div class="d-flex align-items-center justify-content-center h-100" style="margin: auto;">
+                        <clock-with-task :events="eventsToday"></clock-with-task>
+                    </div>
                 </b-card>
             </div>
         </div>
