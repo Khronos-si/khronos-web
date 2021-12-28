@@ -127,10 +127,6 @@
 
                     const data = await this.$http.get('/api/event')
 
-                    // if (data.data && data.data.length === 0) {
-                    //     throw 'Prislo je do napake'
-                    // }
-
                     for (const event of data.data) {
                         event.selected = true
                     }
@@ -144,10 +140,6 @@
                 try {
 
                     const data = await this.$http.get('/api/todo/latest/10')
-
-                    // if (data.data && data.data.length === 0) {
-                    //     throw 'Prislo je do napake'
-                    // }
 
                     this.lastAddedTodos = data.data
                 } catch (err) {
