@@ -22,7 +22,7 @@
 
             </div>
            
-            <div class="col-lg-4 col-4" >
+            <div class="col-lg-4 col-4">
                 <b-card style="height: 30vh;" class="h-30">
                     <calendar trim-weeks class="w-100" :class="isDark? 'dark-theme': ''" :attributes="events" ref="test-calendar" id="id123"> 
                         <template v-slot:day-popover="{ day, attributes }">
@@ -43,7 +43,7 @@
                     </calendar>
                 </b-card>
                 
-                <b-card class="w-100 mt-2 mb-0 h-70 mojCard" >
+                <b-card class="w-100 mt-2 mb-0 h-70 mojCard">
                     <div style="font-size: 1.5rem;">Upcoming taski</div>
                     <div style="height: 42vh; overflow-y: scroll; overflow-x: hidden;">
                         <div v-for="(task, id) in lastAddedTodos" :key="'Home_page_task_' + id" >
@@ -127,9 +127,9 @@
 
                     const data = await this.$http.get('/api/event')
 
-                    if (data.data && data.data.length === 0) {
-                        throw 'Prislo je do napake'
-                    }
+                    // if (data.data && data.data.length === 0) {
+                    //     throw 'Prislo je do napake'
+                    // }
 
                     for (const event of data.data) {
                         event.selected = true
@@ -145,9 +145,9 @@
 
                     const data = await this.$http.get('/api/todo/latest/10')
 
-                    if (data.data && data.data.length === 0) {
-                        throw 'Prislo je do napake'
-                    }
+                    // if (data.data && data.data.length === 0) {
+                    //     throw 'Prislo je do napake'
+                    // }
 
                     this.lastAddedTodos = data.data
                 } catch (err) {
