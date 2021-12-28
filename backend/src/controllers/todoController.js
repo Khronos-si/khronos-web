@@ -83,8 +83,8 @@ const getTodoById = async (req, res) => {
 
 const getLatestTodos = async (req, res) => {
 	const { number } = req.params;
-	console.log(number);
-	const todos = await Todo.find()
+	const { user } = req;
+	const todos = await Todo.find({ todoGroup: { $in: user.todoGroups } })
 		.populate("tags")
 		.populate("todoGroup")
 		.sort({ _id: -1 })
