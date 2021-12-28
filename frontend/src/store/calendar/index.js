@@ -21,14 +21,13 @@ export default {
                 if (group.events) {
                     const event = group.events.filter(ele => ele._id === idEvent)
 
-                    if (event) return event[0]
+                    if (event && event.length > 0) return event[0]
                 }
             }
             
             return null
         },
-        getEvents: state => (idGroup) => {
-            console.log(idGroup)
+        getEvents: state => {
             if (!state.calendar) {
                 return []
             }
@@ -46,6 +45,43 @@ export default {
                             tmpEvent.customData = event
                             tmpEvent.customData.color = group.color
                             tmpEvent.dates = event.dates
+                            // tmpEvent.content = 'red'
+                            selectedEvents.push(tmpEvent)
+                        }
+
+                    }
+                }
+            }
+
+            return selectedEvents
+        },
+        getEventsHome: state => {
+            if (!state.calendar) {
+                return []
+            }
+            const selectedEvents = []
+            
+            for (const group of state.calendar) {
+                
+                if (group.selected) {
+                    if (group.events && group.events.length > 0) {
+                        for (const event of group.events) {
+
+                            const tmpEvent = {}
+                            
+                            tmpEvent._id = event._id
+                            tmpEvent.customData = event
+                            tmpEvent.customData.color = group.color
+                            tmpEvent.dates = event.dates
+                            tmpEvent.dot = {
+                                style: {
+                                    'background-color': group.color
+                                }
+                            }
+                            tmpEvent.popover = {
+                                label: event.description
+                            }
+                            // tmpEvent.content = 'red'
                             selectedEvents.push(tmpEvent)
                         }
 

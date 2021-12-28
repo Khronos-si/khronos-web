@@ -227,7 +227,7 @@
             async editGroup() {
 
 
-                this.permissionsUsers = null
+                this.permissionsUsers = 0
 
                 if (this.sharedWith && this.sharedWith.length !== 0) this.permissionsUsers = this.permissions.permisson
 
@@ -236,9 +236,12 @@
                 const payload = {
                     'id': this.groupInput._id,
                     'name': this.name,
-                    'permissions': this.permissionsUsers,
                     'sharedWith': this.sharedWith,
                     'color': this.color
+                }
+
+                if (this.permissionsUsers) {
+                    payload.permissions = this.permissionsUsers
                 }
 
                 try {

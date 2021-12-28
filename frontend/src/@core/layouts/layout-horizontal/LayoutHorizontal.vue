@@ -84,14 +84,14 @@
         <!--/ CONTENT -->
 
         <!-- Footer -->
-        <footer
+        <!-- <footer
             class="footer footer-light"
             :class="[footerTypeClass]"
         >
             <slot name="footer">
                 <app-footer />
             </slot>
-        </footer>
+        </footer> -->
 
         <slot name="customizer" />
     </div>

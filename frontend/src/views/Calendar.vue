@@ -128,7 +128,7 @@
         },
         computed: {
             events() {
-                return this.$store.getters['calendar/getEvents'](this.selectedGroup)
+                return this.$store.getters['calendar/getEvents']
             },
             eventGroups() {
                 return this.$store.getters['calendar/getAllGroups']
@@ -136,6 +136,7 @@
         },
         data() {
             return {
+                test: {},
                 eventDetailsId: null,
                 clickedOnEvent: false,
                 inputCalendarDay: null,
@@ -190,8 +191,6 @@
                 try {
 
                     const data = await this.$http.get('/api/event')
-
-                    console.log(data.data)
 
                     if (data.data && data.data.length === 0) {
                         throw 'Prislo je do napake'

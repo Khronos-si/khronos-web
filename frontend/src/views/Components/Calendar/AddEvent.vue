@@ -554,6 +554,9 @@
                 if (!this.recurrences) {
                     dates.end = this.dateEnd
                 }
+                if (this.recurrences) {
+                    dates.customEnd = this.dateEnd
+                }
                 
                 if (this.recurrences && this.endsOnType === '2') {
                     console.log('SM KLE')
