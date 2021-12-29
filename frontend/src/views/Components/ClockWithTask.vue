@@ -53,7 +53,6 @@
             drawTasks() {
                 
                 const arrayTimes = []
-                console.log(this.events)
 
                 for (const event of this.events) {
                     const timeStart = this.moment(event.dates.start)
@@ -331,6 +330,8 @@
 
             const insThis1 = this
             this.canvas.addEventListener('mousemove', e => {
+                insThis1.drawWatch()
+
                 const x = e.offsetX
                 const y = e.offsetY
 
@@ -384,7 +385,6 @@
                                 subY = 300 - y - yOnCircle
 
                                 if (Math.abs(subX + subY) < 5) {
-                                    insThis1.drawWatch()
                                     let xMin = 0, yMin = 0
 
                                     if (smerX) {
@@ -440,7 +440,6 @@
                                     this.ctx.fill()
                                     this.ctx.stroke()
 
-                                    // console.log(`SM V EVENTU: ${  ele.time}`)
                                 }
                             }
                         } else if (mirrorAngle >= ele.start && mirrorAngle <= ele.end) {
@@ -451,7 +450,6 @@
                             subY = 300 - y - yOnCircle
 
                             if (Math.abs(subX + subY) < 5) {
-                                insThis1.drawWatch()
                                 let xMin = 0, yMin = 0
                                
                                 if (smerX) {
@@ -509,20 +507,11 @@
                         }
                     }
                 }
-               
-
-                // console.log(`KOT: ${  angle}`)
-
-                // console.log(`CENTER: ${  insThis1.center  }, R: ${  insThis1.r}`)
-                // console.log(`X: ${  x}, Y: ${  y}`)
-                // console.log(`X: ${  xOnCircle}, Y: ${  yOnCircle}`)
-                // console.log(`DIVIANCE (x,y): (${  subX   }, ${  subY  })`)
 
             }, false)
 
             this.drawWatch(true)
-            // this.ctx.canvas.width  = 500
-            // this.ctx.canvas.height  = 500
+           
             const insThis = this
             this.interval = setInterval(function() {
                 insThis.drawWatch(true)
