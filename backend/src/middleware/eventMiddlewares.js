@@ -12,7 +12,7 @@ const prepareTagById = async (req, res, next) => {
 	req.tag = tag;
 	req.isDefault = tag && tag.default;
 	req.canEdit = tag && !tag.default;
-	req.isOwner = tag && tag.owner._id.equals(user._id);
+	req.isOwner = tag && tag.owner._id.toSting() === user._id.toSting;
 
 	return next();
 };
@@ -27,7 +27,7 @@ const prepareEventById = async (req, res, next) => {
 		.populate("sharedWith");
 
 	req.event = event;
-	req.isOwner = event && event.owner._id.equals(user._id);
+	req.isOwner = event && event.owner._id.toString() === user._id.toString();
 	return next();
 };
 

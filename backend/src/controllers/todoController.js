@@ -45,11 +45,17 @@ const _todoGroupToJSON = (todoGroup) => ({
 
 const _deleteTodo = async (todo, group) => {
 	// Remove from group
-	group.todos.splice(group.todos.indexOf(todo), 1);
+	group.todos.splice(
+		group.todos.map((e) => e._id.toString()).indexOf(todo._id.toString()),
+		1
+	);
 	await group.save();
 	// Clear tag references
 	for (const e of todo.tags) {
-		e.appliedTo.splice(e.appliedTo.indexOf(todo), 1);
+		e.appliedTo.splice(
+			e.appliedTo.map((x) => x._id.toString()).indexOf(todo._id.ToString()),
+			1
+		);
 		await e.save();
 	}
 	// Remove todo
@@ -235,12 +241,18 @@ const deleteTodoGroup = async (req, res) => {
 
 		// Delete references stored in the User table
 		for (const e of sharedWith) {
-			e.sharedTodos.splice(e.sharedTodos.indexOf(group), 1);
+			e.sharedTodos.splice(
+				e.sharedTodos.map((x) => x.toString()).indexOf(group._id.toString()),
+				1
+			);
 			await e.save();
 		}
 
 		// Delete the reference in the owners User table
-		user.todoGroups.splice(user.todoGroups.indexOf(group), 1);
+		user.todoGroups.splice(
+			user.todoGroups.map((e) => e.toString()).indexOf(group._id.toString()),
+			1
+		);
 		await user.save();
 		// Delete the todo group
 		await TodoGroup.findByIdAndRemove(group);
@@ -264,7 +276,7 @@ const deleteTodo = async (req, res) => {
 		});
 
 	try {
-		_deleteTodo(todo, group);
+		await _deleteTodo(todo, group);
 		return res.json({ message: "success" });
 	} catch (err) {
 		return res.status(400).json({ message: err });
@@ -280,7 +292,12 @@ const deleteTodoTag = async (req, res) => {
 			.json({ message: "Requested todo tag doesn't exist" });
 
 	// Remove tag from todos
-	tag.appliedTo.forEach((e) => e.tags.splice(e.tags.indexOf(tag), 2));
+	tag.appliedTo.forEach((e) =>
+		e.tags.splice(
+			e.tags.map((x) => x.toString()).indexOf(tag._id.toString()),
+			2
+		)
+	);
 
 	try {
 		for (const e of tag.appliedTo) {
@@ -327,9 +344,16 @@ const updateTodoGroup = async (req, res) => {
 	let i = 0;
 	while (i < group.sharedWith.length) {
 		const e = group.sharedWith[i];
+		console.log(e, group.sharedWith);
 		if (sharedWithUsers.indexOf(e) === -1) {
-			group.sharedWith.splice(group.sharedWith.indexOf(e), 1);
-			e.sharedTodos.splice(e.sharedTodos.indexOf(group), 1);
+			group.sharedWith.splice(
+				group.sharedWith.map((x) => x._id.toString()).indexOf(e._id.toString()),
+				1
+			);
+			e.sharedTodos.splice(
+				e.sharedTodos.map((x) => x.toString()).indexOf(group._id.toString()),
+				1
+			);
 			await e.save();
 		} else i += 1;
 	}
@@ -371,7 +395,10 @@ const updateTodo = async (req, res) => {
 		const newTags = await TodoTag.find({ _id: { $in: tags } });
 
 		for (const e of todo.tags) {
-			e.appliedTo.splice(e.appliedTo.indexOf(todo), 1);
+			e.appliedTo.splice(
+				e.appliedTo.map((x) => x.toString()).indexOf(todo._id.toString()),
+				1
+			);
 			await e.save();
 		}
 

@@ -160,11 +160,19 @@ const deleteEventTag = async (req, res) => {
 
 	// Remove events from user
 	const events = tag.appliedTo;
-	events.forEach((e) => user.events.splice(user.events.indexOf(e), 1));
+	events.forEach((e) =>
+		user.events.splice(
+			user.events.map((x) => x.toString()).indexOf(e._id.toString()),
+			1
+		)
+	);
 
 	if (!isDefault)
 		// Remove tag from user
-		user.eventTags.splice(user.eventTags.indexOf(tag), 1);
+		user.eventTags.splice(
+			user.eventTags.map((e) => e.toString()).indexOf(tag._id.toString()),
+			1
+		);
 	else tag.appliedTo = [];
 
 	try {
@@ -174,7 +182,10 @@ const deleteEventTag = async (req, res) => {
 			// Remove events from users that the event is shared with
 			for (const id of e.sharedWith) {
 				const u = await User.findById(id);
-				u.sharedEvents.splice(u.sharedEvents.indexOf(e), 1);
+				u.sharedEvents.splice(
+					u.sharedEvents.map((x) => x.toString()).indexOf(e._id.toString()),
+					1
+				);
 				await u.save();
 			}
 		}
@@ -203,15 +214,23 @@ const deleteEvent = async (req, res) => {
 	const tag = await EventTag.findById(event.tag);
 
 	// Remove event from user
-	user.events.splice(user.events.indexOf(event), 1);
+	user.events.splice(
+		user.events.map((e) => e.toString()).indexOf(event._id.toString()),
+		1
+	);
 
 	// Remove event from user that the event is shared with
 	sharedWith.forEach((e) =>
-		e.sharedEvents.splice(e.sharedEvents.indexOf(event), 1)
+		e.sharedEvents.splice(
+			e.sharedEvents.map((x) => x.toString()).indexOf(event._id.toString()),
+			1
+		)
 	);
 
 	// Remove event from tag
-	tag.appliedTo.splice(tag.appliedTo.indexOf(event));
+	tag.appliedTo.splice(
+		tag.appliedTo.map((e) => e.toString()).indexOf(event._id.toString())
+	);
 
 	try {
 		for (const e of sharedWith) {
@@ -281,8 +300,14 @@ const updateEvent = async (req, res) => {
 	while (i < event.sharedWith.length) {
 		const e = event.sharedWith[i];
 		if (sharedWithUsers.indexOf(e) === -1) {
-			event.sharedWith.splice(event.sharedWith.indexOf(e), 1);
-			e.sharedEvents.splice(e.sharedEvents.indexOf(event._id), 1);
+			event.sharedWith.splice(
+				event.sharedWith.map((x) => x._id.toString()).indexOf(e._id.toString()),
+				1
+			);
+			e.sharedEvents.splice(
+				e.sharedEvents.map((x) => x.toString()).indexOf(event._id.toString()),
+				1
+			);
 			await e.save();
 		} else i += 1;
 	}
@@ -303,9 +328,12 @@ const updateEvent = async (req, res) => {
 	event.dates = dates || event.end;
 
 	// If the tag was specified in the request, update the event
-	if (tag && !event.tag._id.equals(tag._id)) {
+	if (tag && event.tag._id.toString() !== tag._id.toString()) {
 		const oldTag = await EventTag.findById(event.tag);
-		oldTag.appliedTo.splice(oldTag.appliedTo.indexOf(event), 1);
+		oldTag.appliedTo.splice(
+			oldTag.appliedTo.map((e) => e.toString()).indexOf(event._id.toString()),
+			1
+		);
 		await oldTag.save();
 
 		tag.appliedTo.push(event);

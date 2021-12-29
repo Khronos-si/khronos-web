@@ -20,12 +20,12 @@ const prepareGroupById = async (req, res, next) => {
 		.populate("owner");
 
 	req.group = group;
-	req.isOwner = group && group.owner._id.equals(user._id);
+	req.isOwner = group && group.owner._id.toString() === user._id.toString();
 	req.canEdit =
-		(group && group.owner._id.equals(user._id)) ||
+		(group && group.owner._id.toString() === user._id.toString()) ||
 		(group && group.permissions >= 1);
 	req.canDelete =
-		(group && group.owner._id.equals(user._id)) ||
+		(group && group.owner._id.toString() === user._id.toString()) ||
 		(group && group.permissions >= 2);
 
 	return next();
