@@ -405,7 +405,7 @@
                 allDay: false,
                 dateStart: null,
                 dateEnd: null,
-                optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#FBF37C', '#7F7F7F', '#58555A'],
+                optionColor: ['#7367F0', '#6EC193', '#53AFBE', '#FEB449', '#FE5C36', '#739BAA', '#F5C89F', '#8EBFB5', '#FEA6B0', '#95B2D1', '#42A48D', '#86415E', '#BC1654', '#F53435', '#dbb039', '#7F7F7F', '#58555A'],
                 optionPermissions: [{ title: 'Read', permisson: 0 }, { title: 'Read/Edit', permisson: 1 }, { title: 'Read/Edit/Delete', permisson: 2}],
                 color: '',
                 name: '',
@@ -468,6 +468,10 @@
             },
             enterModal() {
                 this.resetModal()
+                console.log(this.calendarDate)
+
+                this.dateStart = this.calendarDate
+                this.dateEnd = this.calendarDate
             },
             resetModal() {
                 this.repeatTimeValue = null
@@ -559,7 +563,7 @@
                 }
                 
                 if (this.recurrences && this.endsOnType === '2') {
-                    console.log('SM KLE')
+                    // console.log('SM KLE')
                     dates.end = this.endsOnDate
                 }
 
@@ -585,8 +589,8 @@
                         let daysToFirstEvent = -1
                         let elementsHigher = 0
 
-                        console.log('Current day of week')
-                        console.log(currentDayOfWeek)
+                        // console.log('Current day of week')
+                        // console.log(currentDayOfWeek)
 
                         for (const key in this.selectedDays) {
 
@@ -607,8 +611,8 @@
 
                         let daysToAdd = (numberOfWeeks * 7) * this.repeatTimeValue
 
-                        console.log('DAYS TO BEGG')
-                        console.log(daysToAdd)
+                        // console.log('DAYS TO BEGG')
+                        // console.log(daysToAdd)
 
                         if ((this.maxOccurrences - elementsHigher) % numberOfEventsInWeek === 0) {
                             if (this.selectedDays[this.selectedDays.length - 1] !== 1) {
@@ -618,11 +622,11 @@
                             }
                         }
 
-                        console.log(this.selectedDays)
+                        // console.log(this.selectedDays)
                         
                         // console.log(this.selectedDays[this.selectedDays.length - 1])
-                        console.log('DAYS TO ADD BEFORE')
-                        console.log(daysToAdd)
+                        // console.log('DAYS TO ADD BEFORE')
+                        // console.log(daysToAdd)
 
                         if (numberOfEventsInLastWeek > 0) {
                             if (this.selectedDays[numberOfEventsInLastWeek - 1] === 2) daysToAdd += 1
@@ -630,21 +634,21 @@
                             else daysToAdd += this.selectedDays[numberOfEventsInLastWeek - 1] - 1
                         }
                         
-                        console.log('EVENT IN LAST WEEK')
-                        console.log(numberOfEventsInLastWeek)
-                        console.log('ST TEDNOV')
-                        console.log(numberOfWeeks)
-                        console.log('EVNTI NAD DNEVOM')
-                        console.log(elementsHigher)
-                        console.log('DAY TO FIRST EVENT')
-                        console.log(daysToFirstEvent)
-                        console.log('DAYS TO ADD')
-                        console.log(daysToAdd)
+                        // console.log('EVENT IN LAST WEEK')
+                        // console.log(numberOfEventsInLastWeek)
+                        // console.log('ST TEDNOV')
+                        // console.log(numberOfWeeks)
+                        // console.log('EVNTI NAD DNEVOM')
+                        // console.log(elementsHigher)
+                        // console.log('DAY TO FIRST EVENT')
+                        // console.log(daysToFirstEvent)
+                        // console.log('DAYS TO ADD')
+                        // console.log(daysToAdd)
 
 
                         const newDate = new Date(this.dateStart)
                         newDate.setDate(newDate.getDate() + (daysToAdd + daysToFirstEvent - 1))
-                        console.log(newDate)
+                        // console.log(newDate)
                         dates.end = newDate
                     }
 
@@ -660,13 +664,13 @@
                     'eventTagId': this.calendarInput
                 }
 
-                console.log(payload)
+                // console.log(payload)
 
                 
                 try {
                     const data = await this.$http.post('/api/event', payload)
                 
-                    console.log(data)
+                    // console.log(data)
                     const newEvent = data.data
 
                     this.$store.dispatch('calendar/add_event', { 'tag_id': this.calendarInput, 'event': newEvent})

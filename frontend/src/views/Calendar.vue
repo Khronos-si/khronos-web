@@ -5,7 +5,7 @@
             <div class="p-0  m-0 py-2 px-0" style="height: 75vh !important; "> 
                 <!-- v-if="groupPermissions == null || groupPermissions > 0" -->
                 <div class="px-2 pb-1 d-flex justify-content-center" >
-                    <b-button class="btn btn-primary btn-custom btn-block px-3"  v-b-modal.modal-add-event >Add Event</b-button>
+                    <b-button class="btn btn-primary btn-custom btn-block px-3"  v-on:click="addEvent()">Add Event</b-button>
                 </div>
                 <div class="d-flex justify-content-between px-2" style="padding-bottom: 5px;">
                     <div>
@@ -59,17 +59,17 @@
                     is-expanded
                 >
                     <template v-slot:day-content="{ day, attributes }">
-                        <div class="overflow-scroll py-0.5 px-md-1" :class="isDark? 'card-dark': 'card-white'" style="padding-top: 5px;" @click="addCalendarOnDay(day.date)">
-                            <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 5px;" :class="sameDate(day.date, new Date())? 'bg-circle':''">
+                        <div class=" py-0.5 px-md-1" :class="isDark? 'card-dark': 'card-white'" style="padding-top: 5px;" @click="addCalendarOnDay(day.date)">
+                            <div class="d-flex align-items-center justify-content-center" style="margin-bottom: 5px;" :class="sameDate(day.date, new Date())? 'bg-circle':''" :style="sameDate(day.date, new Date())? 'color: black;':''">
                                 <div class="p-0" >{{ day.day }} </div>
                             </div>
-                            <div class="">
+                            <div class="overflow-scroll" style="max-height: 16vh;">
                                 <div
                                     v-for="attr in attributes"
                                     :key="attr.customData._id"
                                     class="text-xs rounded text-center text-black bg-custom text preventUserSelection"
-                                    style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px; cursor: pointer;"
-                                    :style="'--color:' + attr.customData.color + ';'"
+                                    style="padding-left: 5px !important; padding-right: 5px !important; margin-bottom: 5px; cursor: pointer; color: black;"
+                                    :style="'--color:' + attr.customData.color + '; opacity: 0.95;'"
                                     v-on:click="showEvent($event,attr.customData._id)"
                                 >
                                     {{ attr.customData.name}}
@@ -169,6 +169,7 @@
                 console.log(id)
             },
             addCalendarOnDay(date) {
+                console.log('TUKi')
                 this.inputCalendarDay = date
                 this.$bvModal.show('modal-add-event')
             },
@@ -176,6 +177,7 @@
                 this.$bvModal.show('modal-add-calendar')
             },
             addEvent() {
+                this.inputCalendarDay = null
                 this.$bvModal.show('modal-add-event')
             },
             sameDate(first, second) {
@@ -360,12 +362,14 @@
         --day-height: 20vh;
         border-radius: 0;
         width: 100%;
+
         & .vc-day {
             // padding: 0 5px 3px 5px;
             text-align: left;
             text-align: left;
             height: var(--day-height);
             min-width: var(--day-width);
+
             // &.weekday-1,
             // &.weekday-7 {
             //     // background-color: #eff8ff;
