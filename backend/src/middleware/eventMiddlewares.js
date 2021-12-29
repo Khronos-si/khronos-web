@@ -12,7 +12,7 @@ const prepareTagById = async (req, res, next) => {
 	req.tag = tag;
 	req.isDefault = tag && tag.default;
 	req.canEdit = tag && !tag.default;
-	req.isOwner = tag && tag.owner._id.toSting() === user._id.toSting();
+	req.isOwner = tag && tag.owner._id.toString() === user._id.toString();
 
 	return next();
 };
