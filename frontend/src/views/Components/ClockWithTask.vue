@@ -1,16 +1,25 @@
 <template>
-    <div class="d-flex justify-content-center">
-        <canvas id="clock" :style=" isDark == true? 'background: #2e3134 !important;': 'background: white;'"> </canvas>
+    <div style="position: relative;">
+
+        <div class="d-flex justify-content-center">
+            <canvas id="clock" :style=" isDark == true? 'background: #2e3134 !important;': 'background: white;'"> </canvas>
+        </div>
+        
     </div>
+    
 </template>
 
 <script>
     import useAppConfig from '@core/app-config/useAppConfig'
     import { computed } from '@vue/composition-api'
+    // import {BCard} from 'bootstrap-vue'
     
     export default {
+        components:{
+        },
         data() {
             return {
+                arrayOfAngles: null,
                 interval: null,
                 canvas: null,
                 ctx: null,
@@ -78,7 +87,8 @@
 
                     if (arrayTimes.length === 0) {
                         const currentNivo = []
-                        currentNivo.push({'start': kotStart, 'end': kotEnd})
+                        const cas = `${hoursStart  }:${  minutesStart  } -> ${  hoursEnd  }:${  minutesEnd}`
+                        currentNivo.push({'start': kotStart, 'end': kotEnd, 'time': cas, event})
                         arrayTimes.push(currentNivo)
                     } else {
                         for (const currentNivo of arrayTimes) {
@@ -134,11 +144,13 @@
 
                         if (arrayTimes.length - 1 < nivo) {
                             const currentNivo = []
-                            currentNivo.push({'start': kotStart, 'end': kotEnd})
+                            const cas = `${hoursStart  }:${  minutesStart  } -> ${  hoursEnd  }:${  minutesEnd}`
+                            currentNivo.push({'start': kotStart, 'end': kotEnd, 'time': cas, event})
                             arrayTimes.push(currentNivo)
                             nivo = arrayTimes.length - 1
                         } else {
-                            arrayTimes[nivo].push({'start': kotStart, 'end': kotEnd})
+                            const cas = `${hoursStart  }:${  minutesStart  } -> ${  hoursEnd  }:${  minutesEnd}`
+                            arrayTimes[nivo].push({'start': kotStart, 'end': kotEnd, 'time': cas, event})
                         }
                     }
 
@@ -146,11 +158,6 @@
                     let colorAlpha = 1
                     const currentTime = this.moment()
                     const currentHours = currentTime.hour()
-
-                    console.log(`CURRENT H: ${  currentHours}`)
-                    console.log(`Start H: ${  hoursStart}`)
-                    console.log(`end H: ${  hoursEnd}`)
-
 
                     if ((currentHours > 12 && hoursStart < 12 && currentHours > hoursEnd) || (currentHours < 12 && hoursStart > 12)) {
                         line = 3
@@ -166,8 +173,8 @@
                     this.ctx.arc(this.center, this.center, this.r + 25 + (25 * nivo), this.toRadians(kotStart), this.toRadians(kotEnd))
                     this.ctx.stroke()
                 }
-                console.log(arrayTimes)
-                
+
+                this.arrayOfAngles = arrayTimes
             },
             hexToRgb(hex) {
                 const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -291,6 +298,9 @@
                 }
 
                 this.drawTasks()
+            },
+            degrees_to_radians(degrees)             {
+                return degrees * (Math.PI / 180)
             }
         },
         mounted() {
@@ -317,6 +327,198 @@
 
             this.ctx.canvas.width  = width
             this.ctx.canvas.height = width
+
+
+            const insThis1 = this
+            this.canvas.addEventListener('mousemove', e => {
+                const x = e.offsetX
+                const y = e.offsetY
+
+                const slope1 = (300 - 300) / (300 - 0)
+                const slope2 = (300 - y) / (300 - x)
+                const angleRad = (slope1 - slope2) / (1 + (slope1 * slope2))
+                let angle = Math.atan(angleRad) * 180 / Math.PI
+                let mirrorAngle = angle
+                if (x > 300 && y > 300) {
+                    angle = 360 + angle
+                } else if (x < 300 && y > 300) {
+                    angle = 180 + angle
+                } else if (x < 300 && y < 300) {
+                    angle = 180 + angle
+                }
+                let yOnCircle = 0
+                let xOnCircle = 0
+                let subX = 0
+                let subY = 0
+
+                let smerX = false
+                let smerY = false
+
+                if (x > 300 && y > 300) {
+                    smerX = true
+                    smerY = true
+                    mirrorAngle = 90 - mirrorAngle
+                } else if (x < 300 && y > 300) {
+                    smerX = false
+                    smerY = true
+                    mirrorAngle = 270 - mirrorAngle
+                } else if (x < 300 && y < 300) {
+                    smerX = false
+                    smerY = false
+                    mirrorAngle = 270 - mirrorAngle
+                } else if (x > 300 && y < 300) {
+                    smerX = true
+                    smerY = false
+                    mirrorAngle = 90 - mirrorAngle
+                }
+                for (const nivo in insThis1.arrayOfAngles) {
+
+                    for (const ele of insThis1.arrayOfAngles[nivo]) {
+
+                        if (ele.end < ele.start) {
+                            if ((mirrorAngle >= ele.start && mirrorAngle <= 360) || (mirrorAngle <= ele.end)) {
+                                yOnCircle = (this.r + 25 + (25 * nivo)) * Math.sin(insThis1.degrees_to_radians(angle))
+                                xOnCircle = (this.r + 25 + (25 * nivo)) * Math.cos(insThis1.degrees_to_radians(angle))
+
+                                subX = x - 300 - xOnCircle
+                                subY = 300 - y - yOnCircle
+
+                                if (Math.abs(subX + subY) < 5) {
+                                    insThis1.drawWatch()
+                                    let xMin = 0, yMin = 0
+
+                                    if (smerX) {
+                                        xMin = x - 200
+                                    } else {
+                                        xMin = x
+                                    }
+
+                                    if (smerY) {
+                                        yMin = y - 150
+                                    } else {
+                                        yMin = y
+                                    }
+                                   
+
+                                    this.ctx.beginPath()
+                                    this.ctx.rect(xMin, yMin, 200, 150)
+
+                                    if (insThis1.isDark) {
+                                        this.ctx.strokeStyle = '#282a2d'
+                                        this.ctx.fillStyle = '#282a2d'
+                                    } else {
+                                        this.ctx.strokeStyle = '#e7efef'
+                                        this.ctx.fillStyle = '#e7efef'
+                                    }
+                                    this.ctx.stroke()
+                                    this.ctx.fill()
+
+                                    const centerPointX = xMin + (200 / 2)
+                                    const centerPointY = yMin + 30
+
+
+                                    this.ctx.beginPath()
+                                    this.ctx.textAlign = 'center'
+                                    this.ctx.font = '15px Arial'
+                                    this.ctx.fillStyle = 'white'
+                                    this.ctx.fillText(ele.time, centerPointX, centerPointY)
+                                    this.ctx.fill()
+
+
+                                    this.ctx.beginPath()
+                                    this.ctx.fillStyle = ele.event.color
+                                    this.ctx.arc(xMin + 10, centerPointY + 25, 5, 0, 2 * Math.PI)
+                                    this.ctx.fill()
+
+                                    this.ctx.beginPath()
+                                    this.ctx.textAlign = 'start'
+                                    this.ctx.fillStyle = 'white'
+                                    this.ctx.fillText(ele.event.name, xMin + 25, centerPointY + 30)
+                                
+
+                                    this.ctx.beginPath()
+                                    this.ctx.fill()
+                                    this.ctx.stroke()
+
+                                    // console.log(`SM V EVENTU: ${  ele.time}`)
+                                }
+                            }
+                        } else if (mirrorAngle >= ele.start && mirrorAngle <= ele.end) {
+                            yOnCircle = (this.r + 25 + (25 * nivo)) * Math.sin(insThis1.degrees_to_radians(angle))
+                            xOnCircle = (this.r + 25 + (25 * nivo)) * Math.cos(insThis1.degrees_to_radians(angle))
+
+                            subX = x - 300 - xOnCircle
+                            subY = 300 - y - yOnCircle
+
+                            if (Math.abs(subX + subY) < 5) {
+                                insThis1.drawWatch()
+                                let xMin = 0, yMin = 0
+                               
+                                if (smerX) {
+                                    xMin = x - 200
+                                } else {
+                                    xMin = x
+                                }
+
+                                if (smerY) {
+                                    yMin = y - 150
+                                } else {
+                                    yMin = y
+                                }
+
+                                insThis1.ctx.beginPath()
+                                this.ctx.roundRect(xMin, yMin, 200, 150, 5)
+
+                                if (insThis1.isDark) {
+                                    this.ctx.strokeStyle = '#282a2d'
+                                    this.ctx.fillStyle = '#282a2d'
+                                } else {
+                                    this.ctx.strokeStyle = '#e7efef'
+                                    this.ctx.fillStyle = '#e7efef'
+                                }
+                                this.ctx.stroke()
+                                this.ctx.fill()
+
+                                const centerPointX = xMin + (200 / 2)
+                                const centerPointY = yMin + 30
+
+
+                                this.ctx.beginPath()
+                                this.ctx.textAlign = 'center'
+                                this.ctx.font = '15px Arial'
+                                this.ctx.fillStyle = 'white'
+                                this.ctx.fillText(ele.time, centerPointX, centerPointY)
+                                this.ctx.fill()
+
+
+                                this.ctx.beginPath()
+                                this.ctx.fillStyle = ele.event.color
+                                this.ctx.arc(xMin + 10, centerPointY + 25, 5, 0, 2 * Math.PI)
+                                this.ctx.fill()
+
+                                this.ctx.beginPath()
+                                this.ctx.textAlign = 'start'
+                                this.ctx.fillStyle = 'white'
+                                this.ctx.fillText(ele.event.name, xMin + 25, centerPointY + 30)
+                                
+
+                                this.ctx.beginPath()
+                                this.ctx.fill()
+                                this.ctx.stroke()
+                            }
+                        }
+                    }
+                }
+               
+
+                // console.log(`KOT: ${  angle}`)
+
+                // console.log(`CENTER: ${  insThis1.center  }, R: ${  insThis1.r}`)
+                // console.log(`X: ${  x}, Y: ${  y}`)
+                // console.log(`X: ${  xOnCircle}, Y: ${  yOnCircle}`)
+                // console.log(`DIVIANCE (x,y): (${  subX   }, ${  subY  })`)
+
+            }, false)
 
             this.drawWatch(true)
             // this.ctx.canvas.width  = 500
