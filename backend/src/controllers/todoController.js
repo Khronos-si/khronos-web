@@ -53,7 +53,7 @@ const _deleteTodo = async (todo, group) => {
 	// Clear tag references
 	for (const e of todo.tags) {
 		e.appliedTo.splice(
-			e.appliedTo.map((x) => x._id.toString()).indexOf(todo._id.ToString()),
+			e.appliedTo.map((x) => x._id.toString()).indexOf(todo._id.toString()),
 			1
 		);
 		await e.save();
