@@ -76,13 +76,11 @@ jobs:
 
       - name: Create env files for node
         working-directory: ./backend/src/
+        env: 
+          NODE_ENV: ${{ secrets.NODE_ENV }}
         run: |
-          touch .env
-          echo DB_CONNECT=${{ secrets.DB_CONNECT }} >> .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-          echo REDIS_CONNECT=${{ secrets.REDIS_CONNECT }} >> .env
-          echo JWT_EXP=${{ secrets.JWT_EXP }} >> .env
-          echo JWT_EXP_REFRESH=${{ secrets.JWT_EXP_REFRESH }} >> .env
+          echo "$NODE_ENV" | base64 -d > .env
+
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/

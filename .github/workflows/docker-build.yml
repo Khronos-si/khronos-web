@@ -25,7 +25,6 @@ jobs:
           NODE_ENV: ${{ secrets.NODE_ENV }}
         run: |
           echo "$NODE_ENV" | base64 -d > .env
-          cat .env
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/
