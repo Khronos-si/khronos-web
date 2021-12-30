@@ -20,9 +20,15 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Create env files for node
-        working-directory: ./backend/src/
-        run: |
-          echo ${{ secrets.NODE_ENV }} | base64 -d > .env
+        uses: SpicyPizza/create-envfile@v1
+        with:
+          envkey_DB_CONNECT: ${{ secrets.DB_CONNECT }
+          envkey_JWT_SECRET: ${{ secrets.JWT_SECRET }
+          envkey_REDIS_CONNECT: ${{ secrets.REDIS_CONNECT }}
+          envkey_JWT_EXP: ${{ secrets.JWT_EXP }}
+          envkey_JWT_EXP_REFRESH: ${{ secrets.JWT_EXP_REFRESH }}
+          directory: ./backend/src/
+          file_name: .env
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/
