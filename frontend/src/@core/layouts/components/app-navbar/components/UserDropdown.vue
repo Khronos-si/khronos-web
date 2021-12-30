@@ -101,9 +101,20 @@
                 console.log('KAJ SEDOGAJA????')
             },
             logout() {
-                console.log('TUKI SM')
                 // Remove userData from localStorage
                 // ? You just removed token from localStorage. If you like, you can also make API call to backend to blacklist used token
+                
+
+                try {
+                    const data = await this.$http.post('/api/user/logout')
+
+                    console.log(data);
+                    this.$printSuccess("You are successfuly loged out!")                    
+                } catch (err) {
+                    this.$printError("Error trying ti signout")
+                    console.log(err)
+                }
+
                 localStorage.removeItem(useJwt.jwtConfig.storageTokenKeyName)
                 localStorage.removeItem(useJwt.jwtConfig.storageRefreshTokenKeyName)
 
