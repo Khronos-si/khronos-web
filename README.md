@@ -37,9 +37,9 @@
 
 - You can manually trigger a build action from [here](https://github.com/nikp00/TPO/actions/workflows/docker-build.yml)
 
-- Frontend address [http://157.230.113.194](https://khronos.si)
+- Frontend address [https://khronos.si](https://khronos.si)
 
-- Backend address [http://157.230.113.194:3000/api](https://khronos.si:3000/api)
+- Backend address [https://khronos.si:3000/api](https://khronos.si:3000/api)
 
 - If you want to use [Insomnia](https://insomnia.rest/download) to test the API you can use the template in `/utils/insomnia_template/`
 
