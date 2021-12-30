@@ -22,8 +22,8 @@ jobs:
       - name: Create env files for node
         uses: SpicyPizza/create-envfile@v1
         with:
-          envkey_DB_CONNECT: ${{ secrets.DB_CONNECT }
-          envkey_JWT_SECRET: ${{ secrets.JWT_SECRET }
+          envkey_DB_CONNECT: ${{ secrets.DB_CONNECT }}
+          envkey_JWT_SECRET: ${{ secrets.JWT_SECRET }}
           envkey_REDIS_CONNECT: ${{ secrets.REDIS_CONNECT }}
           envkey_JWT_EXP: ${{ secrets.JWT_EXP }}
           envkey_JWT_EXP_REFRESH: ${{ secrets.JWT_EXP_REFRESH }}
