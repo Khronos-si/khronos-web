@@ -28,6 +28,8 @@ jobs:
           echo REDIS_CONNECT=${{ secrets.REDIS_CONNECT }} >> .env
           echo JWT_EXP=${{ secrets.JWT_EXP }} >> .env
           echo JWT_EXP_REFRESH=${{ secrets.JWT_EXP_REFRESH }} >> .env
+          pwd
+          ls
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/
