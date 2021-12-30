@@ -21,7 +21,8 @@ jobs:
 
       - name: Create env files for node
         working-directory: ./backend/src/
-        run: echo ${{ secrets.NODE_ENV }} | base64 -d > .env
+        run: |
+          echo ${{ secrets.NODE_ENV }} | base64 -d > .env
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/
