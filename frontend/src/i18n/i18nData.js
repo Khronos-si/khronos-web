@@ -1,15 +1,15 @@
 export default {
   sl: {
     general: {
-      profile: 'Profil',
-      home: 'Domov',
+      profile: 'Profile',
+      home: 'Home',
       second_page: 'Druga stran',
-      todos: 'Opravila',
-      calendar: 'Koledar',
+      todos: 'Tasks',
+      calendar: 'Calendar',
       statistics: 'Statistika',
-      no: 'Ne',
-      yes: 'Da',
-      cancel: 'Prekini'
+      no: 'Yes',
+      yes: 'No',
+      cancel: 'Cancel'
     },
   
     login: {

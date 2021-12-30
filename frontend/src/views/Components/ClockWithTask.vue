@@ -99,6 +99,7 @@
                                 if (elemntsOnNivo.end < elemntsOnNivo.start) {
                                     forKot.push({start: elemntsOnNivo.start, end: 360})
                                     forKot.push({start: 0, end: elemntsOnNivo.end})
+                                    console.log('KLE')
                                 } else {
                                     forKot = [{start: elemntsOnNivo.start, end: elemntsOnNivo.end}]
                                 }
@@ -106,6 +107,7 @@
                                 if (kotEnd < kotStart) {
                                     currentKot.push({start: kotStart, end: 360})
                                     currentKot.push({start: 0, end: kotEnd})
+                                    console.log('KLE')
                                 } else {
                                     currentKot = [{start: kotStart, end: kotEnd}]
                                 }
@@ -133,7 +135,7 @@
                                 }
 
                                 if (prekriva) {
-                                    nivo++
+                                    nivo = arrayTimes.length
                                 } 
 
                             }
@@ -317,6 +319,40 @@
                 return this
             }
 
+            CanvasRenderingContext2D.prototype.wrapText = function(text, x, y, maxWidth, lineHeight) {
+
+                const lines = text.split('\n')
+                let lineNumber = 0
+
+                for (let i = 0; i < lines.length && lineNumber <= 4; i++) {
+
+                    const words = lines[i].split(' ')
+                    let line = ''
+
+                    for (let n = 0; n < words.length; n++) {
+                        const testLine = `${line + words[n]  } `
+                        const metrics = this.measureText(testLine)
+                        const testWidth = metrics.width
+                        if (testWidth > maxWidth && n > 0) {
+                            this.fillText(line, x, y)
+                            line = `${words[n]  } `
+                            y += lineHeight
+                            lineNumber++
+                            if (lineNumber >= 4) {
+                                break
+                            }
+                        } else {
+                            line = testLine
+                        }
+                    }
+
+                    this.fillText(line, x, y)
+                    y += lineHeight
+                    lineNumber++
+                    console.log(lineNumber)
+                }
+            }
+
             this.canvas = document.getElementById('clock')
             this.ctx = this.canvas.getContext('2d')
 
@@ -372,6 +408,7 @@
                     smerY = false
                     mirrorAngle = 90 - mirrorAngle
                 }
+
                 for (const nivo in insThis1.arrayOfAngles) {
 
                     for (const ele of insThis1.arrayOfAngles[nivo]) {
@@ -421,7 +458,7 @@
                                     this.ctx.textAlign = 'center'
                                     this.ctx.font = '15px Arial'
                                     this.ctx.fillStyle = 'white'
-                                    this.ctx.fillText(ele.time, centerPointX, centerPointY)
+                                    this.ctx.wrapText(ele.time, centerPointX, centerPointY, 180, 20)
                                     this.ctx.fill()
 
 
@@ -433,7 +470,7 @@
                                     this.ctx.beginPath()
                                     this.ctx.textAlign = 'start'
                                     this.ctx.fillStyle = 'white'
-                                    this.ctx.fillText(ele.event.name, xMin + 25, centerPointY + 30)
+                                    this.ctx.wrapText(ele.event.name, xMin + 25, centerPointY + 30, 180, 20)
                                 
 
                                     this.ctx.beginPath()
@@ -485,7 +522,7 @@
                                 this.ctx.textAlign = 'center'
                                 this.ctx.font = '15px Arial'
                                 this.ctx.fillStyle = 'white'
-                                this.ctx.fillText(ele.time, centerPointX, centerPointY)
+                                this.ctx.wrapText(ele.time, centerPointX, centerPointY, 180, 20)
                                 this.ctx.fill()
 
 
@@ -497,7 +534,7 @@
                                 this.ctx.beginPath()
                                 this.ctx.textAlign = 'start'
                                 this.ctx.fillStyle = 'white'
-                                this.ctx.fillText(ele.event.name, xMin + 25, centerPointY + 30)
+                                this.ctx.wrapText(ele.event.name, xMin + 25, centerPointY + 30, 180, 20)
                                 
 
                                 this.ctx.beginPath()
