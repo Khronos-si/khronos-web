@@ -22,12 +22,14 @@ jobs:
       - name: Create env files for node
         working-directory: ./backend/src/
         run: |
-          touch .env
-          echo DB_CONNECT=${{ secrets.DB_CONNECT }} >> .env
-          echo JWT_SECRET=${{ secrets.JWT_SECRET }} >> .env
-          echo REDIS_CONNECT=${{ secrets.REDIS_CONNECT }} >> .env
-          echo JWT_EXP=${{ secrets.JWT_EXP }} >> .env
-          echo JWT_EXP_REFRESH=${{ secrets.JWT_EXP_REFRESH }} >> .env
+          cat << EOF > .env
+          DB_CONNECT=${{ secrets.DB_CONNECT }}
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          REDIS_CONNECT=${{ secrets.REDIS_CONNECT }}
+          JWT_EXP=${{ secrets.JWT_EXP }}
+          JWT_EXP_REFRESH=${{ secrets.JWT_EXP_REFRESH }}
+          EOF
+          
           pwd
           ls -al
           cat .env
