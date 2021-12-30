@@ -21,18 +21,18 @@ jobs:
 
       - name: Create env files for node
         working-directory: ./backend/src/
-        run: |
-          cat << EOF > .env
+        run: 
+          'cat << EOF > .env
           DB_CONNECT=${{ secrets.DB_CONNECT }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           REDIS_CONNECT=${{ secrets.REDIS_CONNECT }}
           JWT_EXP=${{ secrets.JWT_EXP }}
           JWT_EXP_REFRESH=${{ secrets.JWT_EXP_REFRESH }}
           EOF
-          
+
           pwd
           ls -al
-          cat .env
+          cat .env'
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/
