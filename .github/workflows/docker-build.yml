@@ -29,7 +29,8 @@ jobs:
           echo JWT_EXP=${{ secrets.JWT_EXP }} >> .env
           echo JWT_EXP_REFRESH=${{ secrets.JWT_EXP_REFRESH }} >> .env
           pwd
-          ls
+          ls -al
+          cat .env
 
       - name: Docker build images
         working-directory: ./utils/deploy_images/
