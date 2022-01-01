@@ -19,12 +19,6 @@ const router = new VueRouter({
       component: () => import('@/views/Home.vue'),
       meta: {
         pageTitle: i18n.t('general.home'),
-        breadcrumb: [
-          {
-            text: 'Home',
-            active: true
-          }
-        ],
         requiresAuth: true // UPORABNIKU NI TREBA BITI PRIJAVLJEN
         // PRESTAVI NA TRUE
         
