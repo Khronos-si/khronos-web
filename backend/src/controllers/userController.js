@@ -185,15 +185,13 @@ const refreshToken = async (req, res) => {
 
 	const user = decodedToken._id;
 
-	console.log(user);
-
 	const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
 
 	await redisClient.connect();
 	const valid = await redisClient.get(`RFT_${user.toString()}`);
 	await redisClient.disconnect();
 
-	if (!valid && valid === ip)
+	if (!valid || valid !== ip)
 		return res.status(400).json({ message: "Cant refresh token" });
 
 	const validUntil = new Date(
