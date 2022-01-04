@@ -20,11 +20,11 @@
                 <div class="row">
                     <div class="col-xl-5 col-12 d-flex align-items-center">
                         <div>
-                            <div class="text-left" style="font-size: 3.5rem; color:#a19bf3; font-family: 'Montserrat'; font-weight: bold;">ONE CLICK SEPERATES YOU FROM BETTER LIFE!</div>
-                            <div class="text-left mt-4" style="font-size: 2rem;">
+                            <div class="text-left" style="font-size: 2.5rem; color:#a19bf3; font-family: 'Montserrat'; font-weight: bold;">ONE CLICK SEPERATES YOU FROM BETTER LIFE!</div>
+                            <div class="text-left mt-4" style="font-size: 1.5rem;">
                                 Khronos will change your life. You are on your verge to become master of your life!
                             </div>
-                            <div class="text-center mt-3" style="font-size: 2rem;">
+                            <div class="text-center mt-3" style="font-size: 1.5rem;">
                                 "SUCCESS IS NEVER GETTING TO THE BOTTOM OF YOUR TO-DO LIST!"
                                 <div style="font-size: 1rem;">Marrisa Mayer, CEO of Yahoo</div>
                             </div>
@@ -33,8 +33,8 @@
                             </div> -->
                         </div>
                     </div>
-                    <div class="col-xl-7 col-12">
-                        <div class="d-lg-flex justify-content-end px-5">
+                    <div class="col-xl-7 col-12 d-flex justify-content-center align-items-center">
+                        <div class=" px-5">
                             <b-img
                                 fluid
                                 :src="imgUrl"

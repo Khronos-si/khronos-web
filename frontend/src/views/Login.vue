@@ -15,22 +15,22 @@
             <!-- Left Text-->
             <b-col
                 lg="8"
-                class="d-none d-lg-flex align-items-center px-5 pt-5"
+                class="d-none d-lg-flex align-items-center px-5 pt-5 mt-2"
             >
                 <div class="row">
                     <div class="col-xl-5 col-12 d-flex align-items-center">
                         <div>
-                            <div class="text-left" style="font-size: 4rem; color:#a19bf3; font-family: 'Montserrat'; font-weight: bold;">ORGANIZE YOUR LIFE WITH KHRONOS</div>
-                            <div class="text-left mt-4" style="font-size: 2rem;">
+                            <div class="text-left" style="font-size: 2.5rem; color:#a19bf3; font-family: 'Montserrat'; font-weight: bold;">ORGANIZE YOUR LIFE WITH KHRONOS</div>
+                            <div class="text-left mt-4" style="font-size: 1.5rem;">
                                 Khronos gives you the confidence that everything’s organized and accounted for, so you can make progress on the things that are important to you.
                             </div>
-                            <div class="text-left mt-2" style="font-size: 2rem;">
+                            <div class="text-left mt-2" style="font-size: 1.5rem;">
                                 You are one click away from greatness!
                             </div>
                         </div>
                     </div>
-                    <div class="col-xl-7 col-12">
-                        <div class="d-lg-flex justify-content-end px-5">
+                    <div class="col-xl-7 col-12 d-flex align-items-center justify-content-center">
+                        <div class="end px-5">
                             <b-img
                                 fluid
                                 :src="imgUrl"
