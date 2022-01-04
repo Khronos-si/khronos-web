@@ -660,6 +660,8 @@
                     this.$store.dispatch('calendar/add_event', { 'tag_id': this.calendarInput, 'event': newEvent})
 
                     this.$bvModal.hide('modal-add-event')
+
+                    this.$printSuccess('Event added!')
                 } catch (err) {
                     this.$printError('Error while trying to add calendar')
                     console.log(err)

@@ -255,11 +255,13 @@
                     }
 
                     this.$bvModal.hide('modal-edit-group')
+                    this.$printSuccess('Group was successfully changed')
                 } catch (err) {
                     if (err.response.data) {
                         this.emailThatDoesntExist = err.response.data.users
                     }
                     console.log(err)
+                    this.$printError('Error occured when trying to edit group!')
                 }
                
 

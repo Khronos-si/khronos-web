@@ -123,7 +123,7 @@
                     console.log(this.calendarInput._id)
                     const tag = this.calendarInput._id
                     await this.$http.delete(`/api/event/tag/${tag}`)
-
+                    this.$$printSuccess('Calendar was successfully deleted!')//todo
                 } catch (err) {
                     this.$printError('Request was not sucesfull!')//todo
                     console.log(err)

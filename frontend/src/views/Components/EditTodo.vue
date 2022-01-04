@@ -288,8 +288,10 @@
                     this.$store.dispatch('todo/edit_todo', { 'idGroup': group, 'idTodo': todoId, 'todo_new': data.data})
 
                     this.$bvModal.hide('modal-edit-todo')
+                    this.$printSuccess('Todo was successfully changed!')
                 } catch (err) {
                     console.log(err)
+                    this.$printError('Error occured when editing todo!')
                 }
                 
 

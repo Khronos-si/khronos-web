@@ -105,19 +105,39 @@
         methods: {
             async deleteTodo() {
 
-                const todoId = this.todo._id
+                const todoId = this.eventId
 
                 try {
-                    const data = await this.$http.delete(`/api/todo/${todoId}`)
+                    const data = await this.$http.delete(`/api/event/${todoId}`)
                     
                     if (data.status === 200) {
-                        this.$store.dispatch('todo/delete_todo', { 'idGroup': this.selectedGroup, 'idTodo': todoId})
+                        console.log('USPESNO')
                     }
 
-                    this.$bvModal.hide('modal-edit-todo')
+                    this.$bvModal.hide('modal-event-details')
+                    this.$printSuccess('Event was deleted!')
 
                 } catch (err) {
                     console.log(err)
+                    this.$printError('Error occured while deleting event!')
+                }
+
+                try {
+
+                    const data = await this.$http.get('/api/event')
+
+                    if (data.data && data.data.length === 0) {
+                        throw 'Prislo je do napake'
+                    }
+
+                    for (const event of data.data) {
+                        event.selected = true
+                    }
+
+                    this.$store.dispatch('calendar/update_events', { 'events': data.data})
+                } catch (err) {
+                    console.log(err)
+                    this.$printError('Error fetching data!')
                 }
 
             },

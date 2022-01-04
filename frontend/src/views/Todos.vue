@@ -58,7 +58,7 @@
                                 <span class="bullet bullet-sm mr-1" :style="'background:' + group.color + '!important;'"></span>
                                 {{group.name}}
                             </div>
-                            <div  v-if="userId != group.owner._id">
+                            <div>
                                 <span class="badge badge-pill badge-warning ml-1" :style="'background:' + group.color + ' !important;'">{{group.owner.name}}</span>
                             </div>
                         </div>

@@ -220,7 +220,7 @@
                         
                     //     // this.$store.dispatch('todo/edit_tag', { 'tag_new': newTag, 'tag_id': tag})
                     // }
-
+                    this.$printSuccess('Tag was successfully changed!')
                 } catch (err) {
                     this.$printError('Request was not sucesfull!')//todo
                     console.log(err)

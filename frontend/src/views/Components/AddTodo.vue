@@ -179,23 +179,29 @@
                     }
                 }
 
-                const todo = this.selectedGroup
+                try {
 
-                const payload = {
-                    'todoGroupId': this.groupInput,
-                    'name': this.name,
-                    'description': this.description,
-                    'status': false,
-                    'tags': finalTags
+                    const todo = this.selectedGroup
+
+                    const payload = {
+                        'todoGroupId': this.groupInput,
+                        'name': this.name,
+                        'description': this.description,
+                        'status': false,
+                        'tags': finalTags
+                    }
+
+                    const data = await this.$http.post('/api/todo', payload)
+
+                    this.$store.dispatch('todo/add_todo_item', { 'todo_item': data.data, 'todo_group': todo})
+
+                    this.$bvModal.hide('modal-add-todo')
+
+                    this.$printSuccess('Todo Added!')
+                } catch {
+                    this.$printError('Error occured.')
                 }
-
-                const data = await this.$http.post('/api/todo', payload)
-
-                this.$store.dispatch('todo/add_todo_item', { 'todo_item': data.data, 'todo_group': todo})
-
-                console.log(data)
-
-                this.$bvModal.hide('modal-add-todo')
+                
 
             }
            
