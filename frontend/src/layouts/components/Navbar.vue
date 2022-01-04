@@ -44,14 +44,14 @@
                     />
                 </template>
 
-                <b-dropdown-item link-class="d-flex align-items-center">
+                <!-- <b-dropdown-item link-class="d-flex align-items-center">
                     <feather-icon
                         size="16"
                         icon="UserIcon"
                         class="mr-50"
                     />
                     <span>Profile</span>
-                </b-dropdown-item>
+                </b-dropdown-item> -->
 
                 <!-- <b-dropdown-item link-class="d-flex align-items-center">
                     <feather-icon
@@ -80,7 +80,7 @@
                     <span>Chat</span>
                 </b-dropdown-item> -->
 
-                <b-dropdown-divider />
+                <!-- <b-dropdown-divider /> -->
 
                 <b-dropdown-item link-class="d-flex align-items-center" @click="logout()">
                     <feather-icon
@@ -97,7 +97,7 @@
 
 <script>
     import {
-        BLink, BNavbarNav, BNavItemDropdown, BDropdownItem, BDropdownDivider, BAvatar
+        BLink, BNavbarNav, BNavItemDropdown, BDropdownItem, BAvatar
     } from 'bootstrap-vue'
     import DarkToggler from '@core/layouts/components/app-navbar/components/DarkToggler.vue'
     import useJwt from '@/auth/jwt/useJwt'
@@ -128,7 +128,7 @@
             BNavbarNav,
             BNavItemDropdown,
             BDropdownItem,
-            BDropdownDivider,
+            // BDropdownDivider,
             BAvatar,
 
             // Navbar Components

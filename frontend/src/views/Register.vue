@@ -17,12 +17,32 @@
                 lg="8"
                 class="d-none d-lg-flex align-items-center p-5"
             >
-                <div class="w-100 d-lg-flex align-items-center justify-content-center px-5">
-                    <b-img
-                        fluid
-                        :src="imgUrl"
-                        alt="Login V2"
-                    />
+                <div class="row">
+                    <div class="col-xl-5 col-12 d-flex align-items-center">
+                        <div>
+                            <div class="text-left" style="font-size: 3.5rem; color:#a19bf3; font-family: 'Montserrat'; font-weight: bold;">ONE CLICK SEPERATES YOU FROM BETTER LIFE!</div>
+                            <div class="text-left mt-4" style="font-size: 2rem;">
+                                Khronos will change your life. You are on your verge to become master of your life!
+                            </div>
+                            <div class="text-center mt-3" style="font-size: 2rem;">
+                                "SUCCESS IS NEVER GETTING TO THE BOTTOM OF YOUR TO-DO LIST!"
+                                <div style="font-size: 1rem;">Marrisa Mayer, CEO of Yahoo</div>
+                            </div>
+                            <!-- <div class="text-left mt-3" style="font-size: 2rem;">
+                                You are one click away from greatness!
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="col-xl-7 col-12">
+                        <div class="d-lg-flex justify-content-end px-5">
+                            <b-img
+                                fluid
+                                :src="imgUrl"
+                                alt="Login V2"
+                                style="height: 50vh !important;"
+                            />
+                        </div>
+                    </div>
                 </div>
             </b-col>
             <!-- /Left Text-->
@@ -42,7 +62,7 @@
                         title-tag="h2"
                         class="font-weight-bold mb-1"
                     >
-                        Welcome to LajfPlanner!
+                        Welcome to Khronos!
                     </b-card-title>
                     <b-card-text class="mb-2">
                         Please enter you info.
@@ -201,7 +221,7 @@
                 userName: '',
                 password: '',
                 userEmail: '',
-                sideImg: require('@/assets/images/pages/login-v2.svg'),
+                sideImg: require('@/assets/svg/RegisterImage.svg'),
                 // validation rulesimport store from '@/store/index'
                 required,
                 email
@@ -214,7 +234,7 @@
             imgUrl() {
                 if (store.state.appConfig.layout.skin === 'dark') {
                     // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-                    this.sideImg = require('@/assets/images/pages/login-v2-dark.svg')
+                    this.sideImg = require('@/assets/svg/RegisterImage.svg')
                     return this.sideImg
                 }
                 return this.sideImg
@@ -251,7 +271,7 @@
                         thisIns.$router.push({ name: 'login' })
                     }, 3000)
                 } catch (error) {
-                    thisIns.$printWarning(this.$t('login.wrong_password'))
+                    thisIns.$printWarning('Registration failed!')
                 } finally {
                     thisIns.$store.state.app.showLoader = false
                 }

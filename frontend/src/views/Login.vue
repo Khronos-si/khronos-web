@@ -8,7 +8,6 @@
                 <h2 class="brand-text text-primary ml-1">
                     <b-img :src="appLogoImage" style="width: 180px !important;" v-if="skin == 'dark'"></b-img>
                     <b-img :src="appLogoImageLightTheme" style="width: 180px !important;" v-if="skin != 'dark'"></b-img>
-
                 </h2>
             </b-link>
             <!-- /Brand logo-->
@@ -16,15 +15,32 @@
             <!-- Left Text-->
             <b-col
                 lg="8"
-                class="d-none d-lg-flex align-items-center p-5"
+                class="d-none d-lg-flex align-items-center px-5 pt-5"
             >
-                <div class="w-100 d-lg-flex align-items-center justify-content-center px-5">
-                    <b-img
-                        fluid
-                        :src="imgUrl"
-                        alt="Login V2"
-                    />
+                <div class="row">
+                    <div class="col-xl-5 col-12 d-flex align-items-center">
+                        <div>
+                            <div class="text-left" style="font-size: 4rem; color:#a19bf3; font-family: 'Montserrat'; font-weight: bold;">ORGANIZE YOUR LIFE WITH KHRONOS</div>
+                            <div class="text-left mt-4" style="font-size: 2rem;">
+                                Khronos gives you the confidence that everything’s organized and accounted for, so you can make progress on the things that are important to you.
+                            </div>
+                            <div class="text-left mt-2" style="font-size: 2rem;">
+                                You are one click away from greatness!
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-7 col-12">
+                        <div class="d-lg-flex justify-content-end px-5">
+                            <b-img
+                                fluid
+                                :src="imgUrl"
+                                alt="Login V2"
+                                style="height: 50vh !important;"
+                            />
+                        </div>
+                    </div>
                 </div>
+               
             </b-col>
             <!-- /Left Text-->
 
@@ -43,10 +59,10 @@
                         title-tag="h2"
                         class="font-weight-bold mb-1"
                     >
-                        Welcome to LajfPlanner!
+                        Welcome to Khronos!
                     </b-card-title>
                     <b-card-text class="mb-2">
-                        Please sign-in to your account and start the adventure
+                        Please sign-in to your account and start the adventure!
                     </b-card-text>
 
                     <!-- form -->
@@ -224,7 +240,7 @@
                 password: '',
                 userEmail: '',
                 rememberMe: false,
-                sideImg: require('@/assets/images/pages/login-v2.svg'),
+                sideImg: require('@/assets/svg/LoginImage.svg'),
                 // validation rulesimport store from '@/store/index'
                 required,
                 email
@@ -240,7 +256,7 @@
             imgUrl() {
                 if (store.state.appConfig.layout.skin === 'dark') {
                     // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-                    this.sideImg = require('@/assets/images/pages/login-v2-dark.svg')
+                    this.sideImg = require('@/assets/svg/LoginImage1.svg')
                     return this.sideImg
                 }
                 return this.sideImg
@@ -302,4 +318,5 @@
 
 <style lang="scss">
 @import '@core/scss/vue/pages/page-auth.scss';
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
 </style>

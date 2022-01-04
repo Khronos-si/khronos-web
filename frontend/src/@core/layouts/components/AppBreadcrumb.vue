@@ -44,14 +44,14 @@
             md="3"
             cols="12"
         >
-            <b-dropdown
+            <!-- <b-dropdown
                 variant="link"
                 no-caret
                 toggle-class="p-0"
                 right
-            >
+            > -->
 
-                <template #button-content>
+            <!-- <template #button-content>
                     <b-button
                         v-ripple.400="'rgba(255, 255, 255, 0.15)'"
                         variant="primary"
@@ -59,25 +59,25 @@
                     >
                         <feather-icon icon="SettingsIcon" />
                     </b-button>
-                </template>
+                </template> -->
 
-                <b-dropdown-item link-class="d-flex align-items-center">
+            <!-- <b-dropdown-item link-class="d-flex align-items-center">
                     <feather-icon
                         size="16"
                         icon="UserIcon"
                         class="mr-50"
                     />
                     <span>Change color theme</span>
-                </b-dropdown-item>
+                </b-dropdown-item> -->
 
-            </b-dropdown>
+            <!-- </b-dropdown> -->
         </b-col>
     </b-row>
 </template>
 
 <script>
     import {
-        BBreadcrumb, BBreadcrumbItem, BRow, BCol, BDropdown, BButton, BDropdownItem
+        BBreadcrumb, BBreadcrumbItem, BRow, BCol
     } from 'bootstrap-vue'
     import Ripple from 'vue-ripple-directive'
 
@@ -89,10 +89,10 @@
             BBreadcrumb,
             BBreadcrumbItem,
             BRow,
-            BCol,
-            BDropdown,
-            BButton,
-            BDropdownItem
+            BCol
+            // BDropdown,
+            // BButton
+            // BDropdownItem
         }
     }
 </script>

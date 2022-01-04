@@ -15,6 +15,10 @@
             :disabled='true'
         />
 
+        <div class="mt-1">
+            Event time: {{moment(this.startDate).format("HH:mm")}} - {{moment(this.endDate).format("HH:mm")}}
+        </div>
+
         <template #modal-footer="{ ok, cancel }">
            
             <!-- <div v-if="groupPermissions == null || groupPermissions > 0"> -->

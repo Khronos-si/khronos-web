@@ -238,7 +238,7 @@
                 this.nameState = valid
                 this.descState = valid
 
-                if (!this.description || this.description.length <= 20) {
+                if (!this.description || this.description.length <= 10) {
                     this.descState = false
                     valid = false
                 } 

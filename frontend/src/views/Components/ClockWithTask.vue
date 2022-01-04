@@ -99,7 +99,6 @@
                                 if (elemntsOnNivo.end < elemntsOnNivo.start) {
                                     forKot.push({start: elemntsOnNivo.start, end: 360})
                                     forKot.push({start: 0, end: elemntsOnNivo.end})
-                                    console.log('KLE')
                                 } else {
                                     forKot = [{start: elemntsOnNivo.start, end: elemntsOnNivo.end}]
                                 }
@@ -107,7 +106,6 @@
                                 if (kotEnd < kotStart) {
                                     currentKot.push({start: kotStart, end: 360})
                                     currentKot.push({start: 0, end: kotEnd})
-                                    console.log('KLE')
                                 } else {
                                     currentKot = [{start: kotStart, end: kotEnd}]
                                 }
@@ -135,9 +133,12 @@
                                 }
 
                                 if (prekriva) {
-                                    nivo = arrayTimes.length
+                                    nivo++
                                 } 
-
+                                
+                                if (elemntsOnNivo.end < elemntsOnNivo.start && prekriva) {
+                                    nivo = arrayTimes.length
+                                }
                             }
 
                         }
@@ -176,6 +177,8 @@
                 }
 
                 this.arrayOfAngles = arrayTimes
+
+                console.log(arrayTimes)
             },
             hexToRgb(hex) {
                 const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
@@ -349,7 +352,6 @@
                     this.fillText(line, x, y)
                     y += lineHeight
                     lineNumber++
-                    console.log(lineNumber)
                 }
             }
 

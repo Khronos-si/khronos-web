@@ -633,27 +633,12 @@
                             else if (this.selectedDays[numberOfEventsInLastWeek - 1] === 1) daysToAdd += 6
                             else daysToAdd += this.selectedDays[numberOfEventsInLastWeek - 1] - 1
                         }
-                        
-                        // console.log('EVENT IN LAST WEEK')
-                        // console.log(numberOfEventsInLastWeek)
-                        // console.log('ST TEDNOV')
-                        // console.log(numberOfWeeks)
-                        // console.log('EVNTI NAD DNEVOM')
-                        // console.log(elementsHigher)
-                        // console.log('DAY TO FIRST EVENT')
-                        // console.log(daysToFirstEvent)
-                        // console.log('DAYS TO ADD')
-                        // console.log(daysToAdd)
-
-
+                    
                         const newDate = new Date(this.dateStart)
                         newDate.setDate(newDate.getDate() + (daysToAdd + daysToFirstEvent - 1))
-                        // console.log(newDate)
                         dates.end = newDate
                     }
 
-
-                    // dates.end = this.endsOnDate
                 }
 
                 const payload = {
@@ -664,14 +649,13 @@
                     'eventTagId': this.calendarInput
                 }
 
-                // console.log(payload)
-
                 
                 try {
                     const data = await this.$http.post('/api/event', payload)
                 
-                    // console.log(data)
                     const newEvent = data.data
+
+                    console.log(data)
 
                     this.$store.dispatch('calendar/add_event', { 'tag_id': this.calendarInput, 'event': newEvent})
 

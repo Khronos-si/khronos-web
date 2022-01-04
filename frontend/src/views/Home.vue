@@ -2,8 +2,8 @@
     <div >
         <div class="row">
             <div class="col-lg-3 col-1">
-                <b-card class="mojCard m-0" >
-                    <div class="mb-2 p-0" style="font-size: 1.5rem;">Upcoming eventi</div>
+                <b-card class="mojCard m-0 py-1" >
+                    <div class="mb-2 p-0" style="font-size: 1.5rem;">Weekly events</div>
                     <div style="height: 73vh !important; overflow-y: auto; overflow-x: hidden;" class="pr-1 pb-2">
                         <div v-for="(object,id) in eventsInThisWeek" :key="'UpcomingEventi_' + id" >
                             <div class="text-left d-flex justify-content-between w-100 mt-1 overflow-hidden" >
@@ -31,7 +31,7 @@
                                     {{day.date.toLocaleDateString(undefined,options)}}
                                 </div>
                                 <div v-for="(event, id) in attributes" :key="'event_id_' + event.key">
-                                    <div class="d-flex" v-if="id < 5">
+                                    <div class="d-flex" v-if="id < 10">
                                         <div class="d-flex justify-content-center">
                                             <span class="bullet bullet-sm" style="width: 6px !important; height: 6px !important; margin-top: 6px; margin-right: 5px; margin-left: 5px;" :style="'background:' + event.customData.color + '!important;'"></span>
                                         </div>
@@ -43,8 +43,8 @@
                     </calendar>
                 </b-card>
                 
-                <b-card class="w-100 mt-2 mb-0 h-70 mojCard">
-                    <div style="font-size: 1.5rem;">Upcoming taski</div>
+                <b-card class="w-100 mt-2 mb-0 h-70 py-1 mojCard">
+                    <div style="font-size: 1.5rem;">Recent tasks</div>
                     <div style="height: 42vh; overflow-y: scroll; overflow-x: hidden;">
                         <div v-for="(task, id) in lastAddedTodos" :key="'Home_page_task_' + id" >
                             <div class="row py-1 item" >
@@ -73,7 +73,7 @@
             </div>
             <div class="col-lg-5 col-7">
                 <b-card class="w-100 h-100">
-                    <div class="text-center" style="font-size: 1.5rem;">Pregled dnevnih opravil</div>
+                    <div class="text-center" style="font-size: 1.5rem;">Magical watch to view your events</div>
                     <!-- d-flex align-items-center justify-content-center  -->
                     <div class="h-100" style="margin: auto;">
                         <clock-with-task :events="eventsToday"></clock-with-task>
