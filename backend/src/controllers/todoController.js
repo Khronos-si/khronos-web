@@ -39,7 +39,7 @@ const _todoGroupToJSON = (todoGroup) => ({
 		_userToJSON(e, false, true, false, false)
 	),
 	color: todoGroup.color,
-	owner: _userToJSON(todoGroup.owner, true, false, false, false),
+	owner: _userToJSON(todoGroup.owner, true, false, true, false),
 	todos: todoGroup.todos.map((e) => _todoToJSON(e, false)),
 });
 
