@@ -86,7 +86,7 @@
 
                     if (arrayTimes.length === 0) {
                         const currentNivo = []
-                        const cas = `${hoursStart  }:${  minutesStart  } -> ${  hoursEnd  }:${  minutesEnd}`
+                        const cas = `${hoursStart  }:${  minutesStart  } - ${  hoursEnd  }:${  minutesEnd}`
                         currentNivo.push({'start': kotStart, 'end': kotEnd, 'time': cas, event})
                         arrayTimes.push(currentNivo)
                     } else {
@@ -146,12 +146,12 @@
 
                         if (arrayTimes.length - 1 < nivo) {
                             const currentNivo = []
-                            const cas = `${hoursStart  }:${  minutesStart  } -> ${  hoursEnd  }:${  minutesEnd}`
+                            const cas = `${hoursStart  }:${  minutesStart  } - ${  hoursEnd  }:${  minutesEnd}`
                             currentNivo.push({'start': kotStart, 'end': kotEnd, 'time': cas, event})
                             arrayTimes.push(currentNivo)
                             nivo = arrayTimes.length - 1
                         } else {
-                            const cas = `${hoursStart  }:${  minutesStart  } -> ${  hoursEnd  }:${  minutesEnd}`
+                            const cas = `${hoursStart  }:${  minutesStart  } - ${  hoursEnd  }:${  minutesEnd}`
                             arrayTimes[nivo].push({'start': kotStart, 'end': kotEnd, 'time': cas, event})
                         }
                     }
@@ -423,7 +423,7 @@
                                 subX = x - 300 - xOnCircle
                                 subY = 300 - y - yOnCircle
 
-                                if (Math.abs(subX + subY) < 5) {
+                                if (Math.abs(subX + subY) < 2) {
                                     let xMin = 0, yMin = 0
 
                                     if (smerX) {
@@ -488,7 +488,7 @@
                             subX = x - 300 - xOnCircle
                             subY = 300 - y - yOnCircle
 
-                            if (Math.abs(subX + subY) < 5) {
+                            if (Math.abs(subX + subY) < 2) {
                                 let xMin = 0, yMin = 0
                                
                                 if (smerX) {

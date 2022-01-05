@@ -107,6 +107,8 @@
 
                 const todoId = this.eventId
 
+                console.log(this.eventId)
+
                 try {
                     const data = await this.$http.delete(`/api/event/${todoId}`)
                     
